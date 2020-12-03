@@ -13,16 +13,16 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderDetail {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "order_detail_no")
     private int no; // 주문 세부정보 고유번호
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_no")
+    @JoinColumn(name = "order_no", nullable = false)
     private Order order; // 주문 고유번호
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_no")
+    @JoinColumn(name = "product_no", nullable = false)
     private Product product; // 구매 제품 고유번호
 
     @Column(name = "ord_detail_count")
