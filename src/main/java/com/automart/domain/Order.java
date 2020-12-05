@@ -38,7 +38,7 @@ public class Order {
         this.user = user;
     }
 
-    private void setState(OrderState state) {
+    public void setState(OrderState state) {
         this.state = state;
     }
 

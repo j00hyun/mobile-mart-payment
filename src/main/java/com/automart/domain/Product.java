@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "product")
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
@@ -63,5 +62,19 @@ public class Product {
 
     public void addStock(int count) {
         this.stock += count;
+    }
+
+    @Builder
+    public Product(List<Cart> carts, Category category, List<OrderDetail> orderDetails, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+        this.carts = carts;
+        this.category = category;
+        this.orderDetails = orderDetails;
+        this.name = name;
+        this.price = price;
+        this.cost = cost;
+        this.stock = stock;
+        this.code = code;
+        this.imgUrl = imgUrl;
+        this.location = location;
     }
 }
