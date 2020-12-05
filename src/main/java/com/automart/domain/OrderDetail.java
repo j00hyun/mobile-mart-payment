@@ -35,15 +35,15 @@ public class OrderDetail {
         this.order = order;
     }
 
-    private void setProduct(Product product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 
-    private void setCount(int count) {
+    public void setCount(int count) {
         this.count = count;
     }
 
-    private void setPrice(int price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
@@ -68,4 +68,5 @@ public class OrderDetail {
         product.removeStock(count); // 주문상품의 개수만큼 상품현황에서 감소시킴
         return orderDetail;
     }
+
 }

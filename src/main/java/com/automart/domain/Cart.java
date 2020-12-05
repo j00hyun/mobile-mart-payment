@@ -29,4 +29,9 @@ public class Cart {
 
     @Column(name = "cart_price")
     private int price; // 수량 포함 제품 가격
+
+    //test
+    public void setCart(Product product) {
+        this.product = product;
+    }
 }
