@@ -1,5 +1,5 @@
 package com.automart.domain;
 
-public enum OrderStatus {
+public enum OrderState {
     ORDER, CANCEL
 }

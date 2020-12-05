@@ -32,12 +32,54 @@ public class Order {
     @Column(name = "order_date")
     private LocalDateTime orderDate; // 주문 날짜
 
-    //private OrderStatus status; // 주문 상태 [ORDER, CANCLE], 얘도 DB에서 빼는게 좋지 않을까?
+    private OrderState state; // 주문 상태 [ORDER, CANCLE]
 
-    //private int totalPrice; // 얘는 DB에서 빼는게 좋을듯
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-    /* To-do list
-        주문생성
-        주문취소
-        전체가격조회 */
+    private void setState(OrderState state) {
+        this.state = state;
+    }
+
+    public void addOrderDetail(OrderDetail orderDetail) {
+        orderDetails.add(orderDetail);
+        orderDetail.setOrder(this);
+    }
+
+    /**
+     * 주문 생성
+     */
+    public static Order createOrder(User user, List<OrderDetail> orderDetails){
+        Order order = new Order(); // 주문생성
+        order.setUser(user); // 주문유저
+        for (OrderDetail orderDetail : orderDetails) { // 주문정보들
+            order.addOrderDetail(orderDetail);
+        }
+        order.setState(OrderState.ORDER); // 주문상태
+        return order;
+    }
+
+    /**
+     * 주문 취소
+     */
+    public void cancel(){
+        setState(OrderState.CANCEL); // 주문취소
+
+        for (OrderDetail orderDetail : orderDetails) { // Details에서도 취소
+            orderDetail.cancel();
+        }
+        // 환불에 대한 코드가 필요(?)
+    }
+
+    /**
+     * 주문 금액 조회
+     */
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        for (OrderDetail orderDetail : orderDetails) {
+            totalPrice += orderDetail.getTotalPrice();
+        }
+        return totalPrice;
+    }
 }
