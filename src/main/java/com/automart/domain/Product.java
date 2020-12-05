@@ -1,6 +1,8 @@
 package com.automart.domain;
 
+import com.automart.exception.NotEnoughStockException;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "product")
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
@@ -50,4 +53,15 @@ public class Product {
     @Column(name = "product_location", length = 45)
     private String location; // 제품 진열 위치
 
+    public void removeStock(int count) {
+        int restStock = this.stock - count;
+        if (restStock < 0) {
+            throw new NotEnoughStockException("need more stock");
+        }
+        this.stock = restStock;
+    }
+
+    public void addStock(int count) {
+        this.stock += count;
+    }
 }

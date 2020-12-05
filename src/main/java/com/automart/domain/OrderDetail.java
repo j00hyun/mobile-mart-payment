@@ -31,4 +31,41 @@ public class OrderDetail {
     @Column(name = "ord_detail_price")
     private int price; // 수량 포함 제품 가격
 
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    private void setProduct(Product product) {
+        this.product = product;
+    }
+
+    private void setCount(int count) {
+        this.count = count;
+    }
+
+    private void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getTotalPrice() {
+        return price*count;
+    }
+
+    public void cancel() {
+        product.addStock(count);
+    }
+
+    /**
+     * 주문 상품에 대한 정보 생성
+     */
+    public static OrderDetail createOrderDetail(Order order, Product product, int count, int price) {
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrder(order);
+        orderDetail.setProduct(product);
+        orderDetail.setCount(count);
+        orderDetail.setPrice(price);
+
+        product.removeStock(count); // 주문상품의 개수만큼 상품현황에서 감소시킴
+        return orderDetail;
+    }
 }
