@@ -25,7 +25,7 @@ public class OrderDetail {
     @JoinColumn(name = "product_no", nullable = false)
     private Product product; // 구매 제품 고유번호
 
-    @Column(name = "ord_detail_count")
+    @Column(name = "ord_detail_count", columnDefinition = "integer default 1")
     private int count; // 구매 수량
 
     @Column(name = "ord_detail_price")

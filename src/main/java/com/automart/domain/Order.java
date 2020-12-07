@@ -32,13 +32,15 @@ public class Order {
     @Column(name = "order_date")
     private LocalDateTime orderDate; // 주문 날짜
 
-    private OrderState state; // 주문 상태 [ORDER, CANCLE]
+    @Convert(converter = OrderStateAttributeConverter.class)
+    @Column(name = "order_state", length = 45, nullable = false)
+    private String state; // 주문 상태 [ORDER, CANCLE]
 
     public void setUser(User user) {
         this.user = user;
     }
 
-    public void setState(OrderState state) {
+    public void setState(String state) {
         this.state = state;
     }
 
@@ -56,7 +58,8 @@ public class Order {
         for (OrderDetail orderDetail : orderDetails) { // 주문정보들
             order.addOrderDetail(orderDetail);
         }
-        order.setState(OrderState.ORDER); // 주문상태
+        order.setState("ORDER"); // 주문상태
+
         return order;
     }
 
@@ -64,7 +67,7 @@ public class Order {
      * 주문 취소
      */
     public void cancel(){
-        setState(OrderState.CANCEL); // 주문취소
+        setState("CANCEL"); // 주문취소
 
         for (OrderDetail orderDetail : orderDetails) { // Details에서도 취소
             orderDetail.cancel();

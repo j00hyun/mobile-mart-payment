@@ -52,6 +52,10 @@ public class Product {
     @Column(name = "product_location", length = 45)
     private String location; // 제품 진열 위치
 
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public void removeStock(int count) {
         int restStock = this.stock - count;
         if (restStock < 0) {
@@ -76,5 +80,24 @@ public class Product {
         this.code = code;
         this.imgUrl = imgUrl;
         this.location = location;
+    }
+
+    /**
+     * 제품 생성
+     */
+    public Product createProduct(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+        Product product = Product.builder()
+                .category(category)
+                .name(name)
+                .price(price)
+                .cost(cost)
+                .stock(stock)
+                .code(code)
+                .imgUrl(imgUrl)
+                .location(location).build();
+
+        category.addProduct(product);
+
+        return product;
     }
 }
