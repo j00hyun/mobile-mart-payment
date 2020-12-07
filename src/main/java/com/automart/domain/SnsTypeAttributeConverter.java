@@ -27,6 +27,6 @@ public class SnsTypeAttributeConverter implements AttributeConverter<String, Int
         } else if (3 == code) {
             return "GOOGLE";
         }
-        return "NULL";
+        return "LOCAL";
     }
 }
