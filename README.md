@@ -24,10 +24,6 @@
 
 
 
-## ERD 수정후 (2020/12/4)
-![Screen Shot 2020-12-04 at 1 18 33 PM](https://user-images.githubusercontent.com/64248514/101121338-3e37ac00-3633-11eb-9040-774618dd0bca.png)
-![Screen Shot 2020-12-03 at 10 45 22 PM](https://user-images.githubusercontent.com/64248514/101121268-10526780-3633-11eb-96e6-8c6305cc152e.png)
-
-## ERD 수정전
-![Screen Shot 2020-11-24 at 11 10 42 PM](https://user-images.githubusercontent.com/64248514/100105206-70664280-2eaa-11eb-911d-0842605c05ca.png)
-![Screen Shot 2020-11-24 at 11 06 22 PM](https://user-images.githubusercontent.com/64248514/100105214-71976f80-2eaa-11eb-8b7b-1e256ec0c6dd.png)
+## ERD 수정후 (2020/12/7)
+![Screen Shot 2020-12-07 at 8 14 58 PM](https://user-images.githubusercontent.com/64248514/101344703-37c26200-38c9-11eb-9ecb-80867edfbe89.png)
+![Screen Shot 2020-12-07 at 8 24 57 PM](https://user-images.githubusercontent.com/64248514/101345547-858b9a00-38ca-11eb-900b-1a2a16ea1310.png)
