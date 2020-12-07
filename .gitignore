@@ -38,4 +38,4 @@ out/
 
 ### Custom ###
 .properties
-.yml
+*.yml
