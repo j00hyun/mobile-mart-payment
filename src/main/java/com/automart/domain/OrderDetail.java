@@ -47,10 +47,6 @@ public class OrderDetail {
         this.price = price;
     }
 
-    public int getTotalPrice() {
-        return price*count;
-    }
-
     public void cancel() {
         product.addStock(count);
     }
@@ -58,9 +54,8 @@ public class OrderDetail {
     /**
      * 주문 상품에 대한 정보 생성
      */
-    public static OrderDetail createOrderDetail(Order order, Product product, int count, int price) {
+    public static OrderDetail createOrderDetail(Product product, int count, int price) {
         OrderDetail orderDetail = new OrderDetail();
-        orderDetail.setOrder(order);
         orderDetail.setProduct(product);
         orderDetail.setCount(count);
         orderDetail.setPrice(price);
