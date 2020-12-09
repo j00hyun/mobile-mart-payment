@@ -85,7 +85,7 @@ public class Product {
     /**
      * 제품 생성
      */
-    public Product createProduct(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+    public static Product createProduct(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
         Product product = Product.builder()
                 .category(category)
                 .name(name)
