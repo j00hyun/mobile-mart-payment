@@ -148,22 +148,11 @@ public class User implements UserDetails {
     /**
      * SNS를 통해 회원가입한 유저 생성(이메일 존재)
      */
-    public static User createUserBySns(String email, String snsType, String snsKey) {
+    public static User createUserBySns(String email, String snsType) {
         User user = User.builder()
                 .email(email)
                 .snsType(snsType)
-                .snsKey(snsKey).build();
-
-        return user;
-    }
-
-    /**
-     * SNS를 통해 회원가입한 유저 생성(이메일 미존재 - 카카오톡)
-     */
-    public static User createUserBySns(String snsType, String snsKey) {
-        User user = User.builder()
-                .snsType(snsType)
-                .snsKey(snsKey).build();
+                .build();
 
         return user;
     }
