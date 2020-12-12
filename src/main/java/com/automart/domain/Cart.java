@@ -50,7 +50,7 @@ public class Cart {
     /**
      * 카트에 물건 담기
      */
-    public Cart createCart(User user, Product product) {
+    public static Cart createCart(User user, Product product) {
         Cart cart = new Cart();
         cart.setUser(user);
 

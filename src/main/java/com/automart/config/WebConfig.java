@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 @EnableWebSecurity // Spring Security 활성화
 @Configuration
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter { // Spring Security의 설정파일로서의 역할을 하기 위해 상속해야 하는 클래스
+public class WebConfig extends WebSecurityConfigurerAdapter { // Spring Security의 설정파일로서의 역할을 하기 위해 상속해야 하는 클래스
 
     private final UserService userService; // 유저 정보를 가져올 클래스
 
