@@ -9,9 +9,4 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 class AutomartApplicationTests {
 
-	@Test
-	public void contextLoads() {
-
-	}
-
 }

@@ -25,4 +25,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     // snsType별 email으로 회원 찾기
     // @Query(value = "select u from User u where u.email = :no and u.snsType = :snsType")
     public Optional<User> findByEmailAndSnsType(@Param("email") String email, @Param("snsType") String snsType);
+
 }
