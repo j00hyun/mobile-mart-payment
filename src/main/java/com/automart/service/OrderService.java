@@ -1,6 +1,5 @@
 package com.automart.service;
 
-
 import com.automart.domain.Cart;
 import com.automart.domain.Order;
 import com.automart.domain.OrderDetail;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +43,7 @@ public class OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (Integer cartNo : cartNos) {
             Cart cart = cartRepository.findByNo(cartNo);
-            System.out.println("과연.."+cart.getProduct());
-            orderDetails.add(OrderDetail.createOrderDetail(cart.getProduct(), cart.getCount(), cart.getPrice())); // 여기서 NPE발생
+            orderDetails.add(OrderDetail.createOrderDetail(cart.getProduct(), cart.getCount(), cart.getPrice()));
         }
 
         // 주문 생성
@@ -65,13 +62,26 @@ public class OrderService {
         Order order = orderRepository.findByNo(orderNo).orElseThrow(
                 () -> new IllegalStateException("취소할 주문이 존재하지 않습니다.")
         );
-        order.cancel();
+        order.cancel(); // 취소한 주문의 경우 상태만 바뀌고 남아있는걸로 설정해놔서 영속성 제거가 안된상태
     }
 
-    // 주문목록 조회하기
+    /***
+     * 주문 단건 조회하기
+     * @param orderNo : 조회할 주문의 번호
+     * @return 주문 단건에 대한 정보를 담은 Dto를 반환
+     */
+    public OrderResponseDto showOrder(Integer orderNo) {
+        Order order = orderRepository.findByNo(orderNo)
+                .orElseThrow(()->new IllegalStateException("주문이 존재하지 않습니다."));
+        return OrderResponseDto.of(order);
+    }
 
-    @Transactional
-    public List<Order> findOrders() {
-        return orderRepository.findAll();
+    /***
+     * 전체 주문 조회하기
+     * @return 전체 주문에 대한 정보를 담은 Dto를 반환
+     */
+    public List<OrderResponseDto> showOrders() {
+        List<Order> orders = orderRepository.findAll();
+        return OrderResponseDto.listOf(orders);
     }
 }

@@ -33,6 +33,7 @@ public class Cart {
 
     public void setUser(User user) {
         this.user = user;
+        user.getCarts().add(this); // 양방향 연관관계 설정
     }
 
     public void setProduct(Product product) {
@@ -52,6 +53,7 @@ public class Cart {
      */
     public static Cart createCart(User user, Product product) {
         Cart cart = new Cart();
+        System.out.println("cart user : " + user.getNo());
         cart.setUser(user);
 
         // 재고가 존재해야만 가능

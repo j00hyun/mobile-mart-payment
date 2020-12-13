@@ -38,6 +38,8 @@ public class Order {
 
     public void setUser(User user) {
         this.user = user;
+        user.getOrders().add(this); // 양방향 연관관계 설정
+
     }
 
     public void setState(String state) {
@@ -46,7 +48,7 @@ public class Order {
 
     public void addOrderDetail(OrderDetail orderDetail) {
         orderDetails.add(orderDetail);
-        orderDetail.setOrder(this);
+        orderDetail.setOrder(this); // 양방향 연관관계 설정
     }
 
     /**
