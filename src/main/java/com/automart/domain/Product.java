@@ -52,10 +52,6 @@ public class Product {
     @Column(name = "product_location", length = 45)
     private String location; // 제품 진열 위치
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
     public void removeStock(int count) {
         int restStock = this.stock - count;
         if (restStock < 0) {
@@ -69,10 +65,8 @@ public class Product {
     }
 
     @Builder
-    public Product(List<Cart> carts, Category category, List<OrderDetail> orderDetails, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
-        this.carts = carts;
+    public Product(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
         this.category = category;
-        this.orderDetails = orderDetails;
         this.name = name;
         this.price = price;
         this.cost = cost;
@@ -80,6 +74,8 @@ public class Product {
         this.code = code;
         this.imgUrl = imgUrl;
         this.location = location;
+
+        category.getProducts().add(this); // 양방향 연관관계 설정
     }
 
     /**
@@ -96,8 +92,27 @@ public class Product {
                 .imgUrl(imgUrl)
                 .location(location).build();
 
-        category.addProduct(product);
-
         return product;
+    }
+
+    /**
+     * 제품 수정
+     */
+    public Product update(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+        if (this.category != null) { // 양방향 연관관계를 다시 생성하기위해 기존의 관계를 제거
+            this.category.getProducts().remove(this);
+        }
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.cost = cost;
+        this.stock = stock;
+        this.code = code;
+        this.imgUrl = imgUrl;
+        this.location = location;
+
+        category.getProducts().add(this); // 양방향 연관관계 설정
+
+        return this;
     }
 }

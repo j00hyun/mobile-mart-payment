@@ -37,6 +37,7 @@ public class OrderDetail {
 
     public void setProduct(Product product) {
         this.product = product;
+        product.getOrderDetails().add(this); // 양방향 연관관계 설정
     }
 
     public void setCount(int count) {
@@ -48,7 +49,7 @@ public class OrderDetail {
     }
 
     public void cancel() {
-        product.addStock(count);
+        getProduct().addStock(count);
     }
 
     /**
@@ -57,6 +58,7 @@ public class OrderDetail {
     public static OrderDetail createOrderDetail(Product product, int count, int price) {
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.setProduct(product);
+        product.getOrderDetails().add(orderDetail);
         orderDetail.setCount(count);
         orderDetail.setPrice(price);
 

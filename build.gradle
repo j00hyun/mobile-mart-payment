@@ -23,6 +23,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
+	implementation 'io.springfox:springfox-swagger2:3.0.0'
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -33,6 +36,11 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	compile('org.springframework.boot:spring-boot-starter-oauth2-client')
 	compile('org.springframework.session:spring-session-jdbc')
+
+	compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
+	compile('org.springframework.session:spring-session-jdbc')
+
 	testCompile('org.springframework.security:spring-security-test')
 }
 
