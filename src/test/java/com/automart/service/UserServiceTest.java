@@ -5,6 +5,8 @@ import com.automart.cart.repository.CartRepository;
 import com.automart.category.domain.Category;
 import com.automart.order.Service.OrderService;
 import com.automart.order.domain.Order;
+import com.automart.order.dto.OrderRequestDto;
+import com.automart.order.dto.OrderResponseDto;
 import com.automart.order.repository.OrderRepository;
 import com.automart.product.domain.Product;
 import com.automart.user.Service.UserService;
@@ -18,6 +20,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
@@ -69,11 +74,17 @@ class OrderServiceTest {
         em.persist(cart2);
 
         // when : 주문을 할 때
-        Integer orderNo = orderService.Order(user.getNo(), cart1.getNo(), cart2.getNo());
+
+        List<Integer> carts = new ArrayList<>();
+        carts.add(cart1.getNo());
+        carts.add(cart2.getNo());
+        OrderRequestDto requestDto = new OrderRequestDto(user.getNo(),carts);
+
+        OrderResponseDto orderDto = orderService.order(requestDto);
 
         // then
-        Order findOrder = orderRepository.findByNo(orderNo).get();
-        assertThat(findOrder.getNo()).isEqualTo(orderNo);
+        Order findOrder = orderRepository.findByNo(orderDto.getOrderNo()).get();
+        assertThat(findOrder.getNo()).isEqualTo(orderDto.getOrderNo());
 
         assertEquals("주문을 하면 주문상태가 ORDER가 된다.", "ORDER", findOrder.getState());
         assertEquals("1건의 주문에는 주문한 상품의 종류만큼 들어가있어야 한다.", 2, findOrder.getOrderDetails().size());

@@ -3,6 +3,7 @@ package com.automart.order.Service;
 import com.automart.cart.domain.Cart;
 import com.automart.order.domain.Order;
 import com.automart.order.domain.OrderDetail;
+import com.automart.order.dto.OrderRequestDto;
 import com.automart.order.dto.OrderResponseDto;
 import com.automart.user.domain.User;
 import com.automart.cart.repository.CartRepository;
@@ -26,23 +27,21 @@ public class OrderService {
 
     /***
      * 주문하기
-     * @param userNo : 주문을 할 User의 고유번호
-     * @param cartNos : User의 cart리스트
-     * @return : 유저의 식별자
+     * @param requestDto : 주문정보에 대한 Dto (UserNo, CartNos)
+     * @return : 생성한 주문에 대한 정보를 담은 Dto를 반환
      */
     @Transactional
-    public Integer Order(Integer userNo, Integer ...cartNos) throws Exception {
-
-        User user = userRepository.findByNo(userNo).orElseThrow(
+    public OrderResponseDto order(OrderRequestDto requestDto) throws Exception {
+        User user = userRepository.findByNo(requestDto.getUserNo()).orElseThrow(
                 ()->new IllegalAccessException("잘못된 유저입니다."));
 
-        if (cartNos == null || cartNos.length == 0) { // 카트가 존재하지 않을 때 예외처리
+        if (requestDto.getCartNos().size() == 0) { // 카트가 존재하지 않을 때 예외처리
             throw new NullPointerException("장바구니에 상품을 담아주세요.");
         }
 
         // 주문상품정보를 생성한다.
         List<OrderDetail> orderDetails = new ArrayList<>();
-        for (Integer cartNo : cartNos) {
+        for (Integer cartNo : requestDto.getCartNos()) {
             Cart cart = cartRepository.findByNo(cartNo);
             orderDetails.add(OrderDetail.createOrderDetail(cart.getProduct(), cart.getCount(), cart.getPrice()));
         }
@@ -51,7 +50,7 @@ public class OrderService {
         Order order = Order.createOrder(user,orderDetails);
 
         orderRepository.save(order);
-        return order.getNo();
+        return OrderResponseDto.of(order);
     }
 
     /***
