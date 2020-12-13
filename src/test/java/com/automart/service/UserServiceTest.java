@@ -1,7 +1,15 @@
 package com.automart.service;
 
-import com.automart.domain.*;
-import com.automart.repository.*;
+import com.automart.cart.domain.Cart;
+import com.automart.cart.repository.CartRepository;
+import com.automart.category.domain.Category;
+import com.automart.order.Service.OrderService;
+import com.automart.order.domain.Order;
+import com.automart.order.repository.OrderRepository;
+import com.automart.product.domain.Product;
+import com.automart.user.Service.UserService;
+import com.automart.user.domain.User;
+import com.automart.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +27,17 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 @SpringBootTest
 @Transactional
 class OrderServiceTest {
-    @Autowired OrderService orderService;
-    @Autowired UserService userService;
+    @Autowired
+    OrderService orderService;
+    @Autowired
+    UserService userService;
 
-    @Autowired OrderRepository orderRepository;
-    @Autowired UserRepository userRepository;
-    @Autowired CartRepository cartRepository;
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    CartRepository cartRepository;
     @Autowired EntityManager em;
 
     @Test
