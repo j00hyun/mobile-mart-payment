@@ -3,57 +3,44 @@ package com.automart.service;
 import com.automart.domain.User;
 import com.automart.exception.ForbiddenSignUpException;
 import com.automart.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Slf4j
-public class UserService implements UserDetailsService {
+public class UserService {
 
-    private UserRepository userRepository;
-    private SMSService smsService;
-
-    /**
-     * Spring Security 필수 메소드
-     * 로컬 로그인
-     * @param email : 이메일
-     * @return : 이메일에 해당하는 유저 정보
-     */
-    @Override
-    public User loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmailAndSnsType(email, "LOCAL")
-                .orElseThrow(() -> new UsernameNotFoundException(email));
-    }
+    private final UserRepository userRepository;
+    private final SMSService smsService;
 
     /**
-     * 이메일 중복확인
-     * @param email : 중복확인 요청하는 이메일 주소
+     * 로컬 회원 이메일 확인
      */
-    public void checkDuplicateEmail(String email) throws ForbiddenSignUpException {
+    public void checkDuplicateEmail(User user) throws ForbiddenSignUpException {
         log.info("이메일 중복 검증");
 
-        Optional<User> user = userRepository.findByEmailAndSnsType(email, "LOCAL");
+        Optional<User> findUser = userRepository.findByEmailAndSnsType(user.getEmail(), "LOCAL");
 
-        if(user.isPresent()) {
+        if(findUser.isPresent()) {
             throw new ForbiddenSignUpException("동일한 이메일의 회원이 이미 존재합니다.");
         }
     }
 
     /**
      * 휴대폰 중복확인
-     * @param tel : 중복확인 요청하는 휴대폰 번호
      */
-    public void checkDuplicateTel(String tel) throws ForbiddenSignUpException {
+    public void checkDuplicateTel(User user) throws ForbiddenSignUpException {
         log.info("휴대폰 번호 중복 검증");
 
-        Optional<User> user = userRepository.findByTel(tel);
+        Optional<User> findUser = userRepository.findByTel(user.getTel());
 
-        if(user.isPresent()) {
+        if(findUser.isPresent()) {
             throw new ForbiddenSignUpException("동일한 휴대폰 번호의 회원이 이미 존재합니다.");
         }
     }
@@ -90,6 +77,7 @@ public class UserService implements UserDetailsService {
         return pw;
     }
 
+
 //    public int changePassword(int no, String password) {
 //        log.info("비밀번호 변겅");
 //
@@ -102,21 +90,11 @@ public class UserService implements UserDetailsService {
 //        }
 //    }
 
-    /**
-     * 로컬 회원 생성
-     * @param email : 이메일
-     * @param password : 비밀번호
-     * @param name : 이름
-     * @param tel : 전화번호
-     * @return : 유저의 고유번호
-     */
-    public int saveUser(String email, String password, String name, String tel) {
-        log.info("로컬 회원 생성");
-
-        // 입력받은 패스워드 암호화
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        password = encoder.encode(password);
-
-        return userRepository.save(User.createUserByApp(email, password, name, tel)).getNo();
+    @Transactional
+    public Integer saveUser(User user) {
+        checkDuplicateEmail(user);
+        checkDuplicateTel(user);
+        userRepository.save(user);
+        return user.getNo();
     }
 }

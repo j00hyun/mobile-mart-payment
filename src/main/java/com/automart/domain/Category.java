@@ -24,13 +24,11 @@ public class Category {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Product> products = new ArrayList<>();
 
+    /**
+     * 카테고리 수정
+     */
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void addProduct(Product product) {
-        products.add(product);
-        product.setCategory(this);
     }
 
     /**
@@ -39,7 +37,7 @@ public class Category {
     public static Category createCategory(String name) {
         Category category = new Category();
         category.setName(name);
-
         return category;
     }
+
 }
