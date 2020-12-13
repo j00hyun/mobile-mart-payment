@@ -3,6 +3,7 @@ package com.automart.product.Service;
 import com.automart.category.domain.Category;
 import com.automart.product.domain.Product;
 import com.automart.category.repository.CategoryRepository;
+import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.repository.ProductRepository;
 import com.automart.product.dto.ProductResponseDto;
 import com.automart.product.dto.ProductUpdateRequestDto;
@@ -22,13 +23,17 @@ public class ProductService {
 
     /***
      * 상품 등록하기
-     * @param product : 등록할 상품
-     * @return
+     * @param requestDto : 등록할 상품에 대한 정보를 갖고있는 Dto
+     * @return 등록한 상품 식별자
      */
     @Transactional
-    public Integer saveProduct(Product product) {
+    public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) {
+        Category category = categoryRepository.findByNo(requestDto.getCategoryNo());
+        Product product = Product.createProduct(category, requestDto.getName(),
+                requestDto.getPrice(),requestDto.getCost(),requestDto.getStock(),
+                requestDto.getCode(),requestDto.getImgUrl(),requestDto.getLocation());
         productRepository.save(product);
-        return product.getNo();
+        return ProductResponseDto.of(product);
     }
 
     /***
