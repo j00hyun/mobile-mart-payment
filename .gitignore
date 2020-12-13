@@ -40,3 +40,6 @@ out/
 .properties
 *.yml
 test/
+
+.idea
+node_modules
