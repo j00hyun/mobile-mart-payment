@@ -34,7 +34,7 @@ public class User {
 
     @Convert(converter = SnsTypeAttributeConverter.class)
     @Column(name = "user_sns_type", length = 45, nullable = false)
-    private String snsType; // 사용자 SNS 연동 타입 [NULL, NAVER, KAKAO, GOOGLE]
+    private String snsType; // 사용자 SNS 연동 타입 [LOCAL, NAVER, KAKAO, GOOGLE]
 
     @Column(name = "user_sns_key", length = 45, unique = true)
     private String snsKey; // 사용자 SNS 고유 key
@@ -55,33 +55,9 @@ public class User {
         this.snsKey = snsKey;
     }
 
-    /**
-     * 앱에서 회원가입한 유저 생성
-     */
-    public static User createUserByApp(String email, String password, String tel, String name) {
-        User user = User.builder()
-                .email(email)
-                .password(password)
-                .tel(tel)
-                .name(name)
-                .snsType("LOCAL").build();
-
-        return user;
+    // 비밀번호 변경
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    /**
-     * SNS를 통해 회원가입한 유저 생성(이메일 존재)
-     */
-    public static User createUserBySns(String email, String snsType) {
-        User user = User.builder()
-                .email(email)
-                .snsType(snsType)
-                .build();
-
-        return user;
-    }
-
-    /**
-     * 회원정보 수정
-     */
 }

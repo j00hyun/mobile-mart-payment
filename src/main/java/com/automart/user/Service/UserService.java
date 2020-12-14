@@ -1,5 +1,6 @@
 package com.automart.user.Service;
 
+import com.automart.exception.NotFoundUserException;
 import com.automart.user.domain.User;
 import com.automart.exception.ForbiddenSignUpException;
 import com.automart.user.repository.UserRepository;
@@ -21,6 +22,7 @@ public class UserService {
 
     /**
      * 로컬 회원 이메일 확인
+     * @param user : 사용자 정보
      */
     public void checkDuplicateEmail(User user) throws ForbiddenSignUpException {
         log.info("이메일 중복 검증");
@@ -34,6 +36,7 @@ public class UserService {
 
     /**
      * 휴대폰 중복확인
+     * @param user : 사용자 정보
      */
     public void checkDuplicateTel(User user) throws ForbiddenSignUpException {
         log.info("휴대폰 번호 중복 검증");
@@ -77,19 +80,27 @@ public class UserService {
         return pw;
     }
 
+    /**
+     * 비밀번호 변경
+     * @param no : 회원 고유번호
+     * @param password : 새 비밀번호
+     * @return : 유저 정보
+     */
+    public User changePassword(int no, String password) throws NotFoundUserException {
+        log.info("비밀번호 변겅");
 
-//    public int changePassword(int no, String password) {
-//        log.info("비밀번호 변겅");
-//
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        password = encoder.encode(password);
-//
-//        Optional<User> user = userRepository.findByNo(no);
-//
-//        if(user.isPresent()) {
-//        }
-//    }
+        User user = userRepository.findByNo(no)
+                .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
 
+        user.setPassword(password);
+        return user;
+    }
+
+    /**
+     * 회원 생성
+     * @param user : 생성하려는 회원 정보
+     * @return : 회원 고유 번호
+     */
     @Transactional
     public Integer saveUser(User user) {
         checkDuplicateEmail(user);

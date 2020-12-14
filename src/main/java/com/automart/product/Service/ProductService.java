@@ -28,7 +28,7 @@ public class ProductService {
      */
     @Transactional
     public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) {
-        Category category = categoryRepository.findByNo(requestDto.getCategoryNo());
+        Category category = categoryRepository.findByNo(requestDto.getCategoryNo()).get();
         Product product = Product.createProduct(category, requestDto.getName(),
                 requestDto.getPrice(),requestDto.getCost(),requestDto.getStock(),
                 requestDto.getCode(),requestDto.getImgUrl(),requestDto.getLocation());
@@ -43,7 +43,7 @@ public class ProductService {
      */
     @Transactional
     public ProductResponseDto updateProduct(ProductUpdateRequestDto requestDto) {
-        Category category = categoryRepository.findByNo(requestDto.getCategoryNo());
+        Category category = categoryRepository.findByNo(requestDto.getCategoryNo()).get();
         Product product = productRepository.findByNo(requestDto.getProductNo())
                 .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
         product = product.update(category, requestDto.getName(), requestDto.getPrice(),

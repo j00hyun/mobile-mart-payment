@@ -2,6 +2,7 @@ package com.automart.category.domain;
 
 import com.automart.product.domain.Product;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,10 +36,8 @@ public class Category {
     /**
      * 카테고리 생성
      */
-    public static Category createCategory(String name) {
-        Category category = new Category();
-        category.setName(name);
-        return category;
+    @Builder
+    public Category(String name) {
+        this.name = name;
     }
-
 }
