@@ -42,7 +42,7 @@ public class OrderService {
         // 주문상품정보를 생성한다.
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (Integer cartNo : requestDto.getCartNos()) {
-            Cart cart = cartRepository.findByNo(cartNo);
+            Cart cart = cartRepository.findByNo(cartNo).get();
             orderDetails.add(OrderDetail.createOrderDetail(cart.getProduct(), cart.getCount(), cart.getPrice()));
         }
 

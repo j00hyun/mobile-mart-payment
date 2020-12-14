@@ -40,6 +40,7 @@ public class Cart {
 
     public void setProduct(Product product) {
         this.product = product;
+        product.getCarts().add(this);
     }
 
     public void setCount(int count) {
