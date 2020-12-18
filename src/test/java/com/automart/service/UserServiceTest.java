@@ -1,6 +1,7 @@
 package com.automart.service;
 
 import com.automart.cart.domain.Cart;
+import com.automart.cart.dto.CartResponseDto;
 import com.automart.cart.repository.CartRepository;
 import com.automart.cart.service.CartService;
 import com.automart.category.domain.Category;
@@ -283,9 +284,9 @@ class CartServiceTest {
                 .build();
 
         userService.saveUser(user);
-        categoryService.saveCategory("사과");
+        categoryService.saveCategory("과일");
 
-        ProductSaveRequestDto productDto = ProductSaveRequestDto.builder()
+        ProductSaveRequestDto productDto1 = ProductSaveRequestDto.builder()
                 .categoryNo(1)
                 .name("사과")
                 .price(2000)
@@ -296,7 +297,19 @@ class CartServiceTest {
                 .location(null)
                 .build();
 
-        productService.saveProduct(productDto);
+        ProductSaveRequestDto productDto2 = ProductSaveRequestDto.builder()
+                .categoryNo(1)
+                .name("바나나")
+                .price(2000)
+                .cost(1000)
+                .stock(10)
+                .code(11111111)
+                .imgUrl(null)
+                .location(null)
+                .build();
+
+        productService.saveProduct(productDto1);
+        productService.saveProduct(productDto2);
     }
 
     @Test
@@ -377,5 +390,23 @@ class CartServiceTest {
         assertEquals("해당 카트가 존재하지 않아야함.", false, cartRepository.findByNo(1).isPresent());
         assertEquals("해당 유저의 카트가 존재하지 않아야함.", 0, user.getCarts().size());
         assertEquals("해당 상품의 카트가 존재하지 않아야함.", 0, product.getCarts().size());
+    }
+
+    @Test
+    public void 카트목록조회() {
+        // given
+        User user = userRepository.findByNo(1).get();
+        Product product1 = productRepository.findByNo(1).get();
+        Product product2 = productRepository.findByNo(2).get();
+
+        cartService.addProductToCart(1, 1);
+        cartService.addProductToCart(1, 2);
+        cartService.addProductToCart(1, 2);
+
+        // when
+        List<CartResponseDto> cartResponseDtos = cartService.showUserCarts(1);
+
+        // then
+        assertEquals("장바구니에 상품이 2개 담겨있어야함.", 2, cartResponseDtos.size());
     }
 }

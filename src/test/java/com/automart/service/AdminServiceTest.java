@@ -28,11 +28,6 @@ class CategoryServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
 
-    @AfterEach
-    public void cleanup () {
-        categoryRepository.deleteAll();
-    }
-
     @Test
     public void 카테코리생성() {
         // when
@@ -42,6 +37,18 @@ class CategoryServiceTest {
         // then
         assertEquals("카테고리 고유번호가 올바로 증가해야 한다.", 1, category1.getNo());
         assertEquals("카테고리 고유번호가 올바로 증가해야 한다.", 2, category2.getNo());
+    }
+
+    @Test
+    public void 카테고리이름변경() {
+        // given
+        categoryService.saveCategory("과일");
+
+        // when
+        categoryService.updateCategory(1, "채소");
+
+        // then
+        assertEquals("카테고리 이름이 채소여야한다.", "채소", categoryRepository.findByNo(1).get().getName());
     }
 
     @Test
