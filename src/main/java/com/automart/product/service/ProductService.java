@@ -1,4 +1,4 @@
-package com.automart.product.Service;
+package com.automart.product.service;
 
 import com.automart.category.domain.Category;
 import com.automart.exception.ForbiddenMakeProductException;

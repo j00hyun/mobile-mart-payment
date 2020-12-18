@@ -1,4 +1,4 @@
-package com.automart.user.Service;
+package com.automart.user.service;
 
 import com.automart.exception.NotFoundUserException;
 import com.automart.user.domain.User;
@@ -103,6 +103,8 @@ public class UserService {
      */
     @Transactional
     public Integer saveUser(User user) {
+        log.info("회원 생성");
+
         checkDuplicateEmail(user);
         checkDuplicateTel(user);
         userRepository.save(user);

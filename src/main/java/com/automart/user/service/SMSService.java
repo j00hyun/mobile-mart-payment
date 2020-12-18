@@ -1,4 +1,4 @@
-package com.automart.user.Service;
+package com.automart.user.service;
 
 import java.util.HashMap;
 

@@ -1,6 +1,7 @@
 package com.automart.admin.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,14 +31,9 @@ public class Admin {
         this.password = password;
     }
 
-    /**
-     * 관리자 생성
-     */
-    public static Admin createAdmin(String id, String password) {
-        Admin admin = new Admin();
-        admin.setId(id);
-        admin.setPassword(password);
-
-        return admin;
+    @Builder
+    public Admin(String id, String password) {
+        this.id = id;
+        this.password = password;
     }
 }

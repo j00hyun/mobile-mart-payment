@@ -1,6 +1,6 @@
 package com.automart.order.controller;
 
-import com.automart.order.Service.OrderService;
+import com.automart.order.service.OrderService;
 import com.automart.order.dto.OrderRequestDto;
 import com.automart.order.dto.OrderResponseDto;
 import io.swagger.annotations.ApiOperation;

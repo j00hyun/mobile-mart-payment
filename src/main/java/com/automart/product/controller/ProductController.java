@@ -1,6 +1,6 @@
 package com.automart.product.controller;
 
-import com.automart.product.Service.ProductService;
+import com.automart.product.service.ProductService;
 import com.automart.product.dto.ProductResponseDto;
 import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.dto.ProductUpdateRequestDto;

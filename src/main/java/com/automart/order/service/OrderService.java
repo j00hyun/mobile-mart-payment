@@ -1,4 +1,4 @@
-package com.automart.order.Service;
+package com.automart.order.service;
 
 import com.automart.cart.domain.Cart;
 import com.automart.order.domain.Order;
