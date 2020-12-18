@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_no")
     private int no; // 제품 고유번호
 
@@ -117,5 +117,12 @@ public class Product {
         category.getProducts().add(this); // 양방향 연관관계 설정
 
         return this;
+    }
+
+    /**
+     * 해당 제품의 카트 삭제
+     */
+    public void removeCart(Cart cart) {
+        this.carts.remove(cart);
     }
 }

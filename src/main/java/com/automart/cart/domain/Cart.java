@@ -15,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Cart {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cart_no")
     private int no; // 장바구니 고유번호
 
@@ -54,7 +54,7 @@ public class Cart {
     /**
      * 카트에 물건 담기
      */
-    public static Cart createCart(User user, Product product) {
+    public static Cart createCart(User user, Product product) throws NotEnoughStockException {
         Cart cart = new Cart();
         System.out.println("cart user : " + user.getNo());
         cart.setUser(user);
@@ -74,7 +74,7 @@ public class Cart {
     /**
      * 카트에 담긴 물건 수량 증가
      */
-    public void addCart() {
+    public void addCart() throws NotEnoughStockException {
         // 재고가 존재해야만 가능
         if(this.getProduct().getStock() < 1) {
             throw new NotEnoughStockException("재고 부족으로 인해 상품을 담을 수 없습니다.");
@@ -92,6 +92,16 @@ public class Cart {
             this.count --;
             this.price -= this.getProduct().getPrice();
         }
+    }
+
+    /**
+     * 카트에 담긴 물건 삭제
+     */
+    public void removeCart() {
+        this.user.removeCart(this);
+        this.product.removeCart(this);
+        this.user = null;
+        this.product = null;
     }
 
 }

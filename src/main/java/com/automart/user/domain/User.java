@@ -16,7 +16,7 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_no")
     private int no; // 사용자 고유번호
 
@@ -60,4 +60,14 @@ public class User {
         this.password = password;
     }
 
+    // 해당 유저의 장바구니중 특정 제품 제거
+    public void removeCart(Cart cart) {
+        this.carts.remove(cart);
+    }
+
+    // 해당 유저에 해당하는 장바구니 모두 제거
+    public void removeAllCart() {
+        this.carts.forEach(cart -> cart.removeCart());
+        this.carts.clear();
+    }
 }

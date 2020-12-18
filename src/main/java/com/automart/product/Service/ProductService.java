@@ -1,6 +1,7 @@
 package com.automart.product.Service;
 
 import com.automart.category.domain.Category;
+import com.automart.exception.ForbiddenMakeProductException;
 import com.automart.product.domain.Product;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.product.dto.ProductSaveRequestDto;
@@ -28,7 +29,8 @@ public class ProductService {
      */
     @Transactional
     public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) {
-        Category category = categoryRepository.findByNo(requestDto.getCategoryNo()).get();
+        Category category = categoryRepository.findByNo(requestDto.getCategoryNo())
+                .orElseThrow(() -> new ForbiddenMakeProductException("해당 카테고리가 존재하지 않습니다."));
         Product product = Product.createProduct(category, requestDto.getName(),
                 requestDto.getPrice(),requestDto.getCost(),requestDto.getStock(),
                 requestDto.getCode(),requestDto.getImgUrl(),requestDto.getLocation());
