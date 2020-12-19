@@ -40,6 +40,7 @@ dependencies {
 	compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
 	compile('org.springframework.session:spring-session-jdbc')
+	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1' // Jwt토큰
 
 	testCompile('org.springframework.security:spring-security-test')
 	testCompile group: 'junit', name: 'junit', version: '4.12'
