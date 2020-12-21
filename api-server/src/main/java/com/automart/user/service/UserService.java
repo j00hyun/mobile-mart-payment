@@ -1,8 +1,12 @@
 package com.automart.user.service;
 
 import com.automart.exception.NotFoundUserException;
+import com.automart.product.domain.Product;
+import com.automart.product.dto.ProductResponseDto;
 import com.automart.user.domain.User;
 import com.automart.exception.ForbiddenSignUpException;
+import com.automart.user.dto.SignUpRequestDto;
+import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -102,7 +106,7 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByNo(no)
                 .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
 
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password)); // 패스워드 인코딩을 써서 암호화한다.
         return user;
     }
 
@@ -115,14 +119,14 @@ public class UserService implements UserDetailsService {
     public Integer saveUser(User user) {
         log.info("회원 생성");
 
-        checkDuplicateEmail(user);
-        checkDuplicateTel(user);
+        checkDuplicateEmail(user); // 이메일 중복 검증
+        checkDuplicateTel(user); // 연락처 중복 검증
         user.setPassword(passwordEncoder.encode(user.getPassword())); // 패스워드 인코딩을 써서 암호화한다.
         userRepository.save(user);
         return user.getNo();
     }
 
-    // 로그인 시 해당 유저정보를 불러온다.
+    // 로그인 시 토큰발급을 위한 유저의 정보를 불러온다.
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // 로그인시 email를 입력받기 때문에 email로 조회
@@ -161,7 +165,6 @@ public class UserService implements UserDetailsService {
             public boolean isCredentialsNonExpired() {
                 return true;
             }
-
             @Override
             public boolean isEnabled() {
                 return true;
@@ -170,5 +173,9 @@ public class UserService implements UserDetailsService {
         return userDetails;
     }
 
-
+    public UserResponseDto showUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new IllegalStateException("해당하는 회원을 찾을 수 없습니다."));
+        return UserResponseDto.of(user);
+    }
 }

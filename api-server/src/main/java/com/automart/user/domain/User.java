@@ -50,14 +50,18 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 
+    @ElementCollection(fetch =FetchType.EAGER) // =@OneToMany, but @ElementCollection은 비엔티티를 매핑하는 데 사용
+    private List<String> roles = new ArrayList<>();
+
     @Builder
-    public User(String email, String password, String tel, String name, String snsType, String snsKey) {
+    public User(String email, String password, String tel, String name, String snsType, String snsKey, List roles) {
         this.email = email;
         this.password = password;
         this.tel = tel;
         this.name = name;
         this.snsType = snsType;
         this.snsKey = snsKey;
+        this.roles = roles;
     }
 
     // 비밀번호 변경
