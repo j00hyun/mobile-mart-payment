@@ -38,8 +38,8 @@ subprojects {
 		implementation 'org.springframework.boot:spring-boot-starter-security'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
-		implementation 'io.springfox:springfox-swagger2:3.0.0'
-		implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+		implementation 'io.springfox:springfox-swagger2:2.9.2'
+		implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 		implementation 'javax.validation:validation-api'
 
 		compileOnly 'org.projectlombok:lombok'
@@ -54,7 +54,9 @@ subprojects {
 
 		compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
-		compile('org.springframework.session:spring-session-jdbc')
+		// compile('org.springframework.session:spring-session-jdbc')
+		compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.4.0'
+		compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1' // Jwt토큰
 
 		testCompile('org.springframework.security:spring-security-test')
 		testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -75,13 +77,6 @@ subprojects {
 
 project(':api-server') {
 	// api-server 모듈에만 필요한 라이브러리가 발생하면 이곳에 추가한다.
-	dependencies {
-		// compile project(':module-common')
-	}
-}
-
-project(':oauth2-server') {
-	// oauth2-server 모듈에만 필요한 라이브러리가 발생하면 이곳에 추가한다.
 	dependencies {
 		// compile project(':module-common')
 	}
