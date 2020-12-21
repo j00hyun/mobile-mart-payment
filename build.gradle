@@ -1,50 +1,88 @@
-plugins {
-	id 'org.springframework.boot' version '2.3.6.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
-}
+buildscript {
+	ext {
+		springBootVersion = '2.3.6.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
 
-group = 'com.automart'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.10.RELEASE"
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+subprojects {
+	// plugins id
+	apply plugin: 'java'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
-	implementation 'io.springfox:springfox-swagger2:3.0.0'
-	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
-	implementation 'javax.validation:validation-api'
+	group = 'com.automart'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = 1.8
 
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'mysql:mysql-connector-java'
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	repositories {
+		mavenCentral()
 	}
-	testImplementation 'org.springframework.security:spring-security-test'
-	compile('org.springframework.boot:spring-boot-starter-oauth2-client')
 
-	compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+	configurations {
+		compileOnly {
+			extendsFrom annotationProcessor
+		}
+	}
 
-	compile('org.springframework.session:spring-session-jdbc')
+	// 모든 모듈에서 사용하는 라이브러리
+	dependencies {
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		implementation 'org.springframework.boot:spring-boot-starter-security'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
+		implementation 'io.springfox:springfox-swagger2:3.0.0'
+		implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+		implementation 'javax.validation:validation-api'
 
-	testCompile('org.springframework.security:spring-security-test')
-	testCompile group: 'junit', name: 'junit', version: '4.12'
+		compileOnly 'org.projectlombok:lombok'
+		runtimeOnly 'mysql:mysql-connector-java'
+		annotationProcessor 'org.projectlombok:lombok'
+		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+		testImplementation('org.springframework.boot:spring-boot-starter-test') {
+			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+		}
+		testImplementation 'org.springframework.security:spring-security-test'
+		compile('org.springframework.boot:spring-boot-starter-oauth2-client')
+
+		compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
+		compile('org.springframework.session:spring-session-jdbc')
+
+		testCompile('org.springframework.security:spring-security-test')
+		testCompile group: 'junit', name: 'junit', version: '4.12'
+	}
+
+	test {
+		useJUnitPlatform()
+	}
 }
 
-test {
-	useJUnitPlatform()
+//project(':module-common') {
+//	// common 모듈에만 필요한 라이브러리가 발생하면 이곳에 추가한다.
+//	dependencies {
+//		implementation 'org.springframework.boot:spring-boot-starter-security'
+//		implementation 'io.jsonwebtoken:jjwt:0.9.1'
+//	}
+//}
+
+project(':api-server') {
+	// api-server 모듈에만 필요한 라이브러리가 발생하면 이곳에 추가한다.
+	dependencies {
+		// compile project(':module-common')
+	}
+}
+
+project(':oauth2-server') {
+	// oauth2-server 모듈에만 필요한 라이브러리가 발생하면 이곳에 추가한다.
+	dependencies {
+		// compile project(':module-common')
+	}
 }
