@@ -25,6 +25,7 @@ public class JwtTokenProvider {
     private String secretKey;
 
     private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
+    public static final String HEADER_NAME = "JAuth_TOKEN";
 
     private final UserDetailsService userDetailsService;
 
@@ -71,6 +72,6 @@ public class JwtTokenProvider {
 
     // Request의 Header에서 token 파싱 : "X-AUTH_TOKEN: jwt토큰"
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH_TOKEN");
+        return request.getHeader(HEADER_NAME);
     }
 }
