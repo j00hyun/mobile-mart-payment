@@ -28,7 +28,7 @@ public class User {
     @Column(name = "user_email", length = 45, nullable = false)
     private String email; // 사용자 이메일
 
-    @Column(name = "user_pw", length = 45)
+    @Column(name = "user_pw", length = 70)
     private String password; // 사용자 비밀번호
 
     @Column(name = "user_tel", length = 45)

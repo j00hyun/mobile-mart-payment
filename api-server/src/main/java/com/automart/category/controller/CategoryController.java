@@ -1,5 +1,6 @@
 package com.automart.category.controller;
 
+import com.automart.category.domain.Category;
 import com.automart.category.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,9 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @ApiOperation("카테고리 등록")
-    @PostMapping(value = "/register", produces = "text/plain;charset=UTF-8")
+    @PostMapping(value = "/register")
     public ResponseEntity<Void> saveCategory(@RequestBody @Valid String categoryName) {
-        categoryService.saveCategory(categoryName);
+        Category category = categoryService.saveCategory(categoryName);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

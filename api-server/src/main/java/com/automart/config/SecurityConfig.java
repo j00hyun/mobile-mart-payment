@@ -53,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .authorizeRequests() // 이후 요청에 대한 사용권한 체크
                         .antMatchers("/*/signin", "/*/signup").permitAll() // 가입 및 인증 주소는 누구나 접근가능
-                        .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근가능
+                        //.anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근가능 // 모든 컨트롤러 작동여부 확인 뒤 주석 해제하고 다시 테스트할 것
                 .and()
                     .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
                 // jwt token 필터를 id/password 인증 필터 전에 넣는다.
