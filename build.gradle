@@ -36,10 +36,11 @@ dependencies {
 	}
 	testImplementation 'org.springframework.security:spring-security-test'
 	compile('org.springframework.boot:spring-boot-starter-oauth2-client')
+	compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.4.0'
+	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1' // Jwt 토큰
 
 	compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
-	compile('org.springframework.session:spring-session-jdbc')
 
 	testCompile('org.springframework.security:spring-security-test')
 	testCompile group: 'junit', name: 'junit', version: '4.12'
