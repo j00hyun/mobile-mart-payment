@@ -102,7 +102,7 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByNo(no)
                 .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
 
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
         return user;
     }
 
@@ -115,8 +115,8 @@ public class UserService implements UserDetailsService {
     public Integer saveUser(User user) {
         log.info("회원 생성");
 
-        checkDuplicateEmail(user);
-        checkDuplicateTel(user);
+        checkDuplicateEmail(user); // 이메일 중복 검증
+        checkDuplicateTel(user); // 연락처 중복 검증
         user.setPassword(passwordEncoder.encode(user.getPassword())); // 패스워드 인코딩을 써서 암호화한다.
         userRepository.save(user);
         return user.getNo();
