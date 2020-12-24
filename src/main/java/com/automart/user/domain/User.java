@@ -2,18 +2,13 @@ package com.automart.user.domain;
 
 import com.automart.cart.domain.Cart;
 import com.automart.order.domain.Order;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
@@ -28,7 +23,7 @@ public class User {
     @Column(name = "user_email", length = 45, nullable = false)
     private String email; // 사용자 이메일
 
-    @Column(name = "user_pw", length = 70)
+    @Column(name = "user_pw", length = 45)
     private String password; // 사용자 비밀번호
 
     @Column(name = "user_tel", length = 45)
@@ -50,18 +45,14 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 
-    @ElementCollection(fetch =FetchType.EAGER) // =@OneToMany, but @ElementCollection은 비엔티티를 매핑하는 데 사용
-    private List<String> roles = new ArrayList<>();
-
     @Builder
-    public User(String email, String password, String tel, String name, String snsType, String snsKey, List roles) {
+    public User(String email, String password, String tel, String name, String snsType, String snsKey) {
         this.email = email;
         this.password = password;
         this.tel = tel;
         this.name = name;
         this.snsType = snsType;
         this.snsKey = snsKey;
-        this.roles = roles;
     }
 
     // 비밀번호 변경
