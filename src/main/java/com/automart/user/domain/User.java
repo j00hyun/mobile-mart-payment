@@ -32,10 +32,10 @@ public class User {
     @Column(name = "user_name", length = 45)
     private String name; // 사용자 이름
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "user_sns_type", length = 45, nullable = false)
     private AuthProvider snsType; // 사용자 SNS 연동 타입 [local, naver, google, kakao]
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "user_sns_key", length = 45, unique = true)
     private String snsKey; // 사용자 SNS 고유 key
 
