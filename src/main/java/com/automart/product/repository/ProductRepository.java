@@ -10,8 +10,7 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     // 상품 고유번호로 상품 조회하기(단건)
-    @Query(value = "select p from Product p where p.no =:no")
-    public Optional<Product> findByNo(@Param("no") Integer no);
+    public Optional<Product> findByNo(Integer no);
 
 
 }

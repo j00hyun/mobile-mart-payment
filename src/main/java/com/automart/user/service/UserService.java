@@ -1,24 +1,46 @@
 package com.automart.user.service;
 
+import com.automart.exception.InvalidTokenException;
 import com.automart.exception.NotFoundUserException;
+import com.automart.jwt.JwtTokenProvider;
+import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
 import com.automart.exception.ForbiddenSignUpException;
+import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final SMSService smsService;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, SMSService smsService, JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.smsService = smsService;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     /**
      * 로컬 회원 이메일 확인
@@ -27,7 +49,7 @@ public class UserService {
     public void checkDuplicateEmail(User user) throws ForbiddenSignUpException {
         log.info("이메일 중복 검증");
 
-        Optional<User> findUser = userRepository.findByEmailAndSnsType(user.getEmail(), "LOCAL");
+        Optional<User> findUser = userRepository.findByEmailAndSnsType(user.getEmail(), AuthProvider.local);
 
         if(findUser.isPresent()) {
             throw new ForbiddenSignUpException("동일한 이메일의 회원이 이미 존재합니다.");
@@ -92,7 +114,7 @@ public class UserService {
         User user = userRepository.findByNo(no)
                 .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
 
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
         return user;
     }
 
@@ -105,9 +127,46 @@ public class UserService {
     public Integer saveUser(User user) {
         log.info("회원 생성");
 
-        checkDuplicateEmail(user);
-        checkDuplicateTel(user);
+        checkDuplicateEmail(user); // 이메일 중복 검증
+        checkDuplicateTel(user); // 연락처 중복 검증
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // 패스워드 인코딩을 써서 암호화한다.
         userRepository.save(user);
         return user.getNo();
+    }
+
+    /**
+     * 회원 탈퇴
+     * @param token jwt 토큰
+     */
+    @Transactional
+    public String withdraw(String token) {
+        if (jwtTokenProvider.validateToken(token)) {
+            User user = userRepository.findByNo(Integer.valueOf(jwtTokenProvider.getUserNo(token)))
+                    .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
+            userRepository.delete(user);
+            return "delete success";
+        } else {
+            throw new InvalidTokenException("Expried Token");
+        }
+    }
+
+    /**
+     * (어드민용) 이메일로 회원 조회하기
+     * @param email 조회할 회원의 이메일
+     * @return : UserResponseDto를 반환
+     */
+    public UserResponseDto showUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new IllegalStateException("해당하는 회원을 찾을 수 없습니다."));
+        return UserResponseDto.of(user);
+    }
+
+    /**
+     * (어드민용) 전체 회원 조회하기
+     * @return List<UerResponseDto>를 반환
+     */
+    public List<UserResponseDto> showUsers() {
+        List<User> users = userRepository.findAll();
+        return UserResponseDto.listOf(users);
     }
 }

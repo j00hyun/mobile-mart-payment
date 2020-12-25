@@ -74,7 +74,8 @@ class OrderServiceTest {
                 .email("test@naver.com")
                 .password("testpwd")
                 .tel("010-4444-6666")
-                .name("testUser").build();
+                .name("testUser")
+                .snsType("local").build();
 
         em.persist(user);
 

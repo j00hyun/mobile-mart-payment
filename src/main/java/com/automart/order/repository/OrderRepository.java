@@ -10,6 +10,5 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     // 주문 고유번호로 주문 조회하기(단건)
-    @Query("select o from Order o where o.no =:no")
-    public Optional<Order> findByNo(@Param("no") Integer no);
+    public Optional<Order> findByNo(Integer no);
 }

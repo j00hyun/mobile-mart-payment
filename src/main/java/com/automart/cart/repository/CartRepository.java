@@ -13,8 +13,7 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     // 장바구니 고유번호로 장바구니 조회하기(단건)
-    @Query(value = "select c from Cart c where c.no = :no")
-    public Optional<Cart> findByNo(@Param("no") Integer no);
+    public Optional<Cart> findByNo(Integer no);
 
     public Optional<Cart> findByUserAndProduct(User user, Product product);
 
