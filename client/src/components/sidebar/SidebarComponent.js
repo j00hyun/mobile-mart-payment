@@ -57,13 +57,13 @@ function SidebarComponent() {
 
             <MenuItem
                 id={SLUGS.dashboard}
-                title='주문자 페이지'
+                title='재고 관리 메인 페이지'
                 onClick={() => onClick(SLUGS.dashboard)}
             />
 
             <MenuItem
                 id={SLUGS.tickets}
-                title='결제자 페이지'
+                title='매출 관리 메인 페이지'
                 onClick={() => onClick(SLUGS.tickets)}
             />
 
@@ -71,12 +71,12 @@ function SidebarComponent() {
 
             <MenuItem
                 id={SLUGS.settings}
-                title='유저 페이지'
+                title='카테고리 별 매출/ 수익 그래프'
                 onClick={() => onClick(SLUGS.settings)}
             />
 
             <MenuItem id='login' title='로그인' onClick={() => onClick(SLUGS.login)}/>
-            <MenuItem id='logout' title='로그아웃' onClick={logoutMutation}/>
+            {/*<MenuItem id='logout' title='로그아웃' onClick={logoutMutation}/>*/}
 
         </Menu>
     );
