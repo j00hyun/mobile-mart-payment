@@ -20,7 +20,7 @@ function LogoComponent() {
     const classes = useStyles({ theme });
     return (
         <Row className={classes.container} horizontal='center' vertical='center'>
-            <span className={classes.title}>Mobile-Mart-Payment</span>
+            <span className={classes.title}>플랫폼 사업팀 단체 주문 Board</span>
         </Row>
     );
 }
