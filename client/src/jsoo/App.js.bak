@@ -1,0 +1,48 @@
+import React, { Component } from 'react';
+import axios from 'axios';
+
+class App extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			data : [],
+		}
+		this.state1 = {
+			products : [],
+		}
+	}
+	componentDidMount() {
+		this._getHello();
+	}
+
+	_getHello = async() => {
+		let res = await axios.get('/hello');
+		//res = res.data.imgpath;
+		this.setState({ data: res.data.imgpath })
+		console.log('data is ' + JSON.stringify(res));
+		console.log(this.state.data);
+
+		const res1= await axios.get('/api/products');
+		this.setState({ products : res1.data.products })
+		console.log(this.state1.products);
+	}
+
+	render() {
+		return(
+
+		//	<div>
+		//	{
+		//		this.state.data.map((imgpath)=> {
+		//			return <p>imgpath : {imgpath.imgpath} </p>;
+		//		})
+		//	}
+		//	</div>
+			<>
+			<h3> {this.state.data} - connected to server</h3>
+			<h3> {this.state1.products} - db data </h3>
+			</>
+		)
+	}
+}
+
+export default App;
