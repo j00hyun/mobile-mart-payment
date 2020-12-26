@@ -39,3 +39,7 @@ out/
 ### Custom ###
 .properties
 *.yml
+test/
+
+.idea
+node_modules
