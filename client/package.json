@@ -1,31 +1,55 @@
 {
-  "name": "client",
+  "name": "react-admin-dashboard",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.6",
+    "@apollo/react-hooks": "^4.0.0",
+    "@material-ui/core": "^4.11.2",
+    "@material-ui/data-grid": "^4.0.0-alpha.12",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "apollo-boost": "^0.4.9",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link-context": "^1.0.20",
+    "apollo-link-error": "^1.1.13",
+    "apollo-link-http": "^1.5.17",
+    "apollo-server": "^2.19.0",
+    "axios": "^0.21.0",
+    "bson": "^4.2.2",
+    "enumerations": "^1.1.0",
+    "graphql-tag": "^2.11.0",
+    "mongoose": "^5.11.6",
     "prop-types": "^15.7.2",
-    "ra-data-json-server": "^3.10.4",
-    "react": "^17.0.1",
-    "react-admin": "^3.10.4",
-    "react-dom": "^17.0.1",
-    "react-scripts": "4.0.1",
+    "react": "^16.13.1",
+    "react-apollo": "^3.1.5",
+    "react-burger-menu": "^2.6.13",
+    "react-collapsible-content": "^1.0.0",
+    "react-cookie": "^4.0.3",
+    "react-dom": "^16.8.6",
+    "react-hook-form": "^6.13.0",
+    "react-jss": "^10.4.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3",
+    "react-svg-line-chart": "^2.0.1",
+    "semantic-ui-react": "^2.0.1",
+    "simple-flexbox": "^2.3.1",
     "web-vitals": "^0.2.4",
+    "webfontloader": "^1.6.28",
     "yarn": "^1.22.10"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [
@@ -38,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
   }
 }
