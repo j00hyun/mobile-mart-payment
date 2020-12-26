@@ -2,25 +2,17 @@ package com.automart.user.service;
 
 import com.automart.exception.InvalidTokenException;
 import com.automart.exception.NotFoundUserException;
-import com.automart.jwt.JwtTokenProvider;
+import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
 import com.automart.exception.ForbiddenSignUpException;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 

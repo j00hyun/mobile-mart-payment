@@ -2,9 +2,11 @@ package com.automart.user.controller;
 
 import com.automart.exception.NotFoundUserException;
 import com.automart.exception.SigninFailedException;
-import com.automart.jwt.JwtTokenProvider;
+import com.automart.security.jwt.JwtTokenProvider;
+import com.automart.security.UserPrincipal;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
+import com.automart.user.dto.AuthResponseDto;
 import com.automart.user.dto.SignInRequestDto;
 import com.automart.user.dto.SignUpRequestDto;
 import com.automart.user.dto.UserResponseDto;
@@ -12,29 +14,45 @@ import com.automart.user.repository.UserRepository;
 import com.automart.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @Api(tags = {"2. User"})
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
-    private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
 
     @ApiOperation(value = "회원가입", notes = "회원가입을 한다")
     @PostMapping(value = "/signup")
-    public ResponseEntity<Void> signUp(@RequestBody SignUpRequestDto requestDto) {
+    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
         User user = User.builder()
                 .email(requestDto.getEmail())
                 .password(requestDto.getPassword())
@@ -45,25 +63,31 @@ public class UserController {
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
         userService.saveUser(user);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
     @ApiOperation(value = "로컬 로그인", notes = "이메일로 회원 로그인을 한다")
     @PostMapping(value = "/signin")
-    public ResponseEntity<String> singIn(@RequestBody SignInRequestDto requestDto) throws SigninFailedException {
-        User user = userRepository.findByEmail(requestDto.getEmail()).
-                orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
-        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword()))
-            throw new SigninFailedException("패스워드가 일치하지 않습니다.");
-
-        return ResponseEntity.status(HttpStatus.OK).body(jwtTokenProvider.createToken(String.valueOf(user.getNo()), user.getRoles()));
+    public ResponseEntity<?> singIn(@Valid @RequestBody SignInRequestDto requestDto) throws SigninFailedException {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        requestDto.getEmail(),
+                        requestDto.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtTokenProvider.createToken(authentication);
+        return ResponseEntity.ok(new AuthResponseDto(token));
     }
 
-    /**
-     * 소셜 로그인
-     */
-
+    @ApiOperation(value = "내정보 조회", notes = "현재 인증된 유저의 정보를 가져온다.")
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
+    public User getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return userRepository.findByNo(userPrincipal.getNo())
+                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+    }
 
     @ApiOperation(value = "(어드민)이메일로 회원 조회", notes = "(어드민)이메일로 회원을 조회한다.")
     @GetMapping
@@ -72,7 +96,6 @@ public class UserController {
         UserResponseDto userResponseDto = userService.showUser(email);
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
-
 
     @ApiOperation(value = "회원 전체 조회", notes = "회원목록을 조회한다")
     @GetMapping(value = "/list")

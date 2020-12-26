@@ -1,8 +1,9 @@
-package com.automart.oauth;
+package com.automart.security.oauth2;
 
 import com.automart.exception.OAuth2AuthenticationProcessingException;
-import com.automart.oauth.user.OAuth2UserInfo;
-import com.automart.oauth.user.OAuth2UserInfoFactory;
+import com.automart.security.UserPrincipal;
+import com.automart.security.oauth2.user.OAuth2UserInfo;
+import com.automart.security.oauth2.user.OAuth2UserInfoFactory;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
 import com.automart.user.repository.UserRepository;
@@ -18,6 +19,13 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
+/**
+ * OAuth2 provider로부터 access token을 전달받은 뒤 이를 사용해 user 정보를 load할 때 사용
+ *
+ * access token을 사용해 OAuth2 Provider로부터 user detail 정보 획득
+ * 만약, 획득한 user 정보가 이미 DB에 존재할 경우 해당 user 정보를 update
+ * 신규 user일 경우 DB에 등록
+ */
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 

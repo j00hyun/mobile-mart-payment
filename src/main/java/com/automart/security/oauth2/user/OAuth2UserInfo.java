@@ -1,7 +1,11 @@
-package com.automart.oauth.user;
+package com.automart.security.oauth2.user;
 
 import java.util.Map;
 
+/**
+ * 모든 OAuth2 Provider는 different JSON response 값을 return
+ * Spring Security는 map의 key-value pair를 사용해 이를 parse해 사용
+ */
 public abstract class OAuth2UserInfo {
 
     protected Map<String, Object> attributes;

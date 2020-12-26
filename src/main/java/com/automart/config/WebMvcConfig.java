@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// Front-end Client에서 server의 API에 access 할 수 있도록 cors open
+// 실제 production에서는 각자 환경에 맞는 allowedOrigins를 정의해야함.
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
