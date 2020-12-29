@@ -1,6 +1,7 @@
 package com.automart.security;
 
 import com.automart.user.domain.User;
+import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +22,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(int no, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(int no, String email, String password, List<GrantedAuthority> authorities) {
         this.no = no;
         this.email = email;
         this.password = password;

@@ -1,6 +1,7 @@
 package com.automart.config;
 
 import com.automart.security.CustomUserDetailsService;
+import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtBasicAuthenticationFilter;
 import com.automart.security.jwt.JwtCommonAuthorizationFilter;
 import com.automart.security.jwt.JwtTokenProvider;
@@ -113,8 +114,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         // 로그인 성공시 invoke할 Handler를 정의
                         @Override
                         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                            String token = tokenProvider.createToken(authentication);
-                            response.addHeader("Authorization", "Bearer " +  token);
+                            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+                            String accessToken = tokenProvider.generateToken(userPrincipal);
+                            String refreshToken = tokenProvider.generateRefreshToken(userPrincipal);
+
+                            response.addHeader("Authorization", "Bearer " +  accessToken);
                             String targetUrl = "/auth/success";
                             RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
                             dis.forward(request, response);
