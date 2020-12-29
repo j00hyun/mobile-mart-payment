@@ -77,7 +77,9 @@ public class UserController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.createToken(authentication);
+        UserPrincipal userPrincipal = (UserPrincipal)authentication.getPrincipal();
+        String token = jwtTokenProvider.generateToken(userPrincipal);
+        String refreshJwt = jwtTokenProvider.generateToken(userPrincipal);
         return ResponseEntity.ok(new AuthResponseDto(token));
     }
 

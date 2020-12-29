@@ -9,10 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.automart.security.CustomUserDetailsService;
+import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
 import com.automart.user.dto.SignInRequestDto;
 import com.automart.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +47,7 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
 
         SignInRequestDto credentials = null;
         try {
-            credentials = new ObjectMapper().readValue(request.getInputStream(), SignInRequestDto.class);
+            credentials = new ObjectMapper().registerModule(new ParameterNamesModule()).readValue(request.getInputStream(), SignInRequestDto.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,11 +66,13 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
         return authentication;
     }
 
+//    @SuppressWarnings("사용하지 않음")
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         // Grab principal
-        String token = tokenProvider.createToken(authentication);
-        response.addHeader("Authorization", "Bearer " +  token);
-
+        UserPrincipal principal = (UserPrincipal)authentication.getPrincipal();
+        String accessToken = tokenProvider.generateToken(principal);
+        String refreshToken = tokenProvider.generateRefreshToken(principal);
+        response.addHeader("Authorization", "Bearer " +  accessToken);
     }
 }

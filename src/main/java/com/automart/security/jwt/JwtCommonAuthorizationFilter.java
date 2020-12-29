@@ -32,7 +32,7 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         // Read the Authorization header, where the JWT token should be
-        String header = request.getHeader("Authorization");
+        String header = jwtTokenProvider.resolveToken(request);
 
         // If header does not contain BEARER or is null delegate to Spring impl and exit
         if (header == null || !header.startsWith("Bearer")) {
@@ -48,7 +48,7 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
 
     private Authentication getUsernamePasswordAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization")
-                .replace("Bearer","");
+                .replace("Bearer", "");
 
         if (token != null) {
             Integer no = Integer.parseInt(jwtTokenProvider.getUserNo(token)); // users의 id값
