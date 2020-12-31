@@ -50,7 +50,7 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
 
-    @ApiOperation(value = "회원가입", notes = "회원가입을 한다")
+    @ApiOperation(value = "로컬 회원가입", notes = "로컬 회원가입을 한다")
     @PostMapping(value = "/signup")
     public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
         User user = User.builder()
@@ -59,7 +59,6 @@ public class UserController {
                 .tel(requestDto.getTel())
                 .name(requestDto.getName())
                 .snsType(AuthProvider.local)
-                .snsKey(requestDto.getSnsKey())
                 .roles(Collections.singletonList("ROLE_USER"))
                 .build();
         userService.saveUser(user);
