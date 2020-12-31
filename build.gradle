@@ -46,6 +46,9 @@ dependencies {
 
 	testCompile('org.springframework.security:spring-security-test')
 	testCompile group: 'junit', name: 'junit', version: '4.12'
+	compile group: 'com.graphql-java', name: 'graphiql-spring-boot-starter', version: '5.0.2'
+	compile group: 'com.graphql-java', name: 'graphql-java-tools', version: '4.3.0'
+
 }
 
 test {

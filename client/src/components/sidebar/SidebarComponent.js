@@ -6,11 +6,11 @@ import {convertlinksToUrl} from '../../resources/utilities';
 import LogoComponent from './LogoComponent';
 import Menu from './MenuComponent';
 import MenuItem from './MenuItemComponent';
-import {useLogout} from '../../auth/Logout';
-import {useAuthToken} from '../../auth/authToken';
+import {useAuthToken} from '../../routes/auth/authToken';
 import {useApolloClient, useMutation, useQuery} from '@apollo/react-hooks';
-import {MeQuery} from "../../util/graphql";
-import {LogoutMutation} from "../../util/mutation";
+import {MeQuery} from "../../graphql/query";
+import {Row} from "simple-flexbox";
+import {LogoutMutation} from "../../graphql/mutation";
 
 const useStyles = createUseStyles({
     separator: {
@@ -33,12 +33,14 @@ function SidebarComponent() {
     const {data} = useQuery(MeQuery);
 
 
+
     const [logoutMutation, {loading}] = useMutation(LogoutMutation, {
             refetchQueries: [{query: MeQuery}],
             onCompleted: () => {
                 removeAuthToken();
                 localStorage.clear();
-                window.location.href = '/login';
+                window.location.href = '/';
+
 
 
             }
@@ -55,28 +57,28 @@ function SidebarComponent() {
                 <LogoComponent/>
             </div>
 
-            <MenuItem
-                id={SLUGS.dashboard}
-                title='재고 관리 메인 페이지'
-                onClick={() => onClick(SLUGS.dashboard)}
-            />
+            {data&&<MenuItem
+                id={SLUGS.orderboard}
+                title='주문자 페이지'
+                onClick={() => onClick(SLUGS.orderboard)}
+            />}
 
-            <MenuItem
+            {data&&<MenuItem
                 id={SLUGS.tickets}
-                title='매출 관리 메인 페이지'
+                title='결제자 페이지'
                 onClick={() => onClick(SLUGS.tickets)}
-            />
+            />}
 
             <div className={classes.separator}></div>
-
+            {data &&
             <MenuItem
                 id={SLUGS.settings}
-                title='카테고리 별 매출/ 수익 그래프'
+                title='유저 페이지'
                 onClick={() => onClick(SLUGS.settings)}
-            />
+            />}
 
-            <MenuItem id='login' title='로그인' onClick={() => onClick(SLUGS.login)}/>
-            {/*<MenuItem id='logout' title='로그아웃' onClick={logoutMutation}/>*/}
+            {!data && <MenuItem id='login' title='로그인'   onClick={() => onClick(SLUGS.login)}/>}
+            {data&&<MenuItem id='logout' title='로그아웃' onClick={logoutMutation}/>}
 
         </Menu>
     );

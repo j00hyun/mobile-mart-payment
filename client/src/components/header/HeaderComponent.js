@@ -1,13 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
-import { string } from 'prop-types';
-import { useHistory } from 'react-router-dom';
-import { Row } from 'simple-flexbox';
-import { createUseStyles, useTheme } from 'react-jss';
-import { SidebarContext } from '../../hooks/useSidebar';
+import {string} from 'prop-types';
+import {useHistory} from 'react-router-dom';
+import {Row} from 'simple-flexbox';
+import {createUseStyles, useTheme} from 'react-jss';
+import {SidebarContext} from '../../resources/hooks/useSidebar';
 import SLUGS from '../../resources/links';
 import DropdownComponent from '../../components/dropdown';
 import {useQuery} from "@apollo/react-hooks";
-import {MeQuery} from "../../util/graphql";
+import {MeQuery} from "../../graphql/query";
 
 const useStyles = createUseStyles((theme) => ({
     avatar: {
@@ -27,6 +27,7 @@ const useStyles = createUseStyles((theme) => ({
     name: {
         ...theme.typography.itemTitle,
         textAlign: 'right',
+        color: "white",
         '@media (max-width: 768px)': {
             display: 'none'
         }
@@ -44,6 +45,7 @@ const useStyles = createUseStyles((theme) => ({
     },
     title: {
         ...theme.typography.title,
+        color: "white",
         '@media (max-width: 1080px)': {
             marginLeft: 50
         },
@@ -61,10 +63,10 @@ const useStyles = createUseStyles((theme) => ({
 }));
 
 function HeaderComponent() {
-    const { push } = useHistory();
-    const { currentItem } = useContext(SidebarContext);
+    const {push} = useHistory();
+    const {currentItem} = useContext(SidebarContext);
     const theme = useTheme();
-    const classes = useStyles({ theme });
+    const classes = useStyles({theme});
     const [username, setName] = useState();
 
     const {data} = useQuery(MeQuery);
@@ -78,7 +80,7 @@ function HeaderComponent() {
 
     let title;
     switch (true) {
-        case currentItem === SLUGS.dashboard:
+        case currentItem === SLUGS.orderboard:
             title = '주문자 페이지';
             break;
 
@@ -87,15 +89,13 @@ function HeaderComponent() {
             break;
 
         case currentItem === SLUGS.settings:
-            title = '마이페이지';
+            title = '유저 페이지';
+            title = '유저 페이지';
             break;
         default:
             title = '';
     }
 
-    function onSettingsClick() {
-        push(SLUGS.settings);
-    }
 
     return (
         <Row className={classes.container} vertical='center' horizontal='space-between'>

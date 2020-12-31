@@ -3,7 +3,7 @@ import {Column, Row} from 'simple-flexbox';
 import {createUseStyles, useTheme} from 'react-jss';
 import UserTable from '../../components/table/UserTable';
 import {useQuery} from "@apollo/react-hooks";
-import {MeQuery, SearchQuery} from "../../util/graphql";
+import {MeQuery, SearchQuery} from "../../graphql/query";
 
 
 const useStyles = createUseStyles((theme) => ({

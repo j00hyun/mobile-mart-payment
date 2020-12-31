@@ -1,7 +1,7 @@
 const color = {
     brightBlue: '#3498db',
     darkGrayishBlue: '#8b8d94',
-    darkRed: '#774343',
+    darkRed: '#624444',
     grayishBlue: '#A4A6B3',
     grayishBlue2: '#9fa2b4',
     grayishBlue3: '#bdc3c7',
@@ -42,13 +42,16 @@ const typography = {
         fontWeight: 600,
         fontSize: 14,
         lineHeight: '20px',
-        letterSpacing: 0.2
+        letterSpacing: 0.2,
+        align:"center",
+        textAlign: "center"
     },
     title: {
         fontWeight: 'bold',
         fontSize: 24,
         lineHeight: '30px',
-        letterSpacing: 0.3
+        letterSpacing: 0.3,
+        textAlign:"center"
     }
 };
 

@@ -1,10 +1,9 @@
 export default {
     // private
-    dashboard: '/order',
+    orderboard: '/order',
     tickets: '/pay',
     settings: '/settings',
     // auth
-    login: '/login',
-    signup: '/signup',
-    forgotPassword: '/forgot_password'
+    login: '/',
+    signup: '/signup'
 };

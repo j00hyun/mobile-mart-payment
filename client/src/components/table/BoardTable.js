@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './table.css';
 import {useQuery} from "@apollo/react-hooks";
-import {MeQuery, SearchQuery, UserSearchQuery} from "../../util/graphql";
+import {MeQuery, SearchQuery} from "../../graphql/query";
 
 function BoardTable() {
 
@@ -35,7 +35,6 @@ function BoardTable() {
                 <th scope="col">사용자 이름</th>
                 <th scope="col">메뉴</th>
                 <th scope="col">Hot/Ice</th>
-                <th scope="col">주문일시</th>
 
 
             </tr>
@@ -47,7 +46,6 @@ function BoardTable() {
                     <td>{content.username}</td>
                     <td>{content.menu}</td>
                     <td>{content.hi}</td>
-                    <td>{content.createdAt}</td>
 
 
                 </tr>

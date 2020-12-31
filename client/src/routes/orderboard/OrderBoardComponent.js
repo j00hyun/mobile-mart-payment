@@ -2,15 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {Column, Row} from 'simple-flexbox';
 import {createUseStyles} from 'react-jss';
 import MiniCardComponent from '../../components/cards/MiniCardComponent';
-import TodayTrendsComponent from './OrderBoard';
-import UnresolvedTicketsComponent from './UnresolvedTicketsComponent';
-import TasksComponent from './TasksComponent';
-import {useMutation} from "@apollo/react-hooks";
-import {Search} from "semantic-ui-react";
+import OrderBoard from './OrderBoard';
+import Task from './Task';
 import {useQuery} from "@apollo/react-hooks";
-import {CountQuery, SearchQuery} from "../../util/graphql";
+import {AllUserQuery, CountQuery} from "../../graphql/query";
 
-const useStyles = createUseStyles((theme)=>({
+const useStyles = createUseStyles({
     cardsContainer: {
         marginRight: -30,
         marginTop: -30
@@ -23,17 +20,7 @@ const useStyles = createUseStyles((theme)=>({
     },
     miniCardContainer: {
         flexGrow: 1,
-        marginRight: "auto",
-        marginLeft:"auto",
-        '@media (max-width: 768px)': {
-            marginTop: 30,
-            maxWidth: 'none'
-        }
-    },
-    naCardContainer: {
-        flexGrow: 1,
-        marginRight: "auto",
-        marginLeft:"auto",
+        marginRight: 30,
         '@media (max-width: 768px)': {
             marginTop: 30,
             maxWidth: 'none'
@@ -57,19 +44,30 @@ const useStyles = createUseStyles((theme)=>({
             marginTop: 30
         }
     }
-}));
+});
 
 
 function OrderBoardComponent() {
     const classes = useStyles();
 
     const [contents, setContents] = useState('');
+    const [sum, setSum] = useState('');
+    const [count, setCount] = useState('');
 
+    const {data: user} = useQuery(AllUserQuery)
+
+
+    useEffect(() => {
+        if (user) {
+            setCount(user.allUsers.length);
+        }
+    }, [user]);
 
     const {data} = useQuery(CountQuery);
     useEffect(() => {
         if (data) {
             setContents(data.howmany);
+
         }
     }, [data]);
 
@@ -87,19 +85,18 @@ function OrderBoardComponent() {
                     wrap
                     flexGrow={1}
                     horizontal='space-between'
-                    breakpoints={{400: 'column'}}
+                    breakpoints={{384: 'column'}}
                 >
                     <MiniCardComponent
                         className={classes.miniCardContainer}
-                        title='주문자'
+                        title='주문'
                         value={contents[0]}
                     />
                     <MiniCardComponent
                         className={classes.miniCardContainer}
-                        title='취소자'
+                        title='주문 취소'
                         value={contents[1]}
                     />
-
                 </Row>
                 <Row
                     className={classes.cardRow}
@@ -107,27 +104,32 @@ function OrderBoardComponent() {
                     flexGrow={1}
                     horizontal='space-between'
                     breakpoints={{384: 'column'}}
-
                 >
                     <MiniCardComponent
-                        className={classes.naCardContainer}
-                        title='미주문자'
+                        className={classes.miniCardContainer}
+                        title='주문 포기'
                         value={contents[2]}
                     />
 
+                    <MiniCardComponent
+                        className={classes.miniCardContainer}
+                        title='미주문'
+                        value={count - parseInt(contents[0]) - parseInt(contents[1]) - parseInt(contents[2])}
+                    />
 
                 </Row>
             </Row>
+
             <Row
                 horizontal='space-between'
                 className={classes.lastRow}
                 breakpoints={{1024: 'column'}}
             >
-                <TasksComponent containerStyles={classes.tasks}/>
+                <Task containerStyles={classes.tasks}/>
             </Row>
 
             <div className={classes.todayTrends}>
-                <TodayTrendsComponent/>
+                <OrderBoard/>
             </div>
 
         </Column>

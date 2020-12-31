@@ -2,8 +2,7 @@ import React from 'react';
 import {any, arrayOf, func, string} from 'prop-types';
 import {Column, Row} from 'simple-flexbox';
 import {createUseStyles, useTheme} from 'react-jss';
-import CollapsibleContent from '../../components/collapsible/CollapsibleContent';
-import {useSidebar} from '../../hooks/useSidebar';
+import {useSidebar} from '../../resources/hooks/useSidebar';
 
 const useStyles = createUseStyles({
     activeContainer: {
@@ -56,11 +55,6 @@ function MenuItemComponent({children, id, items = [], level = 1, onClick, title}
             <Row vertical='center' onClick={onItemClicked} className={classNameContainer}>
                 <span className={classes.title}>{title}</span>
             </Row>
-            {isCollapsible && (
-                <CollapsibleContent expanded={isExpanded}>
-                    {children.map((child) => child.type({...child.props}))}
-                </CollapsibleContent>
-            )}
         </Column>
     );
 }

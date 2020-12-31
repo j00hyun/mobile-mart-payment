@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { SidebarProvider } from '../../hooks/useSidebar';
+import { SidebarProvider } from '../../resources/hooks/useSidebar';
 
 function SidebarContext({ children }) {
     const { pathname } = useLocation();

@@ -14,7 +14,7 @@ export const SearchQuery = gql`
 `;
 
 
-//유저 목록 불러오기
+//User Order 목록 불러오기
 export const UserSearchQuery = gql`
     query orders($search:String!){
         orders(search:$search,category:4,index:1,hasNext:false,acdc:"username"){
@@ -42,13 +42,52 @@ export const MeQuery = gql`
 `
 
 
-
 //명수 계산
 export const CountQuery = gql`
     query howmany{
-       howmany
+        howmany
     }
 
+`
+
+//누적 금액 계산
+export const CostQuery = gql`
+    query
+    {
+        howmuch
+    }
+
+`
+
+//누적 잔 수
+export const CupQuery = gql`
+    query{coffeeAmount}`
+
+
+//TASK QUERY
+
+
+export const TaskQuery = gql`
+    query{
+        tasks(search:"",category:0,index:1,hasNext:true,acdc:""){
+            _id
+            title
+        }
+    }
+
+
+`
+
+
+//모든 유저 불러오기
+export const AllUserQuery= gql`
+ query{
+    allUsers{
+    _id
+    username
+    idNum
+}
+}
 `
 
 

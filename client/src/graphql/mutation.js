@@ -38,3 +38,42 @@ export const LogoutMutation = gql`
     }
 `
 
+//Task Create
+export const TaskCreateMutation = gql`
+    mutation createTask($title : String!){
+        createTask(taskInput:{
+            title:$title
+        }){
+            _id
+            title
+        }
+    }
+`
+
+//Task Update
+
+export const TaskUpdateMutation = gql`
+    mutation updateTask($id:ID!, $title:String!){
+        updateTask(_id:$id,title:$title){
+            _id
+            title
+        }
+    }
+
+`
+
+//Task Remove
+export const TaskRemoveMutation = gql`
+mutation removeTask($id:ID!){
+    removeTask(_id:$id){
+        _id
+        title
+    }
+}`
+
+
+//주문 초기화
+export const OrderResetMutation = gql`
+mutation {
+    giveupOrder
+}`
