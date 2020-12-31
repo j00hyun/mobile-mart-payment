@@ -7,38 +7,30 @@ import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.security.oauth2.CustomOAuth2UserService;
 import com.automart.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -46,11 +38,11 @@ import java.util.stream.Collectors;
  * 설정하는 순간 스프링 부트가 제공하는 스프링 시큐리티 자동설정은 더이상 제공되지 않음
  * 하지만 WebSecurityConfigurerAdapter 클래스를 상속 받는 순간 모든 요청은 인증을 필요로 하게됨
  */
-@EnableGlobalMethodSecurity( // 특정 메서드에 권한 처리를 하는 MethodSecurity 설정 기능 제공
-        securedEnabled = true, // @Secured 사용하여 인가처리하는 옵션
-        jsr250Enabled = true, // @RolesAllowed 사용하여 인가처리 옵션
-        prePostEnabled = true // @PreAuthorize, @PostAuthorize 사용하여 인가처리 옵션
-)
+//@EnableGlobalMethodSecurity( // 특정 메서드에 권한 처리를 하는 MethodSecurity 설정 기능 제공
+//        securedEnabled = true, // @Secured 사용하여 인가처리하는 옵션
+//        jsr250Enabled = true, // @RolesAllowed 사용하여 인가처리 옵션
+//        prePostEnabled = true // @PreAuthorize, @PostAuthorize 사용하여 인가처리 옵션
+//)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 인증시 사용할 custom User Service
@@ -65,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtTokenProvider tokenProvider;
+
 
     /*
      * 다른 AuthorizationServer나 ResourceServer가 참조할 수 있도록 오버라이딩 해서 빈으로 등록
@@ -96,10 +89,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable 처리
                 .httpBasic().disable() // rest api이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
                 .formLogin().disable()
-                .addFilter(new JwtBasicAuthenticationFilter())
+                .addFilterBefore(new JwtBasicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository))
                 .authorizeRequests() // 이후 요청에 대한 사용권한 체크
-                    .antMatchers("/*/signin", "/*/signup", "/oauth2/**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                    .antMatchers("/", "/*/signin", "/*/signup", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
 //                        .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근가능 (모든 컨트롤러 작동 여부 확인 뒤 주석 해제하고 다시 테스트 할 것!)
                     .anyRequest().authenticated()
                     .and()
@@ -115,7 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
                             String token = tokenProvider.createToken(authentication);
                             response.addHeader("Authorization", "Bearer " +  token);
-                            String targetUrl = "/auth/success";
+                            String targetUrl = "/"; // 로그인 후 이동할 주소
                             RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
                             dis.forward(request, response);
                         }
@@ -153,42 +146,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties clientProperties){
-
-        List<ClientRegistration> registrations =
-                clientProperties.getRegistration().keySet().stream()
-                        .map(provider -> getRegistration(clientProperties, provider))
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-
-        return new InMemoryClientRegistrationRepository(registrations);
-    }
-
-    private ClientRegistration getRegistration(OAuth2ClientProperties clientProperties, String provider) {
-        if("google".equals(provider)) {
-            OAuth2ClientProperties.Registration registration = clientProperties.getRegistration()
-                    .get("google");
-
-            return CommonOAuth2Provider.GOOGLE.getBuilder(provider)
-                    .clientId(registration.getClientId())
-                    .clientSecret(registration.getClientSecret())
-                    .scope("email", "profile")
-                    .build();
-        }
-
-        if("facebook".equals(provider)) {
-            OAuth2ClientProperties.Registration registration = clientProperties.getRegistration()
-                    .get("facebook");
-
-            return CommonOAuth2Provider.FACEBOOK.getBuilder(provider)
-                    .clientId(registration.getClientId())
-                    .clientSecret(registration.getClientSecret())
-                    .userInfoUri("https://graph.facebook.com/me?fields=id,name,email,link")
-                    .scope("email")
-                    .build();
-        }
-        return null;
-
-    }
 }

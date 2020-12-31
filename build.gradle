@@ -24,8 +24,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
-	implementation 'io.springfox:springfox-swagger2:2.9.2'
-	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+//	implementation 'io.springfox:springfox-swagger2:2.9.2'
+//	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	implementation 'javax.validation:validation-api'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -38,10 +38,17 @@ dependencies {
 	}
 	testImplementation 'org.springframework.security:spring-security-test'
 	compile('org.springframework.boot:spring-boot-starter-oauth2-client')
-	compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.4.0'
+//	compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.4.0'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1' // Jwt 토큰
 
 	compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
+	compile(group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2') {
+		exclude module: 'swagger-annotations' exclude module: 'swagger-models'
+	}
+	compile("io.swagger:swagger-annotations:1.5.21")
+	compile("io.swagger:swagger-models:1.5.21")
+	compile(group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2')
 
 
 	testCompile('org.springframework.security:spring-security-test')

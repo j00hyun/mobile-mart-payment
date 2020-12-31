@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.*;
 
 /**
- * 인증된 소셜 로그인 유저 정보
+ * 인증된 로그인 유저 정보
  */
 public class UserPrincipal implements OAuth2User, UserDetails {
 

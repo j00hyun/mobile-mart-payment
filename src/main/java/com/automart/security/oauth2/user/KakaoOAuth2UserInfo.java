@@ -1,20 +1,18 @@
 package com.automart.security.oauth2.user;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 
-    public KakaoOAuth2UserInfo(Map<String, Object> attributes) {
-        super(attributes);
-    }
+    public KakaoOAuth2UserInfo(Map<String, Object> attributes) { super(attributes); }
 
     @Override
-    public String getId() {
-        return (String) attributes.get("sub");
-    }
+    public String getId() { return attributes.get("id").toString(); }
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        HashMap<String, String> accountMap = (HashMap<String, String>) attributes.get("kakao_account");
+        return accountMap.get("email");
     }
 }

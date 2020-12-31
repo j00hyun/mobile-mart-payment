@@ -14,6 +14,10 @@ public abstract class OAuth2UserInfo {
         this.attributes = attributes;
     }
 
+    public OAuth2UserInfo(String userNameAttributeName, Map<String, Object> attributes) {
+        this.attributes = (Map<String, Object>) attributes.get(userNameAttributeName);
+    }
+
     public Map<String, Object> getAttributes() {
         return attributes;
     }

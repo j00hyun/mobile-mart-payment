@@ -22,6 +22,9 @@ public class JwtTokenProvider {
         this.appProperties = appProperties;
     }
 
+    /**
+     * 인증된 유저의 authentication에서 userPrincipal을 추출해 token을 생성한다.
+     */
     public String createToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
@@ -50,7 +53,7 @@ public class JwtTokenProvider {
         }
     }
 
-    // Jwt 토큰에서 회원 구별 정보 추출
+    // Jwt 토큰에서 회원 고유번호 추출
     public String getUserNo(String token) {
         return Jwts.parser()
                 .setSigningKey(appProperties.getAuth().getTokenSecret())
