@@ -46,43 +46,6 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-
-    @ApiOperation(value = "회원가입", notes = "회원가입을 한다")
-    @PostMapping(value = "/signup")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
-        User user = User.builder()
-                .email(requestDto.getEmail())
-                .password(requestDto.getPassword())
-                .tel(requestDto.getTel())
-                .name(requestDto.getName())
-                .snsType(AuthProvider.local)
-                .snsKey(requestDto.getSnsKey())
-                .roles(Collections.singletonList("ROLE_USER"))
-                .build();
-        userService.saveUser(user);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @ApiOperation(value = "로컬 로그인", notes = "이메일로 회원 로그인을 한다")
-    @PostMapping(value = "/signin")
-    public ResponseEntity<?> singIn(@Valid @RequestBody SignInRequestDto requestDto) throws SigninFailedException {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        requestDto.getEmail(),
-                        requestDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserPrincipal userPrincipal = (UserPrincipal)authentication.getPrincipal();
-        String token = jwtTokenProvider.generateToken(userPrincipal);
-        String refreshJwt = jwtTokenProvider.generateToken(userPrincipal);
-        return ResponseEntity.ok(new AuthResponseDto(token));
-    }
-
     @ApiOperation(value = "내정보 조회", notes = "현재 인증된 유저의 정보를 가져온다.")
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
@@ -93,7 +56,7 @@ public class UserController {
 
     @ApiOperation(value = "(어드민)이메일로 회원 조회", notes = "(어드민)이메일로 회원을 조회한다.")
     @GetMapping
-    public ResponseEntity<UserResponseDto> showUser(@RequestHeader("JAuth_TOKEN") String token,
+    public ResponseEntity<UserResponseDto> showUser(@RequestHeader("Authorization") String token,
                                                     @RequestParam String email) {
         UserResponseDto userResponseDto = userService.showUser(email);
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
@@ -101,20 +64,20 @@ public class UserController {
 
     @ApiOperation(value = "회원 전체 조회", notes = "회원목록을 조회한다")
     @GetMapping(value = "/list")
-    public ResponseEntity<List<UserResponseDto>> showUsers(@RequestHeader("JAuth_TOKEN") String token) {
+    public ResponseEntity<List<UserResponseDto>> showUsers(@RequestHeader("Authorization") String token) {
         List<UserResponseDto> userResponseDtos = userService.showUsers();
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDtos);
     }
 
     @ApiOperation(value = "회원 탈퇴", notes = "회원 탈퇴")
     @DeleteMapping(value = "/withdraw")
-    public ResponseEntity<String> withdraw(@RequestHeader("JAuth_TOKEN") String token) {
+    public ResponseEntity<String> withdraw(@RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token));
     }
 
     @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.")
     @PostMapping(value = "/varifyPassword")
-    public ResponseEntity<Boolean> verifyPassword(@RequestHeader("JAuth_TOKEN") String token,
+    public ResponseEntity<Boolean> verifyPassword(@RequestHeader("Authorization") String token,
                                                   @RequestParam String userPassword) {
         User user = userRepository.findByNo(Integer.valueOf(jwtTokenProvider.getUserNo(token)))
                 .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
@@ -127,7 +90,7 @@ public class UserController {
 
     @ApiOperation(value = "비밀번호 변경", notes = "회원의 비밀번호를 변경한다.")
     @PostMapping(value = "/changePassword")
-    public ResponseEntity<UserResponseDto> changePassword(@RequestHeader("JAuth_TOKEN") String token,
+    public ResponseEntity<UserResponseDto> changePassword(@RequestHeader("Authorization") String token,
                                                           @RequestParam String userPassword) {
         Integer userNo = Integer.valueOf(jwtTokenProvider.getUserNo(token));
         User user = userService.changePassword(userNo, userPassword);

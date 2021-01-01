@@ -25,8 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * 이렇게 상속해버리면 SecurityConfig 아래와 같이 걸지 않아도 된다.
- * http.addFilterBefore(JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+ * 로그인 인증 과정을 진행한다.
  */
 public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -42,6 +41,12 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * id/pw를 통해 UsernamePasswordAuthenticationToken을 생성한 후,
+     * AuthenticationManager가 AuthenticationProvider를 순회하며 인증 가능 여부를 체크한다.
+     *      - 이때, AuthenticationProvider는 UserDetailService를 통해 사용자 정보 DB에서 조회
+     * 인증이 완료되면 해당 authentication 객체를 SecurityContextHolder에 저장한 후 반환한다.
+     */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
@@ -66,13 +71,13 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
         return authentication;
     }
 
-//    @SuppressWarnings("사용하지 않음")
+    /**
+     * 인증이 성공하면 JWT를 발급해준다.
+     */
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         // Grab principal
-        UserPrincipal principal = (UserPrincipal)authentication.getPrincipal();
-        String accessToken = tokenProvider.generateToken(principal);
-        String refreshToken = tokenProvider.generateRefreshToken(principal);
-        response.addHeader("Authorization", "Bearer " +  accessToken);
+        String token = tokenProvider.createToken(authentication);
+        response.addHeader("Authorization", "Bearer " +  token);
     }
 }

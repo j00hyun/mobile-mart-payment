@@ -1,9 +1,7 @@
 package com.automart.user.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
 public class SignUpRequestDto {
@@ -14,12 +12,13 @@ public class SignUpRequestDto {
     private String name; // 사용자 이름
     private String snsKey; // 사용자 SNS 고유 Key
 
+    public SignUpRequestDto() { };
+
     @Builder
-    public SignUpRequestDto(String email, String password, String tel, String name, String snsKey) {
+    public SignUpRequestDto(String email, String password, String tel, String name) {
         this.email = email;
         this.password = password;
         this.tel = tel;
         this.name = name;
-        this.snsKey = snsKey;
     }
 }

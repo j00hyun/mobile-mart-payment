@@ -18,6 +18,7 @@ import com.automart.product.service.ProductService;
 import com.automart.product.domain.Product;
 import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.repository.ProductRepository;
+import com.automart.user.domain.AuthProvider;
 import com.automart.user.service.UserService;
 import com.automart.user.domain.User;
 import com.automart.user.repository.UserRepository;
@@ -75,7 +76,7 @@ class OrderServiceTest {
                 .password("testpwd")
                 .tel("010-4444-6666")
                 .name("testUser")
-                .snsType("local").build();
+                .snsType(AuthProvider.local).build();
 
         em.persist(user);
 
@@ -144,7 +145,7 @@ class UserServiceTest {
                 .password("1234")
                 .name("박주현")
                 .tel("01041026206")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
 
         // when
@@ -163,7 +164,7 @@ class UserServiceTest {
                 .password("1234")
                 .name("박주현")
                 .tel("01041026206")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
         userService.saveUser(user1);
 
@@ -172,7 +173,7 @@ class UserServiceTest {
                 .password("abcd")
                 .name("권성훈")
                 .tel("01089110489")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
 
         // when
@@ -192,7 +193,7 @@ class UserServiceTest {
                 .password("1234")
                 .name("박주현")
                 .tel("01041026206")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
         userService.saveUser(user1);
 
@@ -201,7 +202,7 @@ class UserServiceTest {
                 .password("abcd")
                 .name("권성훈")
                 .tel("01041026206")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
 
         // when
@@ -233,7 +234,7 @@ class UserServiceTest {
                 .password("1234")
                 .name("박주현")
                 .tel("01041026206")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
         userService.saveUser(user);
 
@@ -279,7 +280,7 @@ class CartServiceTest {
                 .password("1234")
                 .name("박주현")
                 .tel("01041026206")
-                .snsType("LOCAL")
+                .snsType(AuthProvider.local)
                 .build();
 
         userService.saveUser(user);
