@@ -12,5 +12,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     // 상품 고유번호로 상품 조회하기(단건)
     public Optional<Product> findByNo(Integer no);
 
+    public Optional<Product> findByCode(int code);
 
 }

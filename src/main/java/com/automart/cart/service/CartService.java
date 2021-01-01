@@ -31,16 +31,16 @@ public class CartService {
     private final ProductRepository productRepository;
 
     /**
-     * 카트에 상품 담기
+     * 바코드번호로 카트에 상품 담기
      * @param userNo : 사용자 고유 번호
-     * @param productNo : 담을 제품 고유 번호
+     * @param productCode : 담을 제품의 바코드 번호
      */
-    public void addProductToCart(int userNo, int productNo) throws NotFoundUserException, NotEnoughStockException {
+    public void addProductToCart(int userNo, int productCode) throws NotFoundUserException, NotEnoughStockException {
         log.info("카트에 상품 담기");
 
         User user = userRepository.findByNo(userNo)
                 .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
-        Product product = productRepository.findByNo(productNo)
+        Product product = productRepository.findByCode(productCode)
                 .orElseThrow(() -> new NotEnoughStockException("해당 제품이 존재하지 않습니다."));
 
         Optional<Cart> cart = cartRepository.findByUserAndProduct(user, product);
@@ -52,6 +52,28 @@ public class CartService {
         } else {
             // 카트에 동일 상품이 존재하지 않는 경우
             cartRepository.save(Cart.createCart(user, product));
+        }
+    }
+
+    /**
+     * 카트에 담긴 상품 갯수 1개 증가
+     * @param userNo : 사용자 고유번호
+     * @param productNo : 갯수 증가시킬 상품 고유번호
+     */
+    public void addProduct(int userNo, int productNo) throws NotFoundUserException, NotEnoughStockException {
+        log.info("카트에 담긴 상품 증가");
+
+        User user = userRepository.findByNo(userNo)
+                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+        Product product = productRepository.findByNo(productNo)
+                .orElseThrow(() -> new NotEnoughStockException("해당 제품이 존재하지 않습니다."));
+
+        Optional<Cart> cart = cartRepository.findByUserAndProduct(user, product);
+
+        // 카트에 이미 동일 상품이 존재하는 경우에만 상품 증가 가능
+        if(cart.isPresent()) {
+            cart.get().addCart();
+            cartRepository.save(cart.get());
         }
     }
 

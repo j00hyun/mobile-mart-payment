@@ -2,6 +2,7 @@ package com.automart.user.service;
 
 import com.automart.exception.InvalidTokenException;
 import com.automart.exception.NotFoundUserException;
+import com.automart.exception.SMSException;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
@@ -36,12 +37,12 @@ public class UserService {
 
     /**
      * 로컬 회원 이메일 확인
-     * @param user : 사용자 정보
+     * @param email : 이메일 주소
      */
-    public void checkDuplicateEmail(User user) throws ForbiddenSignUpException {
+    public void checkDuplicateEmail(String email) throws ForbiddenSignUpException {
         log.info("이메일 중복 검증");
 
-        Optional<User> findUser = userRepository.findByEmailAndSnsType(user.getEmail(), AuthProvider.local);
+        Optional<User> findUser = userRepository.findByEmail(email);
 
         if(findUser.isPresent()) {
             throw new ForbiddenSignUpException("동일한 이메일의 회원이 이미 존재합니다.");
@@ -50,12 +51,12 @@ public class UserService {
 
     /**
      * 휴대폰 중복확인
-     * @param user : 사용자 정보
+     * @param phone_no : 휴대폰 번호
      */
-    public void checkDuplicateTel(User user) throws ForbiddenSignUpException {
+    public void checkDuplicateTel(String phone_no) throws ForbiddenSignUpException {
         log.info("휴대폰 번호 중복 검증");
 
-        Optional<User> findUser = userRepository.findByTel(user.getTel());
+        Optional<User> findUser = userRepository.findByTel(phone_no);
 
         if(findUser.isPresent()) {
             throw new ForbiddenSignUpException("동일한 휴대폰 번호의 회원이 이미 존재합니다.");
@@ -65,12 +66,12 @@ public class UserService {
     /**
      * 본인확인 인증번호 핸드폰으로 전송
      * @param phone_no : 핸드폰 번호
-     * @return : 생성된 4자리 인증번호
+     * @return : 생성된 5자리 인증번호
      */
-    public int validatePhone(String phone_no) {
+    public int validatePhone(String phone_no) throws SMSException {
         log.info("인증번호 전송");
 
-        int valiNum = (int) (Math.random() * 100000);
+        int valiNum = (int) (Math.random() * 1000000);
         String message = " [인증번호]\n" + valiNum;
         smsService.sendMessage(phone_no, message);
         return valiNum;
@@ -107,6 +108,8 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
 
         user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
+        userRepository.save(user);
+        // 로그아웃해야함... 또는 Token을 변경해주어야 함.
         return user;
     }
 
@@ -116,11 +119,9 @@ public class UserService {
      * @return : 회원 고유 번호
      */
     @Transactional
-    public Integer saveUser(User user) {
+    public Integer saveUser(User user) throws ForbiddenSignUpException {
         log.info("회원 생성");
 
-        checkDuplicateEmail(user); // 이메일 중복 검증
-        checkDuplicateTel(user); // 연락처 중복 검증
         user.setPassword(passwordEncoder.encode(user.getPassword())); // 패스워드 인코딩을 써서 암호화한다.
         userRepository.save(user);
         return user.getNo();

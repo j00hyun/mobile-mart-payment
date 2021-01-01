@@ -1,37 +1,40 @@
 package com.automart.config;
 
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.SecurityConfiguration;
+import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.awt.print.Pageable;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static springfox.documentation.builders.RequestHandlerSelectors.withMethodAnnotation;
 
 @Configuration
 @EnableSwagger2 // Swagger2 버전을 활성화
-public class SwaggerConfig extends WebMvcConfigurationSupport {
+public class SwaggerConfig implements WebMvcConfigurer {
     private String version;
     private String title;
 
-    /**
-     * swagger-ui.html 페이지 위치 추가
-     */
-    @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-    }
 
     @Bean
-    public Docket api() {
+    public Docket restApi() {
         version = "Demo Version";
         title = "automart API " + version;
         return new Docket(DocumentationType.SWAGGER_2)
@@ -40,7 +43,12 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .apis(RequestHandlerSelectors.any()) // api 스펙이 작성되어 있는 패키지를 지정
                 .paths(PathSelectors.any()) // apis()로 선택되어진 API중 특정 path 조건에 맞는 API들을 다시 필터링하여 문서화
                 .build()
-                .apiInfo(apiInfo(title, version));
+                .apiInfo(apiInfo(title, version)) // 제목, 설명 등 문서에 대한 정보들을 보여주기 위해 호출
+                .ignoredParameterTypes(AuthenticationPrincipal.class)
+                .securitySchemes(Arrays.asList(apiKey()))
+                .select(). // ApiSelectorBuilder 를 생성
+                        apis(withMethodAnnotation(ApiOperation.class))
+                .build();
 
     }
 
@@ -56,4 +64,9 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .version(version)
                 .build();
     }
+
+    private ApiKey apiKey() {
+        return new ApiKey("jwtToken", "Authorization", "header");
+    }
+
 }

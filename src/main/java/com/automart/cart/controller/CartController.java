@@ -26,6 +26,18 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.OK).body(cartResponseDtos);
     }
 
+    @ApiOperation(value = "장바구니 상품 추가", notes = "상품의 바코드를 인식하면 장바구니에 상품이 담깁니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userNo", value = "해당 회원의 고유번호", required = true, dataType = "int", defaultValue = "1"),
+            @ApiImplicitParam(name = "productCode", value = "개수를 증가하려는 제품의 바코드 번호", required = true, dataType = "int", defaultValue = "12345")
+    })
+    @ApiResponse(code = 200, message = "정상적으로 장바구니의 상품 개수가 증가되었습니다.")
+    @PutMapping("/carts/add/{userNo}/{productCode}")
+    public ResponseEntity<Void> addProductByCode(@PathVariable int userNo, @PathVariable int productCode) {
+        cartService.addProductToCart(userNo, productCode);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     @ApiOperation(value = "장바구니 상품 개수 증가", notes = "장바구니 화면에서 해당 상품의 개수 '+' 버튼을 누르면 장바구니의 상품 개수가 1개 증가됩니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userNo", value = "해당 회원의 고유번호", required = true, dataType = "int", defaultValue = "1"),
@@ -34,7 +46,7 @@ public class CartController {
     @ApiResponse(code = 200, message = "정상적으로 장바구니의 상품 개수가 증가되었습니다.")
     @PutMapping("/carts/add/{userNo}/{productNo}")
     public ResponseEntity<Void> addProductCount(@PathVariable int userNo, @PathVariable int productNo) {
-        cartService.addProductToCart(userNo, productNo);
+        cartService.addProduct(userNo, productNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
