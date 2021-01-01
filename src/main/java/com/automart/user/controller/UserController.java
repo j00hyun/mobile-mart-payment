@@ -46,39 +46,6 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-
-    @ApiOperation(value = "로컬 회원가입", notes = "로컬 회원가입을 한다")
-    @PostMapping(value = "/signup")
-    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
-        User user = User.builder()
-                .email(requestDto.getEmail())
-                .password(requestDto.getPassword())
-                .tel(requestDto.getTel())
-                .name(requestDto.getName())
-                .snsType(AuthProvider.local)
-                .roles(Collections.singletonList("ROLE_USER"))
-                .build();
-        userService.saveUser(user);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @ApiOperation(value = "로컬 로그인", notes = "이메일로 회원 로그인을 한다")
-    @PostMapping(value = "/signin")
-    public ResponseEntity<?> singIn(@Valid @RequestBody SignInRequestDto requestDto) throws SigninFailedException {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        requestDto.getEmail(),
-                        requestDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponseDto(token));
-    }
 
     @ApiOperation(value = "내정보 조회", notes = "현재 인증된 유저의 정보를 가져온다.")
     @GetMapping("/me")
