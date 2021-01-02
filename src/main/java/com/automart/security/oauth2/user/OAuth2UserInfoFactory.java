@@ -1,6 +1,6 @@
 package com.automart.security.oauth2.user;
 
-import com.automart.exception.OAuth2AuthenticationProcessingException;
+import com.automart.advice.exception.OAuth2AuthenticationProcessingException;
 import com.automart.user.domain.AuthProvider;
 
 import java.util.Map;

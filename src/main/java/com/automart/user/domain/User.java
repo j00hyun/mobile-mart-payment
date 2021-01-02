@@ -2,6 +2,7 @@ package com.automart.user.domain;
 
 import com.automart.cart.domain.Cart;
 import com.automart.order.domain.Order;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,9 +40,11 @@ public class User {
     @Column(name = "user_sns_key", length = 45, unique = true)
     private String snsKey; // 사용자 SNS 고유 key
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Cart> carts = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 

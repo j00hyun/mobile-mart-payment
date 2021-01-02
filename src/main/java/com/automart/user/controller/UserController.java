@@ -1,11 +1,11 @@
 package com.automart.user.controller;
 
-import com.automart.exception.InvalidTokenException;
-import com.automart.exception.NotFoundUserException;
+import com.automart.advice.exception.InvalidTokenException;
+import com.automart.user.dto.AuthResponseDto;
+import com.automart.advice.exception.NotFoundUserException;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
-import com.automart.user.dto.AuthResponseDto;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import com.automart.user.service.UserService;
