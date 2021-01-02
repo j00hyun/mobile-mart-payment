@@ -75,7 +75,8 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         // Grab principal
-        String token = tokenProvider.createToken(authentication);
-        response.addHeader("Authorization", "Bearer " +  token);
+        String accessToken = tokenProvider.generateToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication); // redis에 담아야함
+        response.addHeader("Authorization", "Bearer " +  accessToken);
     }
 }
