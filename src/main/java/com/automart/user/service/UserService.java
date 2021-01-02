@@ -1,12 +1,8 @@
 package com.automart.user.service;
 
-import com.automart.exception.InvalidTokenException;
-import com.automart.exception.NotFoundUserException;
-import com.automart.exception.SMSException;
+import com.automart.advice.exception.*;
 import com.automart.security.jwt.JwtTokenProvider;
-import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
-import com.automart.exception.ForbiddenSignUpException;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +67,7 @@ public class UserService {
     public int validatePhone(String phone_no) throws SMSException {
         log.info("인증번호 전송");
 
-        int valiNum = (int) (Math.random() * 1000000);
+        int valiNum = (int) (Math.random() * 100000);
         String message = " [인증번호]\n" + valiNum;
         smsService.sendMessage(phone_no, message);
         return valiNum;
@@ -109,6 +105,20 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
         userRepository.save(user);
+    }
+
+    /**
+     * 아이디, 비밀번호 올바른지 확인
+     * @param email : 이메일 주소
+     * @param password : 비밀번호
+     */
+    public void checkLogIn(String email, String password) throws NotFoundUserException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다."));
+
+        if(!passwordEncoder.matches(password, user.getPassword())) {
+            throw new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다.");
+        }
     }
 
     /**

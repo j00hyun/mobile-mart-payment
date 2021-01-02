@@ -1,6 +1,7 @@
 package com.automart.category.domain;
 
 import com.automart.product.domain.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Category {
     @Column(name = "category_name", length = 45, unique = true)
     private String name; // 카테고리 이름
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private List<Product> products = new ArrayList<>();
 

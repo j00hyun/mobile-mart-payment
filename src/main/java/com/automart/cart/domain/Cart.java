@@ -2,7 +2,7 @@ package com.automart.cart.domain;
 
 import com.automart.product.domain.Product;
 import com.automart.user.domain.User;
-import com.automart.exception.NotEnoughStockException;
+import com.automart.advice.exception.NotEnoughStockException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

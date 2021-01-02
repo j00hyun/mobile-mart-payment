@@ -7,8 +7,8 @@ import com.automart.cart.service.CartService;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.category.service.CategoryService;
-import com.automart.exception.ForbiddenSignUpException;
-import com.automart.exception.NotEnoughStockException;
+import com.automart.advice.exception.ForbiddenSignUpException;
+import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.order.service.OrderService;
 import com.automart.order.domain.Order;
 import com.automart.order.dto.OrderRequestDto;
@@ -319,7 +319,7 @@ class CartServiceTest {
         Product product = productRepository.findByNo(1).get();
 
         // when
-        cartService.addProductToCart(1, 1);
+        cartService.addProductByCode(1, 1);
 
         // then
         assertEquals("장바구니의 유저가 존재해야함.", user, cartRepository.findByNo(1).get().getUser());
@@ -333,10 +333,10 @@ class CartServiceTest {
         // given
         User user = userRepository.findByNo(1).get();
         Product product = productRepository.findByNo(1).get();
-        cartService.addProductToCart(1, 1);
+        cartService.addProduct(1, 1);
 
         // when
-        cartService.addProductToCart(1, 1);
+        cartService.addProduct(1, 1);
 
         // then
         assertEquals("해당 유저의 장바구니가 1개여야함.", 1, user.getCarts().size());
@@ -354,7 +354,7 @@ class CartServiceTest {
 
         // when
         NotEnoughStockException exception = assertThrows(NotEnoughStockException.class, () -> {
-            cartService.addProductToCart(1, 1);
+            cartService.addProductByCode(1, 1);
         });
 
         // then
@@ -365,8 +365,8 @@ class CartServiceTest {
     @Test
     public void 카트상품개수감소() {
         // given
-        cartService.addProductToCart(1, 1);
-        cartService.addProductToCart(1, 1);
+        cartService.addProductByCode(1, 1);
+        cartService.addProduct(1, 1);
 
         // when
         cartService.subtractProduct(1, 1);
@@ -380,8 +380,8 @@ class CartServiceTest {
         // given
         User user = userRepository.findByNo(1).get();
         Product product = productRepository.findByNo(1).get();
-        cartService.addProductToCart(1, 1);
-        cartService.addProductToCart(1, 1);
+        cartService.addProductByCode(1, 1);
+        cartService.addProductByCode(1, 1);
 
         // when
         cartService.takeProductOutOfCart(1, 1);
@@ -399,9 +399,9 @@ class CartServiceTest {
         Product product1 = productRepository.findByNo(1).get();
         Product product2 = productRepository.findByNo(2).get();
 
-        cartService.addProductToCart(1, 1);
-        cartService.addProductToCart(1, 2);
-        cartService.addProductToCart(1, 2);
+        cartService.addProductByCode(1, 1);
+        cartService.addProductByCode(1, 2);
+        cartService.addProductByCode(1, 2);
 
         // when
         List<CartResponseDto> cartResponseDtos = cartService.showUserCarts(1);

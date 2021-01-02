@@ -1,4 +1,4 @@
-package com.automart.exception;
+package com.automart.advice.exception;
 
 public class SMSException extends RuntimeException {
     public SMSException() {
