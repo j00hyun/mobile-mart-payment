@@ -65,8 +65,9 @@ public class SignController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponseDto(token));
+        String accessToken = jwtTokenProvider.generateToken(authentication);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(authentication); // redis에 담아야함
+        return ResponseEntity.ok(new AuthResponseDto(accessToken));
     }
 
 
