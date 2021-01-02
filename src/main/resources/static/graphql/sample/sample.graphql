@@ -1,0 +1,10 @@
+type Query {
+  allCities: [City]
+  city(id: Int): City
+}
+
+type City {
+  id: Int!
+  name: String
+  population: Int
+}

@@ -1,0 +1,21 @@
+type Mutation {
+  checkDuplicateId(id: String!, password: String!): Board
+  saveUser(id: String!, password: String!): Board
+}
+
+type Board {
+  no: Int!
+  id: String!
+  password: String!
+}
+
+type Query {
+  allCities: [City]
+  city(id: Int): City
+}
+
+type City {
+  id: Int!
+  name: String
+  population: Int
+}
