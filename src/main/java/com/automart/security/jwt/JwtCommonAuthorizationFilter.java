@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
 import com.automart.user.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,12 +26,14 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
     private JwtTokenProvider jwtTokenProvider;
+    private RedisTemplate<String, Object> redisTemplate;
 
 
-    public JwtCommonAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public JwtCommonAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, RedisTemplate<String, Object> redisTemplate) {
         super(authenticationManager);
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -45,6 +49,7 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
+
         // 만약 header가 존재한다면, DB로 부터 user의 권한을 확인하고, authorization을 수행한다.
         Authentication authentication = getUsernamePasswordAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -57,27 +62,35 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
      */
     private Authentication getUsernamePasswordAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization")
-                .replace("Bearer","");
+                .replace("Bearer", "");
 
-        // 만약 token이 존재한다면, token을 통해 user의 고유 번호를 얻는다.
+        // 만약 token이 존재한다면, token을 통해 user의 이메일을 얻는다.
         if (token != null) {
-            Integer no = Integer.parseInt(jwtTokenProvider.getUserNo(token)); // users의 id값
+            String userEmail = jwtTokenProvider.getUserEmail(token); // users의 email값
+            if (jwtTokenProvider.validateToken(token)) { // 유효한 토큰이라면
+                // 만약 user의 이메일이 존재한다면, DB에서 해당 유저를 찾고 권한을 부여한다.
+                if (userEmail != null) {
 
-            // 만약 user의 고유번호가 존재한다면, DB에서 해당 유저를 찾고 권한을 부여한다.
-            if (no != null) {
-                Optional<User> oUser = userRepository.findByNo(no);
-                User user = oUser.get();
-                UserPrincipal principal = UserPrincipal.create(user);
+                    Optional<User> oUser = userRepository.findByEmail(userEmail);
+                    User user = oUser.get();
+                    UserPrincipal principal = UserPrincipal.create(user);
 
-                // OAuth 인지 일반 로그인인지 구분할 필요가 없음. 왜냐하면 password를 Authentication이 가질 필요가 없으니!!
-                // JWT가 로그인 프로세스를 가로채서 인증다 해버림. (OAuth2.0이든 그냥 일반 로그인 이든)
+                    // OAuth 인지 일반 로그인인지 구분할 필요가 없음. 왜냐하면 password를 Authentication이 가질 필요가 없으니!!
+                    // JWT가 로그인 프로세스를 가로채서 인증다 해버림. (OAuth2.0이든 그냥 일반 로그인 이든)
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication); // 세션에 넣기
-                return authentication;
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    return authentication;
+                }
             }
+//            else {
+//                if (redisTemplate.opsForValue().get(userEmail) != null) { // refresh토큰만 살아있는 경우(access토큰이 기간만 만료된것일 때)
+//                    // access token을 발급해준다.
+//                }
+//            }
         }
         return null;
     }
 }
+

@@ -101,7 +101,7 @@ public class UserService {
      * @param password : 새 비밀번호
      * @return : 유저 정보
      */
-    public User changePassword(int no, String password) throws NotFoundUserException {
+    public void changePassword(int no, String password) throws NotFoundUserException {
         log.info("비밀번호 변겅");
 
         User user = userRepository.findByNo(no)
@@ -109,8 +109,6 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
         userRepository.save(user);
-        // 로그아웃해야함... 또는 Token을 변경해주어야 함.
-        return user;
     }
 
     /**
@@ -134,7 +132,7 @@ public class UserService {
     @Transactional
     public String withdraw(String token) {
         if (jwtTokenProvider.validateToken(token)) {
-            User user = userRepository.findByNo(Integer.valueOf(jwtTokenProvider.getUserNo(token)))
+            User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token))
                     .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
             userRepository.delete(user);
             return "delete success";

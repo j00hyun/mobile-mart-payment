@@ -1,6 +1,7 @@
 package com.automart.config;
 
 import com.automart.security.CustomUserDetailsService;
+import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtBasicAuthenticationFilter;
 import com.automart.security.jwt.JwtCommonAuthorizationFilter;
 import com.automart.security.jwt.JwtTokenProvider;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -58,6 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
 
     /*
      * 다른 AuthorizationServer나 ResourceServer가 참조할 수 있도록 오버라이딩 해서 빈으로 등록
@@ -90,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable() // rest api이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
                 .formLogin().disable()
                 .addFilterBefore(new JwtBasicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository))
+                .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository, redisTemplate))
                 .authorizeRequests() // 이후 요청에 대한 사용권한 체크
                     .antMatchers("/", "/*/signin", "/*/signup", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
 //                        .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근가능 (모든 컨트롤러 작동 여부 확인 뒤 주석 해제하고 다시 테스트 할 것!)
@@ -106,8 +111,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         // 로그인 성공시 invoke할 Handler를 정의
                         @Override
                         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                            String accessToken = tokenProvider.generateToken(authentication);
-                            String refreshToken = tokenProvider.generateRefreshToken(authentication); // redis에 담아야함
+                            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                            String accessToken = tokenProvider.generateAccessToken(userPrincipal);
+                            String refreshToken = tokenProvider.generateRefreshToken(userPrincipal); // redis에 담아야함
                             response.addHeader("Authorization", "Bearer " +  accessToken);
                             String targetUrl = "/"; // 로그인 후 이동할 주소
                             RequestDispatcher dis = request.getRequestDispatcher(targetUrl);

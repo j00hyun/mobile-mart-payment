@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.automart.security.CustomUserDetailsService;
+import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
 import com.automart.user.dto.SignInRequestDto;
 import com.automart.user.repository.UserRepository;
@@ -75,8 +76,9 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
         // Grab principal
-        String accessToken = tokenProvider.generateToken(authentication);
-        String refreshToken = tokenProvider.generateRefreshToken(authentication); // redis에 담아야함
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String accessToken = tokenProvider.generateAccessToken(userPrincipal);
+        String refreshToken = tokenProvider.generateRefreshToken(userPrincipal); // redis에 담아야함
         response.addHeader("Authorization", "Bearer " +  accessToken);
     }
 }
