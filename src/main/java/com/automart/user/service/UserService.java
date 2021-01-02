@@ -1,11 +1,15 @@
 package com.automart.user.service;
 
+import com.automart.security.UserPrincipal;
 import com.automart.advice.exception.*;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.User;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +21,7 @@ import java.util.Optional;
 // @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -97,6 +101,7 @@ public class UserService {
      * @param password : 새 비밀번호
      * @return : 유저 정보
      */
+    @Transactional
     public void changePassword(int no, String password) throws NotFoundUserException {
         log.info("비밀번호 변겅");
 
@@ -140,9 +145,9 @@ public class UserService {
      * @param token jwt 토큰
      */
     @Transactional
-    public String withdraw(String token) {
+    public String withdraw(String token, JwtTokenProvider.TokenType tokenType) {
         if (jwtTokenProvider.validateToken(token)) {
-            User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token))
+            User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
                     .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
             userRepository.delete(user);
             return "delete success";
@@ -169,5 +174,21 @@ public class UserService {
     public List<UserResponseDto> showUsers() {
         List<User> users = userRepository.findAll();
         return UserResponseDto.listOf(users);
+    }
+
+    /**
+     * Spring Security가 UserDetails 구현객체 클래스를 사용해 Authentication을 사용
+     */
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        // User정보를 DB에서 가져온다
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다."));
+
+        // DB에서 가져온 User 정보는 UserPrincipal 클래스로 변경해 Spring Security로 전달한다.
+        // UserPrincipal은 Spring Security의 UserDetails를 implements 하였으므로, 이제 Spring Security는 User 클래스를 사용해 Authentication을 사용 할수 있게 되었다.
+        return UserPrincipal.create(user);
     }
 }

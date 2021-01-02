@@ -27,8 +27,6 @@ public class JwtTokenProvider {
     @Value("${spring.jwt.refresh.token.secret}")
     private String refreshTokenSecret;
 
-    private String secretKey;
-
     private static final long accessTokenExpiredMsc = 1000L * 60 * 60; // 1시간만 유효
     private static final long refreshTokenExpiredMsc = 1000L * 60 * 60 * 24 * 14; // 2주간 유효
 
@@ -36,6 +34,8 @@ public class JwtTokenProvider {
 
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+
+    public enum TokenType { ACCESS_TOKEN, REFRESH_TOKEN }
 
     @PostConstruct
     protected void init() {
@@ -45,20 +45,30 @@ public class JwtTokenProvider {
 
     // Access Token 발급
     public String generateAccessToken(UserPrincipal userPrincipal) {
-        secretKey = accessTokenSecret;
-        return createToken(userPrincipal.getEmail(), accessTokenExpiredMsc);
+        return createToken(userPrincipal.getEmail(), TokenType.ACCESS_TOKEN);
     }
 
     // Refresh Token 발급
     public String generateRefreshToken(UserPrincipal userPrincipal) {
-        secretKey = refreshTokenSecret;
-        return createToken(userPrincipal.getEmail(), refreshTokenExpiredMsc);
+        return createToken(userPrincipal.getEmail(), TokenType.REFRESH_TOKEN);
     }
 
     /**
      * 인증된 유저의 authentication에서 userPrincipal을 추출해 token을 생성한다.
      */
-    public String createToken(String email, long expireTime) {
+    public String createToken(String email, TokenType tokenType) {
+
+        String secretKey;
+        long expireTime;
+
+        if (tokenType == TokenType.ACCESS_TOKEN) {
+            secretKey = accessTokenSecret;
+            expireTime = accessTokenExpiredMsc;
+        } else {
+            secretKey = refreshTokenSecret;
+            expireTime = refreshTokenExpiredMsc;
+        }
+
         Claims claims = Jwts.claims().setSubject(email);
         // claims.put("roles", roles); // need params List<String> roles;
         Date now = new Date();
@@ -72,7 +82,9 @@ public class JwtTokenProvider {
 
     // Jwt 토큰 유효성검사
     public boolean validateToken(String token) {
+        String secretKey = accessTokenSecret;
         try {
+            log.debug("validateToken's secretKey : " + secretKey);
             // 1. setSigningKey를 통해 디지털 서명되었는지를 확인한다.
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(secretKey)
@@ -91,7 +103,13 @@ public class JwtTokenProvider {
     }
 
     // Jwt 토큰에서 회원 이메일 추출
-    public String getUserEmail(String token) {
+    public String getUserEmail(String token, TokenType tokenType) {
+        String secretKey;
+        if (tokenType == TokenType.ACCESS_TOKEN) {
+            secretKey = accessTokenSecret;
+        } else {
+            secretKey = refreshTokenSecret;
+        }
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -104,7 +122,16 @@ public class JwtTokenProvider {
         return request.getHeader(HEADER_NAME);
     }
 
-    public Date getExpirationDate(String token) {
+    public Date getExpirationDate(String token, TokenType tokenType) {
+        String secretKey;
+
+        if (tokenType == TokenType.ACCESS_TOKEN) {
+            secretKey = accessTokenSecret;
+        } else {
+            secretKey = refreshTokenSecret;
+        }
+
+        log.debug("getExpirationDate's secretKey : " + secretKey);
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

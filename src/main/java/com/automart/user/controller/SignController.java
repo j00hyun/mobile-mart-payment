@@ -83,7 +83,7 @@ public class SignController {
         String refreshToken = jwtTokenProvider.generateRefreshToken(userPrincipal);
 
         /* refresh 토큰을 redis에 저장 */
-        Date expirationDate = jwtTokenProvider.getExpirationDate(refreshToken);
+        Date expirationDate = jwtTokenProvider.getExpirationDate(refreshToken, JwtTokenProvider.TokenType.REFRESH_TOKEN);
         redisTemplate.opsForValue().set(
                 userPrincipal.getEmail(), refreshToken,
                 expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
