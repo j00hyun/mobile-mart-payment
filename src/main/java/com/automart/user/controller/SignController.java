@@ -1,5 +1,6 @@
 package com.automart.user.controller;
 
+import com.automart.security.UserPrincipal;
 import com.automart.advice.exception.ForbiddenSignUpException;
 import com.automart.advice.exception.NotFoundUserException;
 import com.automart.advice.exception.SMSException;
@@ -11,7 +12,9 @@ import com.automart.user.dto.SignInRequestDto;
 import com.automart.user.dto.SignUpRequestDto;
 import com.automart.user.service.UserService;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,9 +25,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collections;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Api(tags = {"2. User"})
 @RestController
+@Slf4j
 @RequestMapping("/users")
 public class SignController {
 
@@ -36,6 +42,9 @@ public class SignController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
 
     @ApiOperation(value = "이메일 중복검사", notes = "1-3 초기화면에서 이메일 입력시 중복확인")
@@ -52,10 +61,10 @@ public class SignController {
 
 
     @ApiOperation(value = "로컬 로그인", notes = "2-1 로컬 회원 로그인을 시도한다")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "정상적으로 로그인이 완료되었습니다."),
+    /*@ApiResponses({
+            @ApiResponse(code = 200, message = "정상적으로 로그인 되었습니다."),
             @ApiResponse(code = 403, message = "아이디 또는 비밀번호가 일치하지 않습니다.")
-    })
+    })*/
     @PostMapping("/signin")
     public ResponseEntity<AuthResponseDto> signIn(@ApiParam("로그인 정보") @Valid @RequestBody SignInRequestDto requestDto) throws NotFoundUserException {
         userService.checkLogIn(requestDto.getEmail(), requestDto.getPassword());
@@ -67,8 +76,19 @@ public class SignController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String accessToken = jwtTokenProvider.generateToken(authentication);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(authentication); // redis에 담아야함
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        /* access 토큰과 refresh 토큰을 발급 */
+        String accessToken = jwtTokenProvider.generateAccessToken(userPrincipal);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(userPrincipal);
+
+        /* refresh 토큰을 redis에 저장 */
+        Date expirationDate = jwtTokenProvider.getExpirationDate(refreshToken);
+        redisTemplate.opsForValue().set(
+                userPrincipal.getEmail(), refreshToken,
+                expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
+        log.info("redis value : " + redisTemplate.opsForValue().get(userPrincipal.getEmail()));
+
         return ResponseEntity.ok(new AuthResponseDto(accessToken));
     }
 

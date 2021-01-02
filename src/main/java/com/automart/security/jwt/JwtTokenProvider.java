@@ -5,7 +5,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,7 @@ import java.util.Date;
 
 // Json 웹 토큰을 생성하고 확인
 @Service
+@Slf4j
 public class JwtTokenProvider {
 
     @Value("${spring.jwt.access.token.secret}")
@@ -30,6 +34,9 @@ public class JwtTokenProvider {
 
     private static final String HEADER_NAME = "Authorization";
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+
     @PostConstruct
     protected void init() {
         accessTokenSecret = Base64.getEncoder().encodeToString(accessTokenSecret.getBytes());
@@ -37,24 +44,22 @@ public class JwtTokenProvider {
     }
 
     // Access Token 발급
-    public String generateToken(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+    public String generateAccessToken(UserPrincipal userPrincipal) {
         secretKey = accessTokenSecret;
-        return createToken(String.valueOf(userPrincipal.getNo()), accessTokenExpiredMsc);
+        return createToken(userPrincipal.getEmail(), accessTokenExpiredMsc);
     }
 
     // Refresh Token 발급
-    public String generateRefreshToken(Authentication authentication) {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+    public String generateRefreshToken(UserPrincipal userPrincipal) {
         secretKey = refreshTokenSecret;
-        return createToken(String.valueOf(userPrincipal.getNo()), refreshTokenExpiredMsc);
+        return createToken(userPrincipal.getEmail(), refreshTokenExpiredMsc);
     }
 
     /**
      * 인증된 유저의 authentication에서 userPrincipal을 추출해 token을 생성한다.
      */
-    public String createToken(String userNo, long expireTime) {
-        Claims claims = Jwts.claims().setSubject(userNo);
+    public String createToken(String email, long expireTime) {
+        Claims claims = Jwts.claims().setSubject(email);
         // claims.put("roles", roles); // need params List<String> roles;
         Date now = new Date();
         return Jwts.builder()
@@ -66,21 +71,27 @@ public class JwtTokenProvider {
     }
 
     // Jwt 토큰 유효성검사
-    public boolean validateToken(String jwtToken) {
+    public boolean validateToken(String token) {
         try {
             // 1. setSigningKey를 통해 디지털 서명되었는지를 확인한다.
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(secretKey)
-                    .parseClaimsJws(jwtToken);
+                    .parseClaimsJws(token);
             // 2. 만료일자가 지났는지 확인한다.
-            return !claims.getBody().getExpiration().before(new Date());
+            boolean isNotExpire = !claims.getBody().getExpiration().before(new Date()); // 만료되면 false를 반환
+            // 3. 블랙리스트인지 확인한다.
+            if (redisTemplate.opsForValue().get(token) != null) { // 블랙리스트에 access token이 존재할 경우
+                log.info("이미 로그아웃 처리된 사용자입니다.");
+                return false;
+            }
+            return isNotExpire;
         } catch (Exception e) {
             return false;
         }
     }
 
-    // Jwt 토큰에서 회원 고유번호 추출
-    public String getUserNo(String token) {
+    // Jwt 토큰에서 회원 이메일 추출
+    public String getUserEmail(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -89,7 +100,15 @@ public class JwtTokenProvider {
     }
 
     // Request의 Header에서 token 파싱
-    public String resolveToken(HttpServletRequest request) {
+    public String extractToken(HttpServletRequest request) {
         return request.getHeader(HEADER_NAME);
+    }
+
+    public Date getExpirationDate(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
     }
 }
