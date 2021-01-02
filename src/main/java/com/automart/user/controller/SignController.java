@@ -1,8 +1,8 @@
 package com.automart.user.controller;
 
-import com.automart.exception.ForbiddenSignUpException;
-import com.automart.exception.SMSException;
-import com.automart.exception.SigninFailedException;
+import com.automart.advice.exception.ForbiddenSignUpException;
+import com.automart.advice.exception.NotFoundUserException;
+import com.automart.advice.exception.SMSException;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
@@ -41,11 +41,11 @@ public class SignController {
     @ApiOperation(value = "이메일 중복검사", notes = "1-3 초기화면에서 이메일 입력시 중복확인")
     @ApiImplicitParam(name = "email", value = "중복확인을 진행할 이메일주소", required = true, dataType = "string", defaultValue = "example@google.com")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "증복되지 않는 이메일주소입니다. -> 회원가입 진행"),
-            @ApiResponse(code = 406, message = "중복되는 이메일주소입니다. -> 로그인 진행")
+            @ApiResponse(code = 200, message = "이메일이 중복되지 않습니다."),
+            @ApiResponse(code = 406, message = "동일한 이메일의 회원이 이미 존재합니다.")
     })
-    @GetMapping("/valid/email")
-    public ResponseEntity<?> validEmail(String email) throws ForbiddenSignUpException {
+    @PostMapping("/valid/email")
+    public ResponseEntity<Void> validEmail(@RequestParam String email) throws ForbiddenSignUpException {
         userService.checkDuplicateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -56,8 +56,10 @@ public class SignController {
             @ApiResponse(code = 200, message = "정상적으로 로그인이 완료되었습니다."),
             @ApiResponse(code = 403, message = "아이디 또는 비밀번호가 일치하지 않습니다.")
     })
-    @PostMapping(value = "/signin")
-    public ResponseEntity<?> singIn(@ApiParam("로그인 정보") @Valid @RequestBody SignInRequestDto requestDto) throws SigninFailedException {
+    @PostMapping("/signin")
+    public ResponseEntity<AuthResponseDto> signIn(@ApiParam("로그인 정보") @Valid @RequestBody SignInRequestDto requestDto) throws NotFoundUserException {
+        userService.checkLogIn(requestDto.getEmail(), requestDto.getPassword());
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestDto.getEmail(),
@@ -73,12 +75,12 @@ public class SignController {
     @ApiOperation(value = "핸드폰 본인인증", notes = "3-2 회원가입시 핸드폰 중복확인 후 본인인증 메세지를 전송한다.")
     @ApiImplicitParam(name = "phoneNo", value = "인증번호를 전송할 핸드폰번호", required = true, dataType = "string", defaultValue = "01012345678")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "정상적으로 인증번호가 전송되었습니다."),
-            @ApiResponse(code = 500, message = "서버에러로 인해 인증번호를 전송할 수 없습니다."),
-            @ApiResponse(code = 406, message = "중복되는 전화번호 입니다.")
+            @ApiResponse(code = 200, message = "전송된 인증번호 반환"),
+            @ApiResponse(code = 500, message = "메세지 전송 실패"),
+            @ApiResponse(code = 406, message = "동일한 휴대폰 번호의 회원이 이미 존재합니다.")
     })
     @PostMapping("/valid/phone")
-    public ResponseEntity<?> validPhone(String phoneNo) throws SMSException, ForbiddenSignUpException {
+    public ResponseEntity<Integer> validPhone(@RequestParam String phoneNo) throws SMSException, ForbiddenSignUpException {
         userService.checkDuplicateTel(phoneNo);
         int validNum = userService.validatePhone(phoneNo);
         return ResponseEntity.status(HttpStatus.OK).body(validNum);
@@ -88,10 +90,10 @@ public class SignController {
     @ApiOperation(value = "로컬 회원가입", notes = "3-2 로컬 회원가입을 한다")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 회원가입이 완료되었습니다."),
-            @ApiResponse(code = 405, message = "회원가입에 실패하였습니다.")
+            @ApiResponse(code = 406, message = "회원가입에 실패하였습니다.")
     })
-    @PostMapping(value = "/signup")
-    public ResponseEntity<?> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody SignUpRequestDto requestDto) throws ForbiddenSignUpException{
+    @PostMapping("/signup")
+    public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody SignUpRequestDto requestDto) throws ForbiddenSignUpException{
 
         User user = User.builder()
                 .email(requestDto.getEmail())

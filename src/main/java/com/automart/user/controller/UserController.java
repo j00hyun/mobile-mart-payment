@@ -1,36 +1,22 @@
 package com.automart.user.controller;
 
-import com.automart.exception.ForbiddenSignUpException;
-import com.automart.exception.NotFoundUserException;
-import com.automart.exception.SMSException;
-import com.automart.exception.SigninFailedException;
+import com.automart.advice.exception.NotFoundUserException;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.security.UserPrincipal;
-import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
-import com.automart.user.dto.AuthResponseDto;
-import com.automart.user.dto.SignInRequestDto;
-import com.automart.user.dto.SignUpRequestDto;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import com.automart.user.service.UserService;
 import io.swagger.annotations.*;
-import org.apache.http.HttpResponse;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
 import java.util.*;
 
 @Api(tags = {"2. User"})

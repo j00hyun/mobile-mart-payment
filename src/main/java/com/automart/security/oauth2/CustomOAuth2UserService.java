@@ -1,6 +1,6 @@
 package com.automart.security.oauth2;
 
-import com.automart.exception.OAuth2AuthenticationProcessingException;
+import com.automart.advice.exception.OAuth2AuthenticationProcessingException;
 import com.automart.security.UserPrincipal;
 import com.automart.security.oauth2.user.OAuth2UserInfo;
 import com.automart.security.oauth2.user.OAuth2UserInfoFactory;

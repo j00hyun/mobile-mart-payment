@@ -1,7 +1,7 @@
 package com.automart.product.service;
 
 import com.automart.category.domain.Category;
-import com.automart.exception.ForbiddenMakeProductException;
+import com.automart.advice.exception.ForbiddenMakeProductException;
 import com.automart.product.domain.Product;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.product.dto.ProductSaveRequestDto;

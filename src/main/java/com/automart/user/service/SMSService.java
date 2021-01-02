@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import javax.transaction.Transactional;
 
-import com.automart.exception.SMSException;
+import com.automart.advice.exception.SMSException;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 

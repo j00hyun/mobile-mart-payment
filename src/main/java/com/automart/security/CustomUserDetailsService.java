@@ -1,6 +1,6 @@
 package com.automart.security;
 
-import com.automart.exception.NotFoundUserException;
+import com.automart.advice.exception.NotFoundUserException;
 import com.automart.user.domain.User;
 import com.automart.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,29 +1,21 @@
 package com.automart.config;
 
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.SecurityConfiguration;
-import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.awt.print.Pageable;
 import java.util.Arrays;
-import java.util.List;
 
-import static java.util.Collections.singletonList;
 import static springfox.documentation.builders.RequestHandlerSelectors.withMethodAnnotation;
 
 @Configuration
@@ -36,7 +28,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Bean
     public Docket restApi() {
         version = "Demo Version";
-        title = "automart API " + version;
+        title = "Automart API " + version;
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false) // 불필요한 응답코드(200, 401, 403, 404)와 메시지를 제거
                 .select()// ApiSelectorBuilder를 생성
@@ -58,7 +50,9 @@ public class SwaggerConfig implements WebMvcConfigurer {
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
                 .title(title)
-                .description("마트 자동결제화 애플리케이션 API Docs \n " +
+                .description("마트 자동결제화 애플리케이션 API Docs \n\n " +
+                        "회원가입, 로그인 진행후 response로 얻은 access token을 우측상단 Authorize Value에 \"Bearer \"와 같이 넣어주면 자동으로 header에 token이 들어갑니다. \n\n" +
+                        "ex) Bearer iJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjA5NTcx \n\n" +
                         "<a href=\"https://github.com/j00hyun/mobile-mart-payment\">" +
                         "저장소 사이트 이동하기</a>")
                 .version(version)

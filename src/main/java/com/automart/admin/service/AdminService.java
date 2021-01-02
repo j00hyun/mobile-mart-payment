@@ -2,11 +2,7 @@ package com.automart.admin.service;
 
 import com.automart.admin.domain.Admin;
 import com.automart.admin.repository.AdminRepository;
-import com.automart.exception.ForbiddenSignUpException;
-import com.automart.exception.NotFoundUserException;
-import com.automart.user.domain.User;
-import com.automart.user.repository.UserRepository;
-import com.automart.user.service.SMSService;
+import com.automart.advice.exception.ForbiddenSignUpException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
