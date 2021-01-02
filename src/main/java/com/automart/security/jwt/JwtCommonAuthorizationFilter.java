@@ -66,7 +66,7 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
 
         // 만약 token이 존재한다면, token을 통해 user의 이메일을 얻는다.
         if (token != null) {
-            String userEmail = jwtTokenProvider.getUserEmail(token); // users의 email값
+            String userEmail = jwtTokenProvider.getUserEmail(token, JwtTokenProvider.TokenType.ACCESS_TOKEN); // users의 email값
             if (jwtTokenProvider.validateToken(token)) { // 유효한 토큰이라면
                 // 만약 user의 이메일이 존재한다면, DB에서 해당 유저를 찾고 권한을 부여한다.
                 if (userEmail != null) {

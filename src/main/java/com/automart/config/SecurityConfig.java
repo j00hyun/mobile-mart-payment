@@ -1,12 +1,12 @@
 package com.automart.config;
 
-import com.automart.security.CustomUserDetailsService;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtBasicAuthenticationFilter;
 import com.automart.security.jwt.JwtCommonAuthorizationFilter;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.security.oauth2.CustomOAuth2UserService;
 import com.automart.user.repository.UserRepository;
+import com.automart.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 인증시 사용할 custom User Service
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private UserService userService;
 
     @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
@@ -76,7 +76,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // Authorization에 사용할 userDetailService와 password Encoder를 정의한다.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 
     /*

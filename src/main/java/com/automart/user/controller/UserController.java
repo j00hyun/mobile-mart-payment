@@ -51,7 +51,7 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 내정보가 불러와졌습니다.")
     })
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/me")
     public User getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return userRepository.findByNo(userPrincipal.getNo())
@@ -89,7 +89,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/withdraw")
     public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN));
     }
 
     @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
@@ -115,7 +115,7 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공적으로 비밀번호가 변경되었습니다. 변경된 비밀번호로 다시 로그인해주세요. POST: /logout이 이후에 필요")
     })
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping(value = "/changePassword")
     public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                @RequestHeader("Authorization") String token,
@@ -135,7 +135,7 @@ public class UserController {
 
         /* access token을 통해 userEmail을 찾아 redis에 저장된 refresh token을 삭제한다.*/
         try {
-            userEmail = jwtTokenProvider.getUserEmail(accessToken);
+            userEmail = jwtTokenProvider.getUserEmail(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
         } catch (InvalidTokenException e) {
             log.error("userEmail이 유효한 토큰에 존재하지 않음.");
         }
@@ -150,7 +150,7 @@ public class UserController {
 
         /* access token이 유효한 토큰인 경우 더 이상 사용하지 못하게 블랙리스트에 등록 */
         if (jwtTokenProvider.validateToken(accessToken)) {
-            Date expirationDate = jwtTokenProvider.getExpirationDate(accessToken);
+            Date expirationDate = jwtTokenProvider.getExpirationDate(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
             redisTemplate.opsForValue().set(
                     accessToken, true,
                     expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
@@ -167,7 +167,7 @@ public class UserController {
         String accessToken = jwtTokenProvider.extractToken(request);
 
         if (!jwtTokenProvider.validateToken(accessToken)){
-            String userEmail = jwtTokenProvider.getUserEmail(accessToken);
+            String userEmail = jwtTokenProvider.getUserEmail(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
             if (redisTemplate.opsForValue().get(userEmail) != null) {
                 String newAccessToken = jwtTokenProvider.generateAccessToken(userPrincipal);
                 return ResponseEntity.ok(new AuthResponseDto(newAccessToken));

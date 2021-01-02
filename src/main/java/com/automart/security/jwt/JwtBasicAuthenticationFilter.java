@@ -8,11 +8,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.automart.security.CustomUserDetailsService;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
 import com.automart.user.dto.SignInRequestDto;
 import com.automart.user.repository.UserRepository;
+import com.automart.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,7 +38,7 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
     private UserRepository userRepository;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private UserService userService;
 
     /**
      * id/pw를 통해 UsernamePasswordAuthenticationToken을 생성한 후,
@@ -57,7 +57,7 @@ public class JwtBasicAuthenticationFilter extends UsernamePasswordAuthentication
         }
         Optional<User> oUser = userRepository.findByEmail(credentials.getEmail());
         User user = oUser.get();
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getEmail());
+        UserDetails userDetails = userService.loadUserByUsername(user.getEmail());
         // Create login token
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
