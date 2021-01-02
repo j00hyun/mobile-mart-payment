@@ -106,8 +106,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         // 로그인 성공시 invoke할 Handler를 정의
                         @Override
                         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                            String token = tokenProvider.createToken(authentication);
-                            response.addHeader("Authorization", "Bearer " +  token);
+                            String accessToken = tokenProvider.generateToken(authentication);
+                            String refreshToken = tokenProvider.generateRefreshToken(authentication); // redis에 담아야함
+                            response.addHeader("Authorization", "Bearer " +  accessToken);
                             String targetUrl = "/"; // 로그인 후 이동할 주소
                             RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
                             dis.forward(request, response);
