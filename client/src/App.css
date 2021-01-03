@@ -1,0 +1,267 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700');
+@import url('https://fonts.googleapis.com/css?family=Archivo+Black');
+
+
+/* reset */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, textarea, p, blockquote, th, td, input, select, textarea, button {
+    margin: 0;
+    padding: 0;
+}
+
+fieldset, img {
+    border: 0 none
+}
+
+dl, ul, ol, menu, li {
+    list-style: none
+}
+
+blockquote, q {
+    quotes: none
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: none
+}
+
+input, select, textarea, button {
+    font-size: 100%;
+    vertical-align: middle
+}
+
+button {
+    border: 0 none;
+    background-color: transparent;
+    cursor: pointer
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+body {
+    -webkit-text-size-adjust: none
+}
+
+input[type='text'], input[type='password'], input[type='submit'], input[type='search'] {
+    -webkit-appearance: none;
+    border-radius: 0
+}
+
+input:checked[type='checkbox'] {
+    background-color: #666;
+    -webkit-appearance: checkbox
+}
+
+button, input[type='button'], input[type='submit'], input[type='reset'], input[type='file'] {
+    -webkit-appearance: button;
+    border-radius: 0
+}
+
+body {
+    min-width: 320px;
+    background-color: #fff
+}
+
+body, th, td, input, select, textarea, button {
+    font-size: 14px;
+    line-height: 1.5;
+    font-family: 'Malgun Gothic', '나눔 고', sans-serif;
+    color: #333
+}
+
+a {
+    color: #333;
+    text-decoration: none
+}
+
+a:active, a:hover {
+    text-decoration: none
+}
+
+address, caption, cite, code, dfn, em, var {
+    font-style: normal;
+    font-weight: normal
+}
+
+.show {
+    display: block
+}
+
+.hide {
+    display: none
+}
+
+.header {
+    padding: 20px 160px 20px;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    text-align: -webkit-left;
+    color: #0f0f10;
+    font-size: 22px;
+    font-weight: bolder;
+    border-top: 1px solid #d9d9d9;
+
+
+}
+
+.header h1 {
+    top: 110px;
+    left: 100px;
+    width: 77px;
+    height: 27px;
+    text-align: left;
+    font: normal normal normal 22px/26px AppleSDGothicNeoEB00;
+    color: #232328;
+    opacity: 1;
+
+
+}
+
+.footer {
+    padding: 35px 0;
+    border-top: 1px solid #d9d9d9;
+    font-size: 12px;
+    background-color: #f1f1f1;
+    text-align: center;
+}
+
+.menu {
+    overflow: hidden;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+
+}
+
+.menu li {
+    float: left;
+    width: 20%
+}
+
+.menu li:nth-child(2) {
+    width: 20%;
+}
+
+.menu .tab_day {
+    display: block;
+    padding: 30px 150px;
+    text-align: -webkit-left;
+    color: #0f0f10;
+    margin-top: 10px;
+
+}
+
+
+.menu .tab_day.on {
+    width: 250px;
+    height: 10px;
+    /* UI Properties */
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    opacity: 1;
+    font-size: 17px;
+}
+
+.menu .tab_day.logo {
+    width: 106px;
+    padding: 17px 50px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    opacity: 3;
+    margin-left: 100px;
+    font-size: 25px;
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: #FCD94B;
+    text-decoration-width: 106px;
+    font-family: 'Do Hyeon', sans-serif;
+
+}
+
+
+.hmenu {
+    overflow: hidden;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+
+}
+
+.hmenu li {
+    float: left;
+    width: 10%
+}
+
+
+.hmenu .tab_day {
+    display: block;
+    padding: 7px 130px;
+    text-align: left;
+    color: #0f0f10;
+
+}
+
+.hmenu .tab_day.on {
+    width: 100px;
+    text-align: left;
+    opacity: 1;
+    font-size: 16px;
+}
+
+.card {
+    border-radius: 2px;
+    display: inline-block;
+    margin: 1rem;
+    position: center;
+    top: 239px;
+    left: 120px;
+    width: 1200px;
+    height: 500px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 1px 4px #00000029;
+    opacity: 1;
+}
+
+
+.scard {
+    border-radius: 2px;
+    display: inline-block;
+    margin: 1rem;
+    position: fixed;
+    padding-top: 5px;
+    left: 103px;
+    width: 83.5%;
+    height: 20px;
+    background-color: #f1f1f1;
+    opacity: 1;
+    font-family: 'Do Hyeon', sans-serif;
+
+}
+
+.tcard {
+    border-radius: 2px;
+    display: inline-block;
+    margin: 1rem;
+    position: fixed;
+    padding-top: 5px;
+    width: 10%;
+    height: 20px;
+    border-top: groove #FCD94B 0.8px;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    box-shadow: 2px 1px 4px #00000029;
+    opacity: 1;
+    font-family: 'Do Hyeon', sans-serif;
+
+}
+
+.dcard {
+    border-radius: 2px;
+    display: inline-block;
+    position: fixed;
+    padding-top: 5px;
+    margin-top: 16px;
+    margin-left: 160px;
+    width: 10%;
+    height: 20px;
+    background-color: #f1f1f1;
+    opacity: 1;
+    font-family: 'Do Hyeon', sans-serif;
+
+}

@@ -1,32 +1,27 @@
-import * as React from 'react';
-import PostIcon from '@material-ui/icons/Book';
-import UserIcon from '@material-ui/icons/Group';
-import { Admin, Resource, ListGuesser } from 'react-admin';
-import jsonServerProvider from 'ra-data-json-server';
+import React, {Component} from 'react';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 
-import { PostList, PostEdit, PostCreate, PostShow } from './posts';
-import { UserList } from './users';
-import Dashboard from './Dashboard';
-import authProvider from './authProvider';
+import './App.css';
 
-const App = () => (
-    <Admin
-        dataProvider={jsonServerProvider(
-            'https://jsonplaceholder.typicode.com'
-        )}
-        authProvider={authProvider}
-        dashboard={Dashboard}
-    >
-        <Resource
-            name="posts"
-            icon={PostIcon}
-            list={PostList}
-            edit={PostEdit}
-            create={PostCreate}
-            show={PostShow}
-        />
-        <Resource name="users" icon={UserIcon} list={UserList} />
-        <Resource name="comments" list={ListGuesser} />
-    </Admin>
-);
+import Main from "./pages/Main";
+import Search from "./pages/Search";
+import Crud from "./pages/Crud";
+import Login from "./pages/Login";
+
+
+class App extends Component {
+    render() {
+        return (
+            <Router>
+                <div>
+                    <Route exact path="/" component={Main}/>
+                    <Route exact path="/search" component={Search}/>
+                    <Route exact path="/crud" component={Crud}/>
+                    <Route exact path="/login" component={Login}/>
+                </div>
+            </Router>
+        );
+    }
+}
+
 export default App;

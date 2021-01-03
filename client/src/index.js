@@ -1,8 +1,10 @@
-import * as React from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
+import ApolloProvider from './ApolloProvider';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+
+ReactDOM.render(ApolloProvider, document.getElementById('root'));
 registerServiceWorker();
