@@ -21,7 +21,7 @@ public class User {
     @Column(name = "user_no")
     private int no; // 사용자 고유번호
 
-    @Column(name = "user_email", length = 45, nullable = false)
+    @Column(name = "user_email", length = 45, nullable = false, unique = true)
     private String email; // 사용자 이메일
 
     @Column(name = "user_pw", length = 70)
