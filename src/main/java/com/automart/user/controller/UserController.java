@@ -134,7 +134,6 @@ public class UserController {
         /* access token을 통해 userEmail을 찾아 redis에 저장된 refresh token을 삭제한다.*/
         try {
             userEmail = userPrincipal.getEmail();
-//            userEmail = jwtTokenProvider.getUserEmail(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
         } catch (InvalidTokenException e) {
             log.error("userEmail이 유효한 토큰에 존재하지 않음.");
         }
