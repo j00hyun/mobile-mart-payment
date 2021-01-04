@@ -11,7 +11,7 @@ const Menu = (props) => (
             <Link to="/" className={'tab_day on'}> 재고 관리 </Link>
         </li>
         <li>
-            <Link to="/search" className={'tab_day on'}> 매출 관리 </Link>
+            <Link to="/crud" className={'tab_day on'}> 매출 관리 </Link>
         </li>
         <li>
             <Link to="/crud" className={'tab_day on'}>주문 내역</Link>

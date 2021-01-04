@@ -2,7 +2,8 @@ import React from 'react';
 import App from './App';
 import {ApolloClient, ApolloLink} from 'apollo-boost'
 import {onError} from 'apollo-link-error'
-
+import {ThemeProvider} from 'react-jss';
+import Theme from '../src/route/resources/theme'
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {createHttpLink} from 'apollo-link-http';
 import {ApolloProvider} from '@apollo/react-hooks';
@@ -28,7 +29,13 @@ const client = new ApolloClient({
 
 
 export default (
-    <ApolloProvider client={client}>
-        <App/>
-    </ApolloProvider>
+    <ThemeProvider theme={Theme}>
+        <ApolloProvider client={client}>
+
+            <App/>
+
+        </ApolloProvider>
+    </ThemeProvider>
+
+
 );

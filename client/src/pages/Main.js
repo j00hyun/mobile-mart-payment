@@ -5,8 +5,8 @@ import Menu from "../layout/Menu";
 import Product from "../layout/Product";
 import {useQuery} from "@apollo/react-hooks";
 import {FETCH_POSTS_QUERY} from "../util/graphql";
-import BoardTable from "../components/BoardTable";
 import HeaderMenu from "../layout/HeaderMenu";
+import Searchbar from "../components/Searchbar";
 
 function Main() {
 
@@ -21,6 +21,7 @@ function Main() {
         <div>
             <Menu/>
             <Header/>
+            <Searchbar/>
             <HeaderMenu/>
             <Product/>
         </div>
