@@ -41,7 +41,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .select(). // ApiSelectorBuilder 를 생성
                         apis(withMethodAnnotation(ApiOperation.class))
                 .build();
-
     }
 
     /**
@@ -62,5 +61,4 @@ public class SwaggerConfig implements WebMvcConfigurer {
     private ApiKey apiKey() {
         return new ApiKey("jwtToken", "Authorization", "header");
     }
-
 }

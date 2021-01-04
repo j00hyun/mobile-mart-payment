@@ -1,9 +1,7 @@
 package com.automart.config;
 
 import com.automart.security.UserPrincipal;
-import com.automart.security.jwt.JwtBasicAuthenticationFilter;
-import com.automart.security.jwt.JwtCommonAuthorizationFilter;
-import com.automart.security.jwt.JwtTokenProvider;
+import com.automart.security.jwt.*;
 import com.automart.security.oauth2.CustomOAuth2UserService;
 import com.automart.user.repository.UserRepository;
 import com.automart.user.service.UserService;
@@ -27,12 +25,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -101,6 +101,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                        .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근가능 (모든 컨트롤러 작동 여부 확인 뒤 주석 해제하고 다시 테스트 할 것!)
                     .anyRequest().authenticated()
                     .and()
+                .exceptionHandling()
+                    .authenticationEntryPoint(new CustomAuthenticationEntryPoint()) // access 토큰 만료 예외 처리
+                    .and()
                 // oauth2 login 설정
                 .oauth2Login()
                     .userInfoEndpoint() // 로그인시 사용할 User Service를 정의
@@ -152,6 +155,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
-
 }

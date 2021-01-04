@@ -28,6 +28,7 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	implementation 'javax.validation:validation-api'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'com.google.code.gson:gson:2.8.6'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'

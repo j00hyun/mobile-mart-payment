@@ -63,32 +63,33 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
     private Authentication getUsernamePasswordAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization")
                 .replace("Bearer", "");
+        String userEmail = null;
+        try {
 
-        // 만약 token이 존재한다면, token을 통해 user의 이메일을 얻는다.
-        if (token != null) {
-            String userEmail = jwtTokenProvider.getUserEmail(token, JwtTokenProvider.TokenType.ACCESS_TOKEN); // users의 email값
-            if (jwtTokenProvider.validateToken(token)) { // 유효한 토큰이라면
-                // 만약 user의 이메일이 존재한다면, DB에서 해당 유저를 찾고 권한을 부여한다.
-                if (userEmail != null) {
+            // 만약 token이 존재한다면, token을 통해 user의 이메일을 얻는다.
+            // 이때, token이 만료됐으면 ExpiredTokenResolver로 이동한다.
+            userEmail = jwtTokenProvider.getUserEmail(token, JwtTokenProvider.TokenType.ACCESS_TOKEN); // users의 email값
+            Optional<User> oUser = userRepository.findByEmail(userEmail);
+            User user = oUser.get();
+            UserPrincipal principal = UserPrincipal.create(user);
 
-                    Optional<User> oUser = userRepository.findByEmail(userEmail);
-                    User user = oUser.get();
-                    UserPrincipal principal = UserPrincipal.create(user);
+            // OAuth 인지 일반 로그인인지 구분할 필요가 없음. 왜냐하면 password를 Authentication이 가질 필요가 없으니!!
+            // JWT가 로그인 프로세스를 가로채서 인증다 해버림. (OAuth2.0이든 그냥 일반 로그인 이든)
 
-                    // OAuth 인지 일반 로그인인지 구분할 필요가 없음. 왜냐하면 password를 Authentication이 가질 필요가 없으니!!
-                    // JWT가 로그인 프로세스를 가로채서 인증다 해버림. (OAuth2.0이든 그냥 일반 로그인 이든)
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return authentication;
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    return authentication;
-                }
+        } catch (ExpiredJwtException e) {
+
+            userEmail = e.getClaims().getSubject();
+
+            if (redisTemplate.opsForValue().get(userEmail) != null) { // refresh토큰만 살아있는 경우(access토큰이 기간만 만료된것일 때)
+                String accessToken = jwtTokenProvider.createToken(userEmail, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+                request.setAttribute("token", accessToken);
             }
-//            else {
-//                if (redisTemplate.opsForValue().get(userEmail) != null) { // refresh토큰만 살아있는 경우(access토큰이 기간만 만료된것일 때)
-//                    // access token을 발급해준다.
-//                }
-//            }
+
         }
         return null;
     }
