@@ -100,7 +100,6 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/varifyPassword")
     public ResponseEntity<Boolean> verifyPassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                  @RequestHeader("Authorization") String token,
                                                   @RequestParam String userPassword) {
         User user = getCurrentUser(userPrincipal);
 
@@ -118,24 +117,24 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping(value = "/changePassword")
     public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                               @RequestHeader("Authorization") String token,
                                                           @RequestParam String userPassword) {
         userService.changePassword(userPrincipal.getNo(), userPassword);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @ApiOperation(value = "로그아웃", notes = "로그인된 계정을 로그아웃한다.")//, authorizations = { @Authorization(value = "jwtToken")})
+    @ApiOperation(value = "로그아웃", notes = "로그인된 계정을 로그아웃한다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponse(code = 200, message = "로그아웃 되었습니다.")
     //@PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/logout")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                        HttpServletRequest request) {
         String accessToken = jwtTokenProvider.extractToken(request);
         String userEmail = null;
 
         /* access token을 통해 userEmail을 찾아 redis에 저장된 refresh token을 삭제한다.*/
         try {
-            userEmail = jwtTokenProvider.getUserEmail(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+            userEmail = userPrincipal.getEmail();
+//            userEmail = jwtTokenProvider.getUserEmail(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
         } catch (InvalidTokenException e) {
             log.error("userEmail이 유효한 토큰에 존재하지 않음.");
         }
