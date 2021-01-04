@@ -100,35 +100,37 @@ function SimpleDialog(props) {
 
 	return (
 		<div>
-		<Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-		<DialogTitle id="customized-dialog-title" onClose={handleClose}>
+			<Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+			<DialogTitle id="customized-dialog-title" onClose={handleClose}>
 
-		</DialogTitle>
-		<DialogContent >
-		<div class="container-fluid">
-		<div class="row">
-		<div class="col-md-12">
-		<div  >
-		<div style={{
-			float:"left"
-		}}>
-		<label for="field_rest">
-		<span>남은 수량  </span>
-		</label>
-		<input type="text" class="form-control" id="field_rest" />
-		<img alt="nobrand_sample" src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044" />
-		</div>
-		<div style={{
-			float:"left"
-		}}>
-		<form role="form">
-		<div class="form-group">
-		<p> 치즈크림케익 </p>
+			</DialogTitle>
+			<DialogContent >
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-12">
+					<div style={{
+						display:"flex",
+						float:"left"
+						}}>
+							<div style={{
+								display:"flex",
+								float:"left"
+								}}>
+
+								<img alt="nobrand_sample" src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044" width="300" height="300"/>
+							</div>
+							<div style={{
+								display:"flex",
+								float:"left"
+								}}>
+								<form role="form">
+								<div class="form-group">
+									<p> 치즈크림케익 </p>
 		<h5>.</h5>
 		<label for="field_rest">
 		<span>남은 수량 </span>
 		</label>
-		<TextField id="filled-basic"  variant="filled" size="small"/>
+		<TextField id="filled-basic"  variant="filled" size="small" width="200" height="50"/>
 		<label for="field_auto">
 		<span>자동 주문 </span>
 		</label>
@@ -177,68 +179,12 @@ function SimpleDialog(props) {
 			borderRadius: 5,
 				backgroundColor: "#FFCC33",
 				padding: "9px 18px",
-				fontSize: "14px"
+				fontSize: "14px",
+				float:"right"
 		}}>
 		완료
 		</Button>
 		</form>
-		<table >
-
-		<thead>
-		</thead>
-		<tbody>
-
-		<tr class="table_soo">
-		<td rowspan="7"> <img alt="nobrand_sample" src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044" width="250" height="250"/></td>
-		<td> <p> 치즈크림케익 </p></td>
-		</tr>
-
-		<tr bgcolor ="#FFFFFF">
-
-		<td>4 </td>
-		</tr>
-
-		<tr>
-
-		<td>							<div><label for="field_last">
-		<span>마지막 입고 </span>
-		</label>
-		<TextField id="field_last"  variant="filled" size="small"/></div>
-		</td>
-		</tr>
-
-		<tr>
-
-		<td> 							<label for="field_location">
-		<span>상품 위치  </span>  
-		</label>
-		<input type="text" id="field_location"  />
-		</td>
-		</tr>
-
-		<tr>
-
-		<td> 1</td>
-		</tr>
-		<tr>
-
-		<td> 3</td>
-		</tr>
-
-		<tr>
-
-		<td align="right"> <Button     style={{
-			borderRadius: 5,
-				backgroundColor: "#FFCC33",
-				padding: "9px 18px",
-				fontSize: "14px"
-		}}>
-		완료
-		</Button></td>
-		</tr>
-
-		</tbody>
-		</table>
 
 		</div>
 		</div>
