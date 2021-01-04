@@ -118,7 +118,7 @@ function TodayTrendsComponent() {
             >
                 <Row wrap horizontal='space-between'>
                     <Column>
-                        <span className={classes.graphTitle}>매출추이</span>
+                        <span className={classes.graphTitle}>매출 추이</span>
                         <span
                             className={classes.graphSubtitle}>{renderLegend(theme.color.lightBlue, '총 매출액')}{renderLegend(theme.color.yellow, '순수익')}</span>
                     </Column>
@@ -136,7 +136,7 @@ function TodayTrendsComponent() {
             <Column className={classes.separator} breakpoints={{1024: {display: 'none'}}}>
                 <div/>
             </Column>
-            <Column flexGrow={3} flexBasis='342px' breakpoints={{1024: classes.stats}}>
+            <Column flexGrow={2} flexBasis='300px' breakpoints={{1024: classes.stats}}>
                 {renderStat('총 매출액', '970,403 원')}
                 {renderStat('순수익', '560,302 원')}
             </Column>

@@ -14,7 +14,7 @@ const Menu = (props) => (
             <Link to="/crud" className={'tab_day on'}> 매출 관리 </Link>
         </li>
         <li>
-            <Link to="/crud" className={'tab_day on'}>주문 내역</Link>
+            <Link to="/search" className={'tab_day on'}>주문 내역</Link>
         </li>
 
     </ul>
