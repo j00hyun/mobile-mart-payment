@@ -1,11 +1,13 @@
 package com.automart.user.controller;
 
 import com.automart.advice.exception.InvalidTokenException;
+import com.automart.advice.exception.SMSException;
 import com.automart.user.dto.AuthResponseDto;
 import com.automart.advice.exception.NotFoundUserException;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
+import com.automart.user.dto.FindRequestDto;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import com.automart.user.service.UserService;
@@ -22,10 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-@Api(tags = {"2. User"})
+@Api(tags = {"2. User Management"})
 @RestController
 @Slf4j
 @RequestMapping("/users")
@@ -45,6 +48,46 @@ public class UserController {
 
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+
+
+    @ApiOperation(value = "7 이메일 찾기", notes = "해당 회원의 이메일 주소를 찾는다.")
+    @ApiResponses({
+            @ApiResponse(code = 302, message = "일치하는 회원이 존재합니다."),
+            @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
+    })
+    @PostMapping("/find/email")
+    public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException {
+        User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
+        return ResponseEntity.status(HttpStatus.OK).body(user.getEmail());
+    }
+
+
+    @ApiOperation(value = "8 비밀번호 찾기 시 핸드폰 본인인증", notes = "비밀번호를 찾기 위해 본인인증 메세지를 전송한다.")
+    @ApiImplicitParam(name = "phoneNo", value = "인증번호를 전송할 핸드폰번호", required = true, dataType = "string", defaultValue = "01012345678")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "전송된 인증번호 반환"),
+            @ApiResponse(code = 500, message = "메세지 전송 실패"),
+    })
+    @PostMapping("/find/valid/phone")
+    public ResponseEntity<Integer> validPhoneForFindPw(@RequestParam String phoneNo) throws SMSException {
+        int validNum = userService.validatePhone(phoneNo);
+        return ResponseEntity.status(HttpStatus.OK).body(validNum);
+    }
+
+
+    @ApiOperation(value = "8 새 비밀번호 발급", notes = "해당 회원이 존재하면 새 비밀번호를 문자로 발급한다.")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "새 비밀번호 발급 후 전송 완료"),
+            @ApiResponse(code = 500, message = "메세지 전송 실패"),
+            @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
+    })
+    @PostMapping("/find/reissue/password")
+    public ResponseEntity<Void> findPassword(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException, SMSException {
+        User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
+        String newPassword = userService.generateTempPw(requestDto.getPhone());
+        userService.changePassword(user.getNo(), newPassword);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
 
     @ApiOperation(value = "내정보 조회", notes = "현재 인증된 유저의 정보를 가져온다.", authorizations = { @Authorization(value = "jwtToken")})
@@ -99,6 +142,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
             @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class)
     })
+
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/varifyPassword")
     public ResponseEntity<Boolean> verifyPassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -125,41 +169,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @ApiOperation(value = "로그아웃", notes = "로그인된 계정을 로그아웃한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiResponse(code = 200, message = "로그아웃 되었습니다.")
-    //@PreAuthorize("hasRole('USER')")
-    @PostMapping(value = "/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                       HttpServletRequest request) {
-        String accessToken = jwtTokenProvider.extractToken(request);
-        String userEmail = null;
-
-        /* access token을 통해 userEmail을 찾아 redis에 저장된 refresh token을 삭제한다.*/
-        try {
-            userEmail = userPrincipal.getEmail();
-        } catch (InvalidTokenException e) {
-            log.error("userEmail이 유효한 토큰에 존재하지 않음.");
-        }
-
-        try {
-            if (redisTemplate.opsForValue().get(userEmail) != null) {
-                redisTemplate.delete(userEmail);
-            }
-        } catch (IllegalArgumentException e) {
-            redisTemplate.delete(userEmail);
-        }
-
-        /* access token이 유효한 토큰인 경우 더 이상 사용하지 못하게 블랙리스트에 등록 */
-        if (jwtTokenProvider.validateToken(accessToken)) {
-            Date expirationDate = jwtTokenProvider.getExpirationDate(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
-            redisTemplate.opsForValue().set(
-                    accessToken, true,
-                    expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
-            log.info("redis value : " + redisTemplate.opsForValue().get(accessToken));
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 
 //    // access 토큰이 만료되었으나 refresh 토큰이 살아있는 경우 재발급(그러나 필터통과를 못함(?)..)
 //    @ApiOperation(value = "토큰 만료", notes = "refresh 토큰을 이용하여 access 토큰을 재생성한다.", authorizations = { @Authorization(value = "jwtToken")})

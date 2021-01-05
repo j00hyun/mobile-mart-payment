@@ -17,7 +17,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
-@Api(tags = {"1. Cart"})
+@Api(tags = {"3. Cart"})
 @RestController
 @RequestMapping("/carts")
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class CartController {
     private final CartService cartService;
 
 
-    @ApiOperation(value = "장바구니 상품 추가", notes = "4-2 상품의 바코드를 인식하면 장바구니에 상품이 담깁니다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiOperation(value = "4-2 장바구니 상품 추가", notes = "상품의 바코드를 인식하면 장바구니에 상품이 담깁니다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "productCode", value = "추가하려는 상품의 바코드 번호", required = true, dataType = "int", defaultValue = "12345")
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 장바구니에 상품이 추가되었습니다."),
@@ -43,7 +43,7 @@ public class CartController {
     }
 
 
-    @ApiOperation(value = "장바구니 조회", notes = "4-3 장바구니 목록이 반환됩니다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiOperation(value = "4-3 장바구니 조회", notes = "장바구니 목록이 반환됩니다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 장바구니 목록이 반환되었습니다."),
             @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class),
@@ -57,7 +57,7 @@ public class CartController {
     }
 
 
-    @ApiOperation(value = "장바구니 상품 개수 증가", notes = "4-3 장바구니 화면에서 해당 상품의 개수 '+' 버튼을 누르면 장바구니의 상품 개수가 1개 증가됩니다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiOperation(value = "4-3 장바구니 상품 개수 증가", notes = "장바구니 화면에서 해당 상품의 개수 '+' 버튼을 누르면 장바구니의 상품 개수가 1개 증가됩니다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "productNo", value = "개수를 증가하려는 제품의 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 장바구니의 상품 개수가 증가되었습니다."),
@@ -74,7 +74,7 @@ public class CartController {
     }
 
 
-    @ApiOperation(value = "장바구니 상품 개수 감소", notes = "4-3 장바구니 화면에서 해당 상품의 개수 '-' 버튼을 누르면 장바구니의 상품 개수가 1개 감소됩니다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiOperation(value = "4-3 장바구니 상품 개수 감소", notes = "장바구니 화면에서 해당 상품의 개수 '-' 버튼을 누르면 장바구니의 상품 개수가 1개 감소됩니다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "productNo", value = "개수를 감소하려는 제품의 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 장바구니의 상품 개수가 감소되었습니다."),
@@ -90,7 +90,7 @@ public class CartController {
     }
 
 
-    @ApiOperation(value = "장바구니 상품 삭제", notes = "4-3 장바구니 화면에서 해당 상품의 '삭제하기' 버튼을 누르면 장바구니에서 해당 상품이 삭제됩니다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiOperation(value = "4-3 장바구니 상품 삭제", notes = "장바구니 화면에서 해당 상품의 '삭제하기' 버튼을 누르면 장바구니에서 해당 상품이 삭제됩니다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "productNo", value = "삭제하려는 제품의 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 장바구니의 상품이 삭제되었습니다."),

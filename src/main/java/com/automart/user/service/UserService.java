@@ -141,6 +141,18 @@ public class UserService implements UserDetailsService {
     }
 
     /**
+     * 이름과 휴대폰 번호로 유저 정보 찾기
+     * @param name : 이름
+     * @param phone : 휴대폰 번호
+     */
+    public User findUserByNameAndTel(String name, String phone) throws NotFoundUserException {
+        User user = userRepository.findByNameAndTel(name, phone)
+                .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
+
+        return user;
+    }
+
+    /**
      * 회원 탈퇴
      * @param token jwt 토큰
      */
@@ -191,4 +203,5 @@ public class UserService implements UserDetailsService {
         // UserPrincipal은 Spring Security의 UserDetails를 implements 하였으므로, 이제 Spring Security는 User 클래스를 사용해 Authentication을 사용 할수 있게 되었다.
         return UserPrincipal.create(user);
     }
+
 }
