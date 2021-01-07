@@ -27,6 +27,9 @@ public class User {
     @Column(name = "user_pw", length = 70)
     private String password; // 사용자 비밀번호
 
+    @Column(name = "user_pw_status", columnDefinition = "boolean default false")
+    private boolean tempPassword; // 사용자 임시비밀번호 여부
+
     @Column(name = "user_tel", length = 45)
     private String tel; // 사용자 전화번호
 
@@ -52,9 +55,10 @@ public class User {
     private List<String> roles = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, String tel, String name, AuthProvider snsType, String snsKey, List roles) {
+    public User(String email, String password, boolean tempPassword, String tel, String name, AuthProvider snsType, String snsKey, List roles) {
         this.email = email;
         this.password = password;
+        this.tempPassword = tempPassword;
         this.tel = tel;
         this.name = name;
         this.snsType = snsType;
@@ -65,6 +69,20 @@ public class User {
     // 비밀번호 변경
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    // 임시 비밀번호 여부 True로 변경
+    public void makeTrueTempPw() {
+        if(!this.isTempPassword()) {
+            this.tempPassword = true;
+        }
+    }
+
+    // 임시 비밀번호 여부 False로 변경
+    public void makeFalseTempPw() {
+        if(this.isTempPassword()) {
+            this.tempPassword = false;
+        }
     }
 
     // 소셜로그인 유저 이메일 변겅

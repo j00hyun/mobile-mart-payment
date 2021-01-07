@@ -102,7 +102,7 @@ public class UserService implements UserDetailsService {
      * @return : 유저 정보
      */
     @Transactional
-    public void changePassword(int no, String password) throws NotFoundUserException {
+    public User changePassword(int no, String password) throws NotFoundUserException {
         log.info("비밀번호 변겅");
 
         User user = userRepository.findByNo(no)
@@ -110,20 +110,25 @@ public class UserService implements UserDetailsService {
 
         user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
         userRepository.save(user);
+
+        return user;
     }
 
     /**
      * 아이디, 비밀번호 올바른지 확인
      * @param email : 이메일 주소
      * @param password : 비밀번호
+     * @return : 해당 유저 정보
      */
-    public void checkLogIn(String email, String password) throws NotFoundUserException {
+    public User checkLogIn(String email, String password) throws NotFoundUserException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
         if(!passwordEncoder.matches(password, user.getPassword())) {
             throw new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
+
+        return user;
     }
 
     /**

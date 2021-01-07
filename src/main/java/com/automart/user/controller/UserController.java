@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -86,6 +87,8 @@ public class UserController {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
         String newPassword = userService.generateTempPw(requestDto.getPhone());
         userService.changePassword(user.getNo(), newPassword);
+        user.makeTrueTempPw();
+        userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -136,7 +139,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN));
     }
 
-    @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
+    /*@ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "userPassword", value = "해당 회원의 현재 비밀번호", required = true, dataType = "string", defaultValue = "oldpassword")
     @ApiResponses({
             @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
@@ -153,9 +156,9 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(false);
 
         return ResponseEntity.status(HttpStatus.OK).body(true);
-    }
+    }*/
 
-    @ApiOperation(value = "비밀번호 변경", notes = "회원의 비밀번호를 변경한다.", authorizations = { @Authorization(value = "jwtToken")})
+    /*@ApiOperation(value = "비밀번호 변경", notes = "회원의 비밀번호를 변경한다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "userPassword", value = "변경할 새로운 비밀번호", required = true, dataType = "string", defaultValue = "newpassword")
     @ApiResponses({
             @ApiResponse(code = 200, message = "성공적으로 비밀번호가 변경되었습니다. \n변경된 비밀번호로 다시 로그인해주세요. \nPOST: /logout이 이후에 필요"),
@@ -167,7 +170,7 @@ public class UserController {
                                                           @RequestParam String userPassword) {
         userService.changePassword(userPrincipal.getNo(), userPassword);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
+    }*/
 
 
 //    // access 토큰이 만료되었으나 refresh 토큰이 살아있는 경우 재발급(그러나 필터통과를 못함(?)..)
