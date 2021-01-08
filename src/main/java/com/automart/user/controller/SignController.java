@@ -120,10 +120,12 @@ public class SignController {
     @ApiOperation(value = "3-2 로컬 회원가입", notes = "로컬 회원가입을 한다")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 회원가입이 완료되었습니다."),
-            @ApiResponse(code = 406, message = "회원가입에 실패하였습니다.")
+            @ApiResponse(code = 406, message = "이메일 또는 핸드폰번호가 중복되어 회원가입에 실패하였습니다.")
     })
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody SignUpRequestDto requestDto) throws ForbiddenSignUpException{
+        userService.checkDuplicateEmail(requestDto.getEmail());
+        userService.checkDuplicateTel(requestDto.getTel());
 
         User user = User.builder()
                 .email(requestDto.getEmail())

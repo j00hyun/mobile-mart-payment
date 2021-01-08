@@ -27,7 +27,7 @@ public class User {
     @Column(name = "user_pw", length = 70)
     private String password; // 사용자 비밀번호
 
-    @Column(name = "user_pw_status", columnDefinition = "boolean default false")
+    @Column(name = "user_temp_pw", columnDefinition = "boolean default false")
     private boolean tempPassword; // 사용자 임시비밀번호 여부
 
     @Column(name = "user_tel", length = 45)
