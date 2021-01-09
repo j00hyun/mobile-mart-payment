@@ -25,14 +25,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -85,6 +83,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // 로그인 성공시 invoke할 Handler를 정의
+        // 로그인 실패시 invoke할 Handler를 정의
         http
                 .cors() // cors 허용
                     .and()
@@ -109,28 +109,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .userInfoEndpoint() // 로그인시 사용할 User Service를 정의
                         .userService(customOAuth2UserService)
                         .and()
-                    .successHandler(new AuthenticationSuccessHandler() {
+                    .successHandler((request, response, authentication) -> {
 
-                        // 로그인 성공시 invoke할 Handler를 정의
-                        @Override
-                        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-                            String accessToken = tokenProvider.generateAccessToken(userPrincipal);
-                            String refreshToken = tokenProvider.generateRefreshToken(userPrincipal); // redis에 담아야함
-                            response.addHeader("Authorization", "Bearer " +  accessToken);
-                            String targetUrl = "/"; // 로그인 후 이동할 주소
-                            RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
-                            dis.forward(request, response);
-                        }
+                        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                        String accessToken = tokenProvider.generateAccessToken(userPrincipal);
+                        String refreshToken = tokenProvider.generateRefreshToken(userPrincipal); // redis에 담아야함
+                        response.addHeader("Authorization", "Bearer " +  accessToken);
+                        response.setStatus(HttpServletResponse.SC_OK);
+//                            String targetUrl = "/"; // 로그인 후 이동할 주소
+//                            RequestDispatcher dis = request.getRequestDispatcher(targetUrl);
+//                            dis.forward(request, response);
                     })
 
-                    .failureHandler(new AuthenticationFailureHandler() {
+                    .failureHandler((request, response, exception) -> {
 
-                        // 로그인 실패시 invoke할 Handler를 정의
-                        @Override
-                        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                        }
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                     });
     }
 
