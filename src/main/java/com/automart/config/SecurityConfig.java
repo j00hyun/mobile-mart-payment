@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -48,21 +49,23 @@ import java.util.List;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 인증시 사용할 custom User Service
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private JwtTokenProvider tokenProvider;
 
-    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    public SecurityConfig(@Lazy UserService userService, CustomOAuth2UserService customOAuth2UserService, UserRepository userRepository, JwtTokenProvider tokenProvider, RedisTemplate<String, Object> redisTemplate) {
+	this.userService = userService;
+	this.customOAuth2UserService = customOAuth2UserService;
+	this.userRepository = userRepository;
+	this.tokenProvider = tokenProvider;
+	this.redisTemplate = redisTemplate;
+    }
 
     /*
      * 다른 AuthorizationServer나 ResourceServer가 참조할 수 있도록 오버라이딩 해서 빈으로 등록
