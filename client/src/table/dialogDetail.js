@@ -1,8 +1,5 @@
 import React from 'react';
-import './table.css';
-import {red} from "@material-ui/core/colors";
-
-import DialogDetail from './dialogDetail'
+import './dialogDetail.css';
 
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,7 +29,6 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-
 const emails = ['username@gmail.com', 'user02@gmail.com'];
 
 const useStyles = makeStyles({
@@ -220,9 +216,7 @@ SimpleDialog.propTypes = {
 	open: PropTypes.bool.isRequired,
 	selectedValue: PropTypes.string.isRequired,
 };
-
-
-function BoardTable() {
+function DialogDetail() {
 	const [open, setOpen] = React.useState(false);
 	const [selectedValue, setSelectedValue] = React.useState(emails[1]);
 
@@ -235,76 +229,14 @@ function BoardTable() {
 		setSelectedValue(value);
 	};
 	return (
-
-
-		<table border bgcolor="#FFFFFF">
-
-		<thead>
-		<tr>
-		<th scope="col">이미지</th>
-		<th scope="col">품명</th>
-		<th scope="col">남은 수량</th>
-		<th scope="col">마지막 입고</th>
-		<th scope="col">위치</th>
-		<th scope="col">구매가</th>
-		<th scope="col">판매가</th>
-
-
-		</tr>
-		</thead>
-		<tbody>
+<div>
 		<SimpleDialog selectedValue={selectedValue} open={open} onClose={handleClose}/>
 
-		<tr style={{marginBottom: 20}}>
-		<td><button onClick={handleClickOpen}><img
+		<button onClick={handleClickOpen}><img
 		src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044"
-		width="70px"/></button></td>
-		<td>치즈크림케익</td>
-		<td className="yellow">32개</td>
-		<td>2020.12.10</td>
-		<td>A열 4번</td>
-		<td className="red">20000원</td>
-		<td className="blue">30000원</td>
-		</tr>
-		<tr style={{marginBottom: 20}}>
-		<td> <DialogDetail/></td>
-		<td>치즈크림케익</td>
-		<td className="yellow">32개</td>
-		<td>2020.12.10</td>
-		<td>A열 4번</td>
-		<td className="red">20000원</td>
-		<td className="blue">30000원</td>
-		</tr>
-		<tr style={{marginBottom: 20}}>
-		<td><img
-		src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044"
-		width="70px"/></td>
-		<td>치즈크림케익</td>
-		<td className="yellow">32개</td>
-		<td>2020.12.10</td>
-		<td>A열 5번</td>
-		<td className="red">20000원</td>
-		<td className="blue">30000원</td>
-		</tr>
-		<tr style={{marginBottom: 20}}>
-		<td><img
-		src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044"
-		width="70px"/></td>
-		<td>치즈크림케익</td>
-		<td className="yellow">32개</td>
-		<td>2020.12.10</td>
-		<td>A열 4번</td>
-		<td className="red">20000원</td>
-		<td className="blue">30000원</td>
-		</tr>
-
-
-		</tbody>
-
-
-		</table>
-
+		width="70px"/></button>
+</div>
 	)
 }
 
-export default BoardTable;
+export default DialogDetail

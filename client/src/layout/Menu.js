@@ -1,5 +1,7 @@
-import React from 'react';
 import {Link} from "react-router-dom";
+import Order from "./orderDialog";
+import React from 'react';
+import ReactDOM from 'react-dom'; 
 
 const Menu = (props) => (
     <ul className="menu">
@@ -14,7 +16,7 @@ const Menu = (props) => (
             <Link to="/search" className={'tab_day on'}> 매출 관리 </Link>
         </li>
         <li>
-            <Link to="/crud" className={'tab_day on'}>주문 내역</Link>
+			<Order/>
         </li>
 
     </ul>
