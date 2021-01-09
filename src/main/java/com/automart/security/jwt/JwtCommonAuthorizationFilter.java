@@ -87,6 +87,7 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
 
             if (redisTemplate.opsForValue().get(userEmail) != null) { // refresh토큰만 살아있는 경우(access토큰이 기간만 만료된것일 때)
                 String accessToken = jwtTokenProvider.createToken(userEmail, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+                request.setAttribute("exception", "EXPIRED_TOKEN");
                 request.setAttribute("token", accessToken);
             }
 
