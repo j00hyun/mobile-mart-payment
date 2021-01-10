@@ -22,11 +22,11 @@ const useStyles = makeStyles((theme) => ({
      display: 'flex',
      flexDirection: 'column',
      margin: 'auto',
-     width: 'fit-content',
+     width: 'fit-condent',
    },
  formControl: {
      marginTop: theme.spacing(2),
-     minWidth: 300,
+     minWidth: 500,
    },
  formControlLabel: {
      marginTop: theme.spacing(1),
@@ -36,8 +36,6 @@ const useStyles = makeStyles((theme) => ({
 export default function MaxWidthDialog() {
 const classes = useStyles();
 const [open, setOpen] = React.useState(false);
-const [fullWidth, setFullWidth] = React.useState(true);
-const [maxWidth, setMaxWidth] = React.useState('sm');
 
 const handleClickOpen = () => {
 setOpen(true);
@@ -47,63 +45,43 @@ const handleClose = () => {
 setOpen(false);
 };
 
-const handleMaxWidthChange = (event) => {
-setMaxWidth(event.target.value);
-};
 
-const handleFullWidthChange = (event) => {
-setFullWidth(event.target.checked);
+const customContentStyle = {
+width: "800px",
+	   float: "right",
+		   margin:" 0px 500px 0px 0px"
+				
 };
 
 return (
-<React.Fragment>
+		<React.Fragment>
 <Link onClick = {handleClickOpen} className={'tab_day on'}>
 주문내역
 </Link>
 <Dialog
-fullWidth={fullWidth}
-maxWidth={maxWidth}
+fullWidth={true}
+maxWidth={'sm'}
 open={open}
+float={'right'}
 onClose={handleClose}
 aria-labelledby="max-width-dialog-title"
+contentStyle={customContentStyle}
 >
 <DialogTitle>
-주문내역
+<div>
+주문내역&nbsp;&nbsp;&nbsp;&nbsp;
   <TextField id="standard-basic" label="주문날짜, 물품검색" />
  <IconButton type="submit" className={classes.iconButton} aria-label="search">
         <SearchIcon />
       </IconButton>
+	  </div>
 </DialogTitle>
 
 <DialogContent>
-<p>ㆍ12월</p>
+<h4>ㆍ12월</h4>
+<br/>
+<h4>ㆍ11월</h4>
 
-<form className={classes.form} noValidate>
-<FormControl className={classes.formControl}>
-<InputLabel htmlFor="max-width">maxWidth</InputLabel>
-<Select
-autoFocus
-value={maxWidth}
-onChange={handleMaxWidthChange}
-inputProps={{
-name: 'max-width',
- id: 'max-width',
-}}
->
-<MenuItem value={false}>false</MenuItem>
-<MenuItem value="xs">xs</MenuItem>
-<MenuItem value="sm">sm</MenuItem>
-<MenuItem value="md">md</MenuItem>
-<MenuItem value="lg">lg</MenuItem>
-<MenuItem value="xl">xl</MenuItem>
-</Select>
-</FormControl>
-<FormControlLabel
-className={classes.formControlLabel}
-control={<Switch checked={fullWidth} onChange={handleFullWidthChange} />}
-label="Full width"
-/>
-</form>
 </DialogContent>
 <DialogActions>
 <Button onClick={handleClose} color="primary">
