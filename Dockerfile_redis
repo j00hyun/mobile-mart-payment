@@ -1,0 +1,3 @@
+FROM redis:alpine
+MAINTAINER alexji.dev@gmail.com
+EXPOSE 6379
