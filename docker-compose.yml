@@ -1,0 +1,64 @@
+version: "3.7"
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile_nginx
+    image: alexjime/nginx:0.1
+    ports:
+      - "80:80"
+    container_name: nginx-for-atmt-server
+    network_mode: "host"
+  redis:
+    build:
+      context: .
+      dockerfile: Dockerfile_redis
+    image: alexjime/redis:0.1
+    ports:
+      - "6379:6379"
+    container_name: redis-for-atmt-server
+    networks:
+      - redis-net
+  automart-app-blue-A: # 서비스명
+    build:
+      context: .
+      dockerfile: Dockerfile_atmt
+    image: alexjime/automart-app:0.1 # 이미지, 태그
+    ports:
+      - "8081:8080"
+    container_name: automart-app-blue-A
+    networks:
+      - redis-net
+  automart-app-blue-B: # 서비스명
+    build:
+      context: .
+      dockerfile: Dockerfile_atmt
+    image: alexjime/automart-app:0.1 # 이미지, 태그
+    ports:
+      - "8083:8080"
+    container_name: automart-app-blue-B
+    networks:
+      - redis-net
+  automart-app-green-A: # 서비스명
+    build:
+      context: .
+      dockerfile: Dockerfile_atmt
+    image: alexjime/automart-app:0.1 # 이미지, 태그
+    ports:
+      - "8082:8080"
+    container_name: automart-app-green-A
+    networks:
+      - redis-net
+  automart-app-green-B: # 서비스명
+    build:
+      context: .
+      dockerfile: Dockerfile_atmt
+    image: alexjime/automart-app:0.1 # 이미지, 태그
+    ports:
+      - "8084:8080"
+    container_name: automart-app-green-B
+    networks:
+      - redis-net
+networks:
+  redis-net:
