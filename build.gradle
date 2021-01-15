@@ -29,6 +29,9 @@ dependencies {
 	implementation 'javax.validation:validation-api'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'com.google.code.gson:gson:2.8.6'
+	implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2'
+	implementation 'com.graphql-java:graphql-java-tools:5.2.4'
+	implementation 'io.leangen.graphql:graphql-spqr-spring-boot-starter:0.0.4'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
