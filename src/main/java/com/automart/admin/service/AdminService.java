@@ -1,5 +1,4 @@
 package com.automart.admin.service;
-
 import com.automart.admin.domain.Admin;
 import com.automart.admin.repository.AdminRepository;
 import com.automart.exception.ForbiddenSignUpException;

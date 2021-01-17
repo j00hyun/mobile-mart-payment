@@ -1,21 +1,24 @@
 const color = {
     brightBlue: '#3498db',
     darkGrayishBlue: '#8b8d94',
-    darkRed: '#a90000',
+    darkRed: '#624444',
     grayishBlue: '#A4A6B3',
     grayishBlue2: '#9fa2b4',
     grayishBlue3: '#bdc3c7',
     lightBlue: '#3751FF',
-    lightGrayishBlue: '#F7F8FC', // background color
+    lightGrayishBlue: '#f7f8fc',
     lightGrayishBlue2: '#DFE0EB',
     paleBlue: '#DDE2FF',
     paleBlueTransparent: 'rgba(221, 226, 255, 0.08)',
-    veryDarkGrayishBlue: '#373a47'
+    veryDarkGrayishBlue: '#373a47',
+    darkgreen: "#063014",
+    lightyellow: "#d2cdc1",
+    yellow: "#f1bf4b",
+    black: "#0a0a0a",
 };
 
 const typography = {
     cardTitle: {
-        fontWeight: 'bold',
         fontSize: 19,
         lineHeight: '24px',
         letterSpacing: '0.4px'
@@ -42,18 +45,20 @@ const typography = {
         fontWeight: 600,
         fontSize: 14,
         lineHeight: '20px',
-        letterSpacing: 0.2
+        letterSpacing: 0.2,
+        align:"center",
+        textAlign: "center"
     },
     title: {
         fontWeight: 'bold',
         fontSize: 24,
         lineHeight: '30px',
-        letterSpacing: 0.3
+        letterSpacing: 0.3,
+        textAlign:"center"
     }
 };
 
 export default {
-    // https://www.colorhexa.com/A4A6B3
     color,
     typography
 };
