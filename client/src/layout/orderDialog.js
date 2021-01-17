@@ -62,6 +62,7 @@ return (
 fullWidth={true}
 maxWidth={'sm'}
 open={open}
+margin={ '0px 500px 0px 0px'}
 float={'right'}
 onClose={handleClose}
 aria-labelledby="max-width-dialog-title"

@@ -1,5 +1,6 @@
 import {Link} from "react-router-dom";
 import Order from "./orderDialog";
+import OrderDraw from "./orderDrawer";
 import React from 'react';
 import ReactDOM from 'react-dom'; 
 
@@ -16,7 +17,7 @@ const Menu = (props) => (
             <Link to="/search" className={'tab_day on'}> 매출 관리 </Link>
         </li>
         <li>
-			<Order/>
+			<OrderDraw/>
         </li>
 
     </ul>
