@@ -1,7 +1,6 @@
-package com.automart.oauth;
+package com.automart.security;
 
 import com.automart.user.domain.User;
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,18 +9,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.*;
 
 /**
- * 소셜 로그인 유저 정보
+ * 인증된 로그인 유저 정보
  */
 public class UserPrincipal implements OAuth2User, UserDetails {
 
     private static final long serialVersionUID = 1L;
 
+    private int no;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(int no, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.no = no;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
@@ -32,6 +33,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
                 singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserPrincipal(
+                user.getNo(),
                 user.getEmail(),
                 user.getPassword(),
                 authorities
@@ -43,6 +45,8 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         userPrincipal.setAttributes(attributes);
         return userPrincipal;
     }
+
+    public int getNo() { return no; }
 
     public String getEmail() {
         return email;

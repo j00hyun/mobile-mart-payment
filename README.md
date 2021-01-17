@@ -22,8 +22,9 @@
   > https://xd.adobe.com/view/f11772d9-a4b1-427f-8b61-4a24e196a001-a444/screen/8e507592-33b2-4513-a61a-eebeac49b42e/
 
 
+## ERD 수정후 (2020/1/9)
+![Screen Shot 2021-01-09 at 12 55 10 AM](https://user-images.githubusercontent.com/64248514/104036872-4f1da380-5217-11eb-9adc-5b325890b93b.png)
+![Screen Shot 2021-01-09 at 1 05 17 AM](https://user-images.githubusercontent.com/64248514/104036880-50e76700-5217-11eb-8e79-bdc5fa03390e.png)
 
-
-## ERD 수정후 (2020/12/7)
-![Screen Shot 2020-12-07 at 8 14 58 PM](https://user-images.githubusercontent.com/64248514/101344703-37c26200-38c9-11eb-9ecb-80867edfbe89.png)
-![Screen Shot 2020-12-07 at 8 24 57 PM](https://user-images.githubusercontent.com/64248514/101345547-858b9a00-38ca-11eb-900b-1a2a16ea1310.png)
+## 서버 아키텍처
+![서버 아키텍처](https://user-images.githubusercontent.com/43433753/104724514-18dea780-5774-11eb-967d-d74189914d12.png)

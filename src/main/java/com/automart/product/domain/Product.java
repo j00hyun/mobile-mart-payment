@@ -2,15 +2,21 @@ package com.automart.product.domain;
 
 import com.automart.cart.domain.Cart;
 import com.automart.category.domain.Category;
-import com.automart.exception.NotEnoughStockException;
+import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.order.domain.OrderDetail;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -20,10 +26,12 @@ import java.util.List;
 public class Product {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GraphQLQuery(name = "no")
     @Column(name = "product_no")
     private int no; // 제품 고유번호
 
     // 제품이 품절되거나 사라지면 카트에 들어있던 동일 제품도 사라져야한다
+    @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Cart> carts = new ArrayList<>();
 
@@ -31,27 +39,44 @@ public class Product {
     @JoinColumn(name = "category_no")
     private Category category; // 카테고리 고유번호
 
+    @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
+    @GraphQLQuery(name = "name")
     @Column(name = "product_name", length = 45)
     private String name; // 제품 이름
 
+    @GraphQLQuery(name = "price")
     @Column(name = "product_price")
     private int price; // 제품 판매가
 
+    @GraphQLQuery(name = "cost")
     @Column(name = "product_cost")
     private int cost; // 제품 원가
 
+    @GraphQLQuery(name = "stock")
     @Column(name = "product_stock")
     private int stock; // 제품 재고
 
+    @GraphQLQuery(name = "minStock")
+    @Column(name = "product_min_stock")
+    private int minStock; // 자동주문을 진행할 남은 수량
+
+    @Temporal(TemporalType.DATE)
+    @GraphQLQuery(name = "receivingDate")
+    @Column(name = "product_receive_date")
+    private Date receivingDate; // 마지막 입고 날짜
+
+    @GraphQLQuery(name = "code")
     @Column(name = "product_code")
     private int code; // 제품 바코드 번호
 
+    @GraphQLQuery(name = "imgUrl")
     @Column(name = "product_img_url", length = 100)
     private String imgUrl; // 제품 이미지 저장 주소
 
+    @GraphQLQuery(name = "location")
     @Column(name = "product_location", length = 45)
     private String location; // 제품 진열 위치
 
@@ -67,13 +92,16 @@ public class Product {
         this.stock += count;
     }
 
+
     @Builder
-    public Product(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+    public Product(Category category, String name, int price, int cost, int stock, int minStock, Date receivingDate, int code, String imgUrl, String location) {
         this.category = category;
         this.name = name;
         this.price = price;
         this.cost = cost;
         this.stock = stock;
+        this.minStock = minStock;
+        this.receivingDate = receivingDate;
         this.code = code;
         this.imgUrl = imgUrl;
         this.location = location;
@@ -84,15 +112,20 @@ public class Product {
     /**
      * 제품 생성
      */
-    public static Product createProduct(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+    public static Product createProduct(Category category, String name, int price, int cost, int stock, int minStock, String stringDate, int code, String location) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        Date receivingDate = dateFormat.parse(stringDate);
+
         Product product = Product.builder()
                 .category(category)
                 .name(name)
                 .price(price)
                 .cost(cost)
                 .stock(stock)
+                .minStock(minStock)
+                .receivingDate(receivingDate)
                 .code(code)
-                .imgUrl(imgUrl)
+//                .imgUrl(imgUrl)
                 .location(location).build();
 
         return product;

@@ -27,6 +27,11 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger2:2.9.2'
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	implementation 'javax.validation:validation-api'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'com.google.code.gson:gson:2.8.6'
+	implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2'
+	implementation 'com.graphql-java:graphql-java-tools:5.2.4'
+	implementation 'io.leangen.graphql:graphql-spqr-spring-boot-starter:0.0.4'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'mysql:mysql-connector-java'
@@ -38,10 +43,17 @@ dependencies {
 	}
 	testImplementation 'org.springframework.security:spring-security-test'
 	compile('org.springframework.boot:spring-boot-starter-oauth2-client')
-	compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.4.0'
+//	compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.4.0'
 	compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1' // Jwt 토큰
 
 	compile group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
+//	compile(group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2') {
+//		exclude module: 'swagger-annotations' exclude module: 'swagger-models'
+//	}
+//	compile("io.swagger:swagger-annotations:1.5.21")
+//	compile("io.swagger:swagger-models:1.5.21")
+//	compile(group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2')
 
 
 	testCompile('org.springframework.security:spring-security-test')

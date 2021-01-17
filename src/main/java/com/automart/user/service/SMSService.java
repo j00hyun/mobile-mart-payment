@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.transaction.Transactional;
 
+import com.automart.advice.exception.SMSException;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class SMSService {
      * @param message : 메세지 내용
      */
     @Transactional
-    public void sendMessage(String phone, String message) {
+    public void sendMessage(String phone, String message) throws SMSException{
 
         String api_key = "NCSDTOVXDJYJ4ZJV";
         String api_secret = "AXJSK5XLJMN7L7R9KENJD3KGKMZXIPCQ";
@@ -43,10 +44,7 @@ public class SMSService {
             System.out.println(obj.toString());
 
         } catch (CoolsmsException e) {
-
-            log.error("메세지 전송 실패");
-            System.out.println(e.getMessage());
-            System.out.println(e.getCode());
+            throw new SMSException("메세지 전송 실패");
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.automart.exception;
+package com.automart.advice.exception;
 
 public class InvalidTokenException extends RuntimeException {
     public InvalidTokenException() {

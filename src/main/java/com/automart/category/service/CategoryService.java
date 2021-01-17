@@ -2,7 +2,7 @@ package com.automart.category.service;
 
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
-import com.automart.exception.ForbiddenMakeCategoryException;
+import com.automart.advice.exception.ForbiddenMakeCategoryException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

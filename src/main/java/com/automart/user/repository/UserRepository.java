@@ -19,7 +19,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     // email로 회원 찾기
     public Optional<User> findByEmail(String email);
 
-    // snsType별 email으로 회원 찾기
-    public Optional<User> findByEmailAndSnsType(String email, AuthProvider snsType);
+    // 고객 email과 sns type이 일치하는 회원 찾기
+    public Optional<User> findByEmailAndSnsType(String email, AuthProvider authProvider);
+
+    // 이름과 휴대폰번호가 일치하는 회원 찾기
+    public Optional<User> findByNameAndTel(String name, String tel);
 
 }
