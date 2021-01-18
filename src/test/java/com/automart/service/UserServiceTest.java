@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,8 +65,8 @@ class OrderServiceTest {
         Category category = Category.builder().name("foods").build();
         em.persist(category);
 
-        Product product1 = Product.createProduct(category, "banana", 3200,4000, 3,12345,null,null);
-        Product product2 = Product.createProduct(category, "apple", 2000,3000, 3,23456,null,null);
+        Product product1 = Product.createProduct(category, "banana", 3200,4000, 3,50,"2020.10.10", 12345, null);
+        Product product2 = Product.createProduct(category, "apple", 2000,3000, 3,50,"2020.10.10",12344, null);
 
         em.persist(product1);
         em.persist(product2);
@@ -274,7 +275,7 @@ class CartServiceTest {
      * 테스트에 필요한 기본적인 유저, 카테고리, 상품 생성
      */
     @BeforeEach
-    public void prepare() {
+    public void prepare() throws ParseException {
         User user = User.builder()
                 .email("loove1997@naver.com")
                 .password("1234")
@@ -293,7 +294,6 @@ class CartServiceTest {
                 .cost(1000)
                 .stock(10)
                 .code(11111111)
-                .imgUrl(null)
                 .location(null)
                 .build();
 
@@ -304,7 +304,6 @@ class CartServiceTest {
                 .cost(1000)
                 .stock(10)
                 .code(11111111)
-                .imgUrl(null)
                 .location(null)
                 .build();
 

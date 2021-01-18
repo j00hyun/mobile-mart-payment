@@ -1,15 +1,11 @@
 package com.automart.user.service;
 
-import com.automart.security.UserPrincipal;
 import com.automart.advice.exception.*;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.User;
 import com.automart.user.dto.UserResponseDto;
 import com.automart.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +17,7 @@ import java.util.Optional;
 // @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -120,7 +116,10 @@ public class UserService implements UserDetailsService {
      * @param password : 비밀번호
      * @return : 해당 유저 정보
      */
-    public User checkLogIn(String email, String password) throws NotFoundUserException {
+    public User checkLogIn(String email, String password) throws NotFoundUserException, SignInTypeErrorException {
+        if(!email.contains("@")) {
+            throw new SignInTypeErrorException("올바른 형식의 이메일 주소가 아닙니다.");
+        }
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
@@ -191,22 +190,6 @@ public class UserService implements UserDetailsService {
     public List<UserResponseDto> showUsers() {
         List<User> users = userRepository.findAll();
         return UserResponseDto.listOf(users);
-    }
-
-    /**
-     * Spring Security가 UserDetails 구현객체 클래스를 사용해 Authentication을 사용
-     */
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        // User정보를 DB에서 가져온다
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일로 유저를 찾을 수 없습니다."));
-
-        // DB에서 가져온 User 정보는 UserPrincipal 클래스로 변경해 Spring Security로 전달한다.
-        // UserPrincipal은 Spring Security의 UserDetails를 implements 하였으므로, 이제 Spring Security는 User 클래스를 사용해 Authentication을 사용 할수 있게 되었다.
-        return UserPrincipal.create(user);
     }
 
 }

@@ -125,7 +125,6 @@ public class Product {
                 .minStock(minStock)
                 .receivingDate(receivingDate)
                 .code(code)
-//                .imgUrl(imgUrl)
                 .location(location).build();
 
         return product;

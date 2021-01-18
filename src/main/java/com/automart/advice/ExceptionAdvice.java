@@ -1,9 +1,6 @@
 package com.automart.advice;
 
-import com.automart.advice.exception.ForbiddenSignUpException;
-import com.automart.advice.exception.NotEnoughStockException;
-import com.automart.advice.exception.NotFoundUserException;
-import com.automart.advice.exception.RequirePasswordChangeException;
+import com.automart.advice.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +29,10 @@ public class ExceptionAdvice {
     @ExceptionHandler(RequirePasswordChangeException.class)
     protected ResponseEntity<String> requirePasswordChange (RequirePasswordChangeException e) {
         return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(SignInTypeErrorException.class)
+    protected ResponseEntity<String> signInFailed (SignInTypeErrorException e) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
     }
 }

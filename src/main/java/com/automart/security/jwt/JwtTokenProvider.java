@@ -45,12 +45,12 @@ public class JwtTokenProvider {
 
     // Access Token 발급
     public String generateAccessToken(UserPrincipal userPrincipal) {
-        return createToken(userPrincipal.getEmail(), TokenType.ACCESS_TOKEN);
+        return createToken(userPrincipal.getPrincipal(), TokenType.ACCESS_TOKEN);
     }
 
     // Refresh Token 발급
     public String generateRefreshToken(UserPrincipal userPrincipal) {
-        return createToken(userPrincipal.getEmail(), TokenType.REFRESH_TOKEN);
+        return createToken(userPrincipal.getPrincipal(), TokenType.REFRESH_TOKEN);
     }
 
     /**

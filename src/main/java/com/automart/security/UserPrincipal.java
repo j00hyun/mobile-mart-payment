@@ -1,5 +1,6 @@
 package com.automart.security;
 
+import com.automart.admin.domain.Admin;
 import com.automart.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,14 +17,14 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private static final long serialVersionUID = 1L;
 
     private int no;
-    private String email;
+    private String principal;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(int no, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(int no, String principal, String password, Collection<? extends GrantedAuthority> authorities) {
         this.no = no;
-        this.email = email;
+        this.principal = principal;
         this.password = password;
         this.authorities = authorities;
     }
@@ -40,6 +41,18 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         );
     }
 
+    public static UserPrincipal create(Admin admin) {
+        List<GrantedAuthority> authorities = Collections.
+                singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        return new UserPrincipal(
+                admin.getNo(),
+                admin.getId(),
+                admin.getPassword(),
+                authorities
+        );
+    }
+
     public static UserPrincipal create(User user, Map<String, Object> attributes) {
         UserPrincipal userPrincipal = UserPrincipal.create(user);
         userPrincipal.setAttributes(attributes);
@@ -48,8 +61,8 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     public int getNo() { return no; }
 
-    public String getEmail() {
-        return email;
+    public String getPrincipal() {
+        return principal;
     }
 
     @Override
@@ -59,7 +72,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return principal;
     }
 
     @Override
@@ -98,6 +111,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getName() {
-        return String.valueOf(email);
+        return String.valueOf(principal);
     }
 }

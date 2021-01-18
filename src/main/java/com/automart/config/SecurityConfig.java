@@ -1,5 +1,6 @@
 package com.automart.config;
 
+import com.automart.security.CustomUserDetailsService;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.*;
 import com.automart.security.oauth2.CustomOAuth2UserService;
@@ -35,35 +36,23 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
-/**
- * 설정하는 순간 스프링 부트가 제공하는 스프링 시큐리티 자동설정은 더이상 제공되지 않음
- * 하지만 WebSecurityConfigurerAdapter 클래스를 상속 받는 순간 모든 요청은 인증을 필요로 하게됨
- */
-//@EnableGlobalMethodSecurity( // 특정 메서드에 권한 처리를 하는 MethodSecurity 설정 기능 제공
-//        securedEnabled = true, // @Secured 사용하여 인가처리하는 옵션
-//        jsr250Enabled = true, // @RolesAllowed 사용하여 인가처리 옵션
-//        prePostEnabled = true // @PreAuthorize, @PostAuthorize 사용하여 인가처리 옵션
-//)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 인증시 사용할 custom User Service
-    private UserService userService;
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
 
+    @Autowired
     private CustomOAuth2UserService customOAuth2UserService;
 
+    @Autowired
     private UserRepository userRepository;
 
+    @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-
-    public SecurityConfig(@Lazy UserService userService, CustomOAuth2UserService customOAuth2UserService, UserRepository userRepository, JwtTokenProvider tokenProvider, RedisTemplate<String, Object> redisTemplate) {
-	this.userService = userService;
-	this.customOAuth2UserService = customOAuth2UserService;
-	this.userRepository = userRepository;
-	this.tokenProvider = tokenProvider;
-	this.redisTemplate = redisTemplate;
-    }
 
     /*
      * 다른 AuthorizationServer나 ResourceServer가 참조할 수 있도록 오버라이딩 해서 빈으로 등록
@@ -77,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // Authorization에 사용할 userDetailService와 password Encoder를 정의한다.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
     /*

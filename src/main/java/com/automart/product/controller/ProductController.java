@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -22,7 +23,7 @@ public class ProductController {
 
     @ApiOperation("상품 등록")
     @PostMapping("/register")
-    public ResponseEntity<ProductResponseDto> saveProduct(@RequestBody @Valid ProductSaveRequestDto requestDto) {
+    public ResponseEntity<ProductResponseDto> saveProduct(@RequestBody @Valid ProductSaveRequestDto requestDto) throws ParseException {
         ProductResponseDto productResponseDto = productService.saveProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -48,10 +49,10 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
     }
 
-    @ApiOperation("상품 목록 조회")
-    @GetMapping("/list")
-    public ResponseEntity<List<ProductResponseDto>> showProducts() {
-        List<ProductResponseDto> productResponseDtos = productService.showProducts();
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
-    }
+//    @ApiOperation("상품 목록 조회")
+//    @GetMapping("/list")
+//    public ResponseEntity<List<ProductResponseDto>> showProducts() {
+//        List<ProductResponseDto> productResponseDtos = productService.showProducts();
+//        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
+//    }
 }

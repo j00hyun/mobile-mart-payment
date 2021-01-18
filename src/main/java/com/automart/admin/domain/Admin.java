@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "admin")
@@ -20,8 +22,11 @@ public class Admin {
     @Column(name = "admin_id", length = 45, nullable = false, unique = true)
     private String id; // 관리자 아이디
 
-    @Column(name = "admin_pw", length = 45, nullable =false)
+    @Column(name = "admin_pw", length = 70, nullable =false)
     private String password; // 관리자 비밀번호
+
+    @ElementCollection(fetch = FetchType.EAGER) // = @OneToMany, but @ElementCollection은 비엔티티를 매핑하는데 사용
+    private List<String> roles = new ArrayList<>();
 
     public void setId(String id) {
         this.id = id;
@@ -32,8 +37,9 @@ public class Admin {
     }
 
     @Builder
-    public Admin(String id, String password) {
+    public Admin(String id, String password, List roles) {
         this.id = id;
         this.password = password;
+        this.roles = roles;
     }
 }

@@ -6,8 +6,7 @@ import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
 import com.automart.user.dto.AuthResponseDto;
-import com.automart.user.dto.FindRequestDto;
-import com.automart.user.dto.SignInRequestDto;
+import com.automart.user.dto.UserSignInRequestDto;
 import com.automart.user.dto.SignUpRequestDto;
 import com.automart.user.service.UserService;
 import io.swagger.annotations.*;
@@ -25,7 +24,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.Date;
@@ -35,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @Slf4j
 @RequestMapping("/users")
-public class SignController {
+public class UserSignController {
 
     @Autowired
     private UserService userService;
@@ -67,10 +65,11 @@ public class SignController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 로그인 되었습니다.", response = AuthResponseDto.class),
             @ApiResponse(code = 403, message = "아이디 또는 비밀번호가 일치하지 않습니다."),
+            @ApiResponse(code = 406, message = "올바른 형식의 이메일 주소가 아닙니다. ('@' 미포함)"),
             @ApiResponse(code = 428, message = "비밀번호를 변경해야 합니다.", response = AuthResponseDto.class)
     })
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponseDto> signIn(@ApiParam("로그인 정보") @Valid @RequestBody SignInRequestDto requestDto) throws NotFoundUserException {
+    public ResponseEntity<AuthResponseDto> signIn(@ApiParam("로그인 정보") @Valid @RequestBody UserSignInRequestDto requestDto) throws NotFoundUserException, SignInTypeErrorException {
         User user = userService.checkLogIn(requestDto.getEmail(), requestDto.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(
@@ -89,9 +88,9 @@ public class SignController {
         /* refresh 토큰을 redis에 저장 */
         Date expirationDate = jwtTokenProvider.getExpirationDate(refreshToken, JwtTokenProvider.TokenType.REFRESH_TOKEN);
         redisTemplate.opsForValue().set(
-                userPrincipal.getEmail(), refreshToken,
+                userPrincipal.getPrincipal(), refreshToken,
                 expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
-        log.info("redis value : " + redisTemplate.opsForValue().get(userPrincipal.getEmail()));
+        log.info("redis value : " + redisTemplate.opsForValue().get(userPrincipal.getPrincipal()));
 
         /* 임시 비밀번호 여부 체크 */
         if(user.isTempPassword()) {
