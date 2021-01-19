@@ -1,17 +1,23 @@
 package com.automart.admin.controller;
 
 import com.automart.admin.domain.Admin;
+import com.automart.admin.dto.AdminSignUpRequestDto;
 import com.automart.admin.dto.AuthResponseDto;
 import com.automart.admin.dto.AdminSignInRequestDto;
 import com.automart.admin.service.AdminService;
+import com.automart.advice.exception.ForbiddenSignUpException;
 import com.automart.advice.exception.NotFoundUserException;
 import com.automart.advice.exception.SignInTypeErrorException;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtTokenProvider;
+import com.automart.user.domain.AuthProvider;
+import com.automart.user.domain.User;
+import com.automart.user.dto.UserSignUpRequestDto;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +50,27 @@ public class AdminSignController {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+
+    @ApiOperation(value = "관리자 회원가입", notes = "개발자가 관리자를 추가하는데 사용, Front와 연결 X")
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "정상적으로 회원가입이 완료되었습니다."),
+            @ApiResponse(code = 406, message = "아이디가 중복되어 회원가입에 실패하였습니다.")
+    })
+    @PostMapping("/signup")
+    public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody AdminSignUpRequestDto requestDto) throws ForbiddenSignUpException {
+        adminService.checkDuplicateId(requestDto.getId());
+
+        Admin admin = Admin.builder()
+                .id(requestDto.getId())
+                .password(requestDto.getPassword())
+                .roles(Collections.singletonList("ROLE_ADMIN"))
+                .build();
+
+        adminService.saveAdmin(admin);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
 
     @ApiOperation(value = "1 관리자 로그인", notes = "관리자 로그인을 시도한다")

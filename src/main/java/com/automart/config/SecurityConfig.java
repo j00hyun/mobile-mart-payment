@@ -1,5 +1,6 @@
 package com.automart.config;
 
+import com.automart.admin.repository.AdminRepository;
 import com.automart.security.CustomUserDetailsService;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.*;
@@ -49,6 +50,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserRepository userRepository;
 
     @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
     private JwtTokenProvider tokenProvider;
 
     @Autowired
@@ -87,9 +91,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable() // rest api이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
                 .formLogin().disable()
                 .addFilterBefore(new JwtBasicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository, redisTemplate))
+                .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository, adminRepository, redisTemplate))
                 .authorizeRequests() // 이후 요청에 대한 사용권한 체크
-                    .antMatchers("/", "/*/signin", "/*/signup", "/*/valid/**", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**", "/graphql").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                    .antMatchers("/", "/*/signin", "/*/signup", "/*/valid/**", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                    .antMatchers("/graphql").hasRole("ADMIN")
                     .anyRequest().authenticated() // 그 외의 모든 요청은 인증된 사용자만 접근 가능
                     .and()
                 .exceptionHandling()

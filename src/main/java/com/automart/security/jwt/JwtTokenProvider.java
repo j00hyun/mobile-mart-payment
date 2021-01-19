@@ -56,7 +56,7 @@ public class JwtTokenProvider {
     /**
      * 인증된 유저의 authentication에서 userPrincipal을 추출해 token을 생성한다.
      */
-    public String createToken(String email, TokenType tokenType) {
+    public String createToken(String principal, TokenType tokenType) {
 
         String secretKey;
         long expireTime;
@@ -69,7 +69,7 @@ public class JwtTokenProvider {
             expireTime = refreshTokenExpiredMsc;
         }
 
-        Claims claims = Jwts.claims().setSubject(email);
+        Claims claims = Jwts.claims().setSubject(principal);
         // claims.put("roles", roles); // need params List<String> roles;
         Date now = new Date();
         return Jwts.builder()
@@ -102,8 +102,8 @@ public class JwtTokenProvider {
         }
     }
 
-    // Jwt 토큰에서 회원 이메일 추출
-    public String getUserEmail(String token, TokenType tokenType) {
+    // Jwt 토큰에서 회원 이메일 또는 관리자 아이디 추출
+    public String getPrincipal(String token, TokenType tokenType) {
         String secretKey;
         if (tokenType == TokenType.ACCESS_TOKEN) {
             secretKey = accessTokenSecret;

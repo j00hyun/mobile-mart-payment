@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.automart.admin.domain.Admin;
+import com.automart.admin.repository.AdminRepository;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
 import com.automart.user.repository.UserRepository;
@@ -25,14 +27,16 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
+    private AdminRepository adminRepository;
     private JwtTokenProvider jwtTokenProvider;
     private RedisTemplate<String, Object> redisTemplate;
 
 
-    public JwtCommonAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, RedisTemplate<String, Object> redisTemplate) {
+    public JwtCommonAuthorizationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, AdminRepository adminRepository, RedisTemplate<String, Object> redisTemplate) {
         super(authenticationManager);
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
+        this.adminRepository = adminRepository;
         this.redisTemplate = redisTemplate;
     }
 
@@ -63,30 +67,42 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
     private Authentication getUsernamePasswordAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization")
                 .replace("Bearer", "");
-        String userEmail = null;
+        String principal = null;
+        UserPrincipal userPrincipal = null;
         try {
 
             // 만약 token이 존재한다면, token을 통해 user의 이메일을 얻는다.
             // 이때, token이 만료됐으면 ExpiredTokenResolver로 이동한다.
-            userEmail = jwtTokenProvider.getUserEmail(token, JwtTokenProvider.TokenType.ACCESS_TOKEN); // users의 email값
-            Optional<User> oUser = userRepository.findByEmail(userEmail);
-            User user = oUser.get();
-            UserPrincipal principal = UserPrincipal.create(user);
+            principal = jwtTokenProvider.getPrincipal(token, JwtTokenProvider.TokenType.ACCESS_TOKEN); // user의 email 또는 admin의 id 값
+
+            if(principal.contains("@")) {
+                // Admin 일 경우
+                Optional<User> oUser = userRepository.findByEmail(principal);
+                User user = oUser.get();
+                userPrincipal = UserPrincipal.create(user);
+
+            } else {
+                // User 일 경우
+                Optional<Admin> oAdmin = adminRepository.findById(principal);
+                Admin admin = oAdmin.get();
+                userPrincipal = UserPrincipal.create(admin);
+
+            }
 
             // OAuth 인지 일반 로그인인지 구분할 필요가 없음. 왜냐하면 password를 Authentication이 가질 필요가 없으니!!
             // JWT가 로그인 프로세스를 가로채서 인증다 해버림. (OAuth2.0이든 그냥 일반 로그인 이든)
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return authentication;
 
         } catch (ExpiredJwtException e) {
 
-            userEmail = e.getClaims().getSubject();
+            principal = e.getClaims().getSubject();
 
-            if (redisTemplate.opsForValue().get(userEmail) != null) { // refresh토큰만 살아있는 경우(access토큰이 기간만 만료된것일 때)
-                String accessToken = jwtTokenProvider.createToken(userEmail, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+            if (redisTemplate.opsForValue().get(principal) != null) { // refresh토큰만 살아있는 경우(access토큰이 기간만 만료된것일 때)
+                String accessToken = jwtTokenProvider.createToken(principal, JwtTokenProvider.TokenType.ACCESS_TOKEN);
                 request.setAttribute("exception", "EXPIRED_TOKEN");
                 request.setAttribute("token", accessToken);
             }
