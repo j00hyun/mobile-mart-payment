@@ -1,5 +1,8 @@
 #!/bin/bash
 
+./gradlew bootJar 
+wait 
+
 DOCKER_APP_NAME=automart-app
 
 EXIST_BLUE=$(docker ps | grep ${DOCKER_APP_NAME}-blue)
