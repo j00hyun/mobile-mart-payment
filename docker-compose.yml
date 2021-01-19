@@ -22,7 +22,7 @@ services:
       - redis-net
   automart-app-blue-A: # 서비스명
     build:
-      context: .
+      context: ./build/libs/
       dockerfile: Dockerfile_atmt
     image: alexjime/automart-app:0.1 # 이미지, 태그
     ports:
@@ -32,7 +32,7 @@ services:
       - redis-net
   automart-app-blue-B: # 서비스명
     build:
-      context: .
+      context: ./build/libs/
       dockerfile: Dockerfile_atmt
     image: alexjime/automart-app:0.1 # 이미지, 태그
     ports:
@@ -42,7 +42,7 @@ services:
       - redis-net
   automart-app-green-A: # 서비스명
     build:
-      context: .
+      context: ./build/libs/
       dockerfile: Dockerfile_atmt
     image: alexjime/automart-app:0.1 # 이미지, 태그
     ports:
@@ -52,7 +52,7 @@ services:
       - redis-net
   automart-app-green-B: # 서비스명
     build:
-      context: .
+      context: ./build/libs/
       dockerfile: Dockerfile_atmt
     image: alexjime/automart-app:0.1 # 이미지, 태그
     ports:
