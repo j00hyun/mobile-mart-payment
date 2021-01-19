@@ -45,7 +45,7 @@ class CategoryServiceTest {
         categoryService.saveCategory("과일");
 
         // when
-        categoryService.updateCategory(1, "채소");
+        categoryService.updateCategory(1, "채소", "N-23");
 
         // then
         assertEquals("카테고리 이름이 채소여야한다.", "채소", categoryRepository.findByNo(1).get().getName());

@@ -23,12 +23,12 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ApiOperation("카테고리 이름 수정")
-    @PutMapping(value = "/edit/{categoryNo}/{categoryName}", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<Void> updateCategory(@PathVariable int categoryNo, @PathVariable String categoryName) {
-        categoryService.updateCategory(categoryNo, categoryName);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
+//    @ApiOperation("카테고리 이름 수정")
+//    @PutMapping(value = "/edit/{categoryNo}/{categoryName}", produces = "text/plain;charset=UTF-8")
+//    public ResponseEntity<Void> updateCategory(@PathVariable int categoryNo, @PathVariable String categoryName) {
+//        categoryService.updateCategory(categoryNo, categoryName);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//    }
 
     @ApiOperation("카테고리 제거")
     @DeleteMapping("/delete")

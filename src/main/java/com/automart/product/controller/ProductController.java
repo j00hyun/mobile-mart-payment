@@ -42,12 +42,12 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @ApiOperation("상품 상세 조회")
-    @GetMapping("/detail/{productNo}")
-    public ResponseEntity<ProductResponseDto> showProduct(@PathVariable int productNo) {
-        ProductResponseDto productResponseDto = productService.showProduct(productNo);
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
-    }
+//    @ApiOperation("상품 상세 조회")
+//    @GetMapping("/detail/{productNo}")
+//    public ResponseEntity<ProductResponseDto> showProduct(@PathVariable int productNo) {
+//        ProductResponseDto productResponseDto = productService.showProduct(productNo);
+//        return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
+//    }
 
 //    @ApiOperation("상품 목록 조회")
 //    @GetMapping("/list")

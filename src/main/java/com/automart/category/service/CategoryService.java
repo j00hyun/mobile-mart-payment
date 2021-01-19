@@ -37,13 +37,13 @@ public class CategoryService {
      * @param categoryName : 변경하려는 이름
      * @return : 변경된 카테고리
      */
-    public Category updateCategory(int categoryNo, String categoryName) throws IllegalStateException{
+    public Category updateCategory(int categoryNo, String categoryName, String categoryCode) throws IllegalStateException{
         log.info("카테고리 수정");
 
         Category category = categoryRepository.findByNo(categoryNo)
                 .orElseThrow(() -> new IllegalStateException("해당 카테고리가 존재하지 않습니다."));
 
-        category.setName(categoryName);
+        category.setName(categoryName, categoryCode);
         categoryRepository.save(category);
         return category;
     }

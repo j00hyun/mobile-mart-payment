@@ -22,7 +22,6 @@ import java.text.ParseException;
 import java.util.List;
 
 @Service
-@GraphQLApi
 @RequiredArgsConstructor
 public class ProductService {
 
@@ -34,7 +33,6 @@ public class ProductService {
      * @param requestDto : 등록할 상품에 대한 정보를 갖고있는 Dto
      * @return 등록한 상품 식별자
      */
-    @GraphQLMutation(name = "saveProduct")
     @Transactional
     public ProductResponseDto saveProduct(@GraphQLContext ProductSaveRequestDto requestDto) throws ParseException {
         Category category = categoryRepository.findByNo(requestDto.getCategoryNo())
@@ -73,32 +71,6 @@ public class ProductService {
         Product product = productRepository.findByNo(productNo)
                 .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
         productRepository.delete(product);
-    }
-
-
-    /**
-     * 상품 단건 조회하기
-     * @param productNo : 조회할 상품의 번호
-     * @return 주문 단건에 대한 정보를 담은 Dto를 반환
-     */
-    @GraphQLQuery(name = "showProduct")
-    public ProductResponseDto showProduct(Integer productNo) {
-        Product product = productRepository.findByNo(productNo)
-                .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
-        return ProductResponseDto.of(product);
-    }
-
-    /**
-     * 해당 카테고리의 상품 조회하기
-     * @param categoryNo : 조회할 카테고리 고유번호
-     * @return 전체 상품에 대한 정보를 담은 Dto를 반환
-     */
-    @GraphQLQuery(name = "showProducts")
-    public List<ProductResponseDto> showProducts(int categoryNo) {
-        Category category = categoryRepository.findByNo(categoryNo)
-                .orElseThrow(() -> new ForbiddenMakeProductException("해당 카테고리가 존재하지 않습니다."));
-        List<Product> products = productRepository.findAllByCategory(category);
-        return ProductResponseDto.listOf(products);
     }
 
 }
