@@ -7,7 +7,7 @@ import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
 import com.automart.user.dto.AuthResponseDto;
 import com.automart.user.dto.UserSignInRequestDto;
-import com.automart.user.dto.SignUpRequestDto;
+import com.automart.user.dto.UserSignUpRequestDto;
 import com.automart.user.service.UserService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
@@ -122,7 +122,7 @@ public class UserSignController {
             @ApiResponse(code = 406, message = "이메일 또는 핸드폰번호가 중복되어 회원가입에 실패하였습니다.")
     })
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody SignUpRequestDto requestDto) throws ForbiddenSignUpException{
+    public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody UserSignUpRequestDto requestDto) throws ForbiddenSignUpException{
         userService.checkDuplicateEmail(requestDto.getEmail());
         userService.checkDuplicateTel(requestDto.getTel());
 
@@ -176,7 +176,14 @@ public class UserSignController {
         return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(newAccessToken));
     }
 
-
+    @ApiOperation(value = "(개발용) 회원 탈퇴", notes = "특정 회원을 삭제한다", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "회원이 정상적으로 탈퇴되었습니다.")
+    })
+    @DeleteMapping(value = "/delete")
+    public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN));
+    }
 
 
     /*@ApiOperation(value = "로그아웃", notes = "로그인된 계정을 로그아웃한다.", authorizations = { @Authorization(value = "jwtToken")})

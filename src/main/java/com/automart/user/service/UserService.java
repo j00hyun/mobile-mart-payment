@@ -36,8 +36,6 @@ public class UserService {
      * @param email : 이메일 주소
      */
     public void checkDuplicateEmail(String email) throws ForbiddenSignUpException {
-        log.info("이메일 중복 검증");
-
         Optional<User> findUser = userRepository.findByEmail(email);
 
         if(findUser.isPresent()) {
@@ -50,8 +48,6 @@ public class UserService {
      * @param phone_no : 휴대폰 번호
      */
     public void checkDuplicateTel(String phone_no) throws ForbiddenSignUpException {
-        log.info("휴대폰 번호 중복 검증");
-
         Optional<User> findUser = userRepository.findByTel(phone_no);
 
         if(findUser.isPresent()) {
@@ -65,9 +61,13 @@ public class UserService {
      * @return : 생성된 5자리 인증번호
      */
     public int validatePhone(String phone_no) throws SMSException {
-        log.info("인증번호 전송");
+        int valiNum;
 
-        int valiNum = (int) (Math.random() * 100000);
+        // 첫자리가 0일 경우 나타나는 4자리 인증번호 방지
+        do {
+            valiNum = (int) (Math.random() * 100000);
+        } while (valiNum < 10000);
+
         String message = " [인증번호]\n" + valiNum;
         smsService.sendMessage(phone_no, message);
         return valiNum;
@@ -80,8 +80,6 @@ public class UserService {
      * @return : 생성된 임시 비밀번호
      */
     public String generateTempPw(String phone_no) {
-        log.info("임시 비밀번호 전송");
-
         String pw = "";
         for (int i = 0; i < 12; i++) {
             pw += (char) ((Math.random() * 26) + 97);
@@ -99,8 +97,6 @@ public class UserService {
      */
     @Transactional
     public User changePassword(int no, String password) throws NotFoundUserException {
-        log.info("비밀번호 변겅");
-
         User user = userRepository.findByNo(no)
                 .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
 
@@ -137,8 +133,6 @@ public class UserService {
      */
     @Transactional
     public Integer saveUser(User user) throws ForbiddenSignUpException {
-        log.info("회원 생성");
-
         user.setPassword(passwordEncoder.encode(user.getPassword())); // 패스워드 인코딩을 써서 암호화한다.
         userRepository.save(user);
         return user.getNo();
@@ -162,8 +156,10 @@ public class UserService {
      */
     @Transactional
     public String withdraw(String token, JwtTokenProvider.TokenType tokenType) {
+        token = token.replace("Bearer", "");
+
         if (jwtTokenProvider.validateToken(token)) {
-            User user = userRepository.findByEmail(jwtTokenProvider.getUserEmail(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
+            User user = userRepository.findByEmail(jwtTokenProvider.getPrincipal(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
                     .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
             userRepository.delete(user);
             return "delete success";
@@ -173,7 +169,7 @@ public class UserService {
     }
 
     /**
-     * (어드민용) 이메일로 회원 조회하기
+     * (개발용) 이메일로 회원 조회하기
      * @param email 조회할 회원의 이메일
      * @return : UserResponseDto를 반환
      */
@@ -184,7 +180,7 @@ public class UserService {
     }
 
     /**
-     * (어드민용) 전체 회원 조회하기
+     * (개발용) 전체 회원 조회하기
      * @return List<UerResponseDto>를 반환
      */
     public List<UserResponseDto> showUsers() {
