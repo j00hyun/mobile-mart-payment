@@ -19,7 +19,8 @@ services:
       - "6379:6379"
     container_name: redis-for-atmt-server
     networks:
-      - redis-net
+      redis-net:
+        ipv4_address: 172.18.0.2
   automart-app-blue-A: # 서비스명
     build:
       context: .
@@ -62,3 +63,5 @@ services:
       - redis-net
 networks:
   redis-net:
+    external:
+      name: redis-net 
