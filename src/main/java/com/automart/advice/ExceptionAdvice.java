@@ -32,7 +32,12 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(SignInTypeErrorException.class)
-    protected ResponseEntity<String> signInFailed (SignInTypeErrorException e) {
+    protected ResponseEntity<String> signInTypeError (SignInTypeErrorException e) {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenMakeProductException.class)
+    protected ResponseEntity<String> forbiddenMakeProduct (ForbiddenMakeProductException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }

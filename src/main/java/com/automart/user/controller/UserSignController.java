@@ -55,7 +55,7 @@ public class UserSignController {
             @ApiResponse(code = 406, message = "동일한 이메일의 회원이 이미 존재합니다.")
     })
     @PostMapping("/valid/email")
-    public ResponseEntity<Void> validEmail(@RequestParam String email) throws ForbiddenSignUpException {
+    public ResponseEntity<Void> validEmail(@RequestBody String email) throws ForbiddenSignUpException {
         userService.checkDuplicateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

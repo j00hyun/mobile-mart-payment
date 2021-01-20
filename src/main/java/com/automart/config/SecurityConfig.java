@@ -94,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository, adminRepository, redisTemplate))
                 .authorizeRequests() // 이후 요청에 대한 사용권한 체크
                     .antMatchers("/", "/*/signin", "/*/signup", "/*/valid/**", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
-                    .antMatchers("/graphql").hasRole("ADMIN")
+                    .antMatchers("/graphql", "/products/**").hasRole("ADMIN")
                     .anyRequest().authenticated() // 그 외의 모든 요청은 인증된 사용자만 접근 가능
                     .and()
                 .exceptionHandling()

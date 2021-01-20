@@ -42,7 +42,7 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @Column(name = "product_name", length = 45)
+    @Column(name = "product_name", length = 45, unique = true)
     private String name; // 제품 이름
 
     @Column(name = "product_price")
@@ -115,7 +115,8 @@ public class Product {
                 .minStock(minStock)
                 .receivingDate(receivingDate)
                 .code(code)
-                .location(location).build();
+                .location(location)
+                .build();
 
         return product;
     }
@@ -146,5 +147,12 @@ public class Product {
      */
     public void removeCart(Cart cart) {
         this.carts.remove(cart);
+    }
+
+    /**
+     * 해당 제품의 imgUrl 수정
+     */
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

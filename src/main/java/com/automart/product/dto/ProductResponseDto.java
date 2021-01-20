@@ -5,6 +5,8 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,33 +14,18 @@ import java.util.stream.Collectors;
 @Getter
 public class ProductResponseDto {
 
-    @GraphQLQuery(description = "고유번호")
     private int no; // 제품 고유번호
-
-    @GraphQLQuery(description = "품명")
     private String name; // 제품 이름
-
-    @GraphQLQuery(description = "남은 수량")
     private int stock; // 제품 남은 수량
-
-    @GraphQLQuery(description = "자동주문 갯수")
     private int minStock; // 자동주문 겟수
-
-    @GraphQLQuery(description = "마지막 입고")
-    private Date receivingDate; // 제품 마지막 입고 날짜
-
-    @GraphQLQuery(description = "위치")
+    private String receivingDate; // 제품 마지막 입고 날짜
     private String location; // 제품 진열 위치
-
-    @GraphQLQuery(description = "구매가")
     private int cost; // 제품 원가 (구매가)
-
-    @GraphQLQuery(description = "판매가")
     private int price; // 제품 판매가
 
 
     @Builder
-    public ProductResponseDto(int no, String name, int stock, int minStock, Date receivingDate, String location, int cost, int price) {
+    public ProductResponseDto(int no, String name, int stock, int minStock, String receivingDate, String location, int cost, int price) {
         this.no = no;
         this.name = name;
         this.stock = stock;
@@ -51,12 +38,15 @@ public class ProductResponseDto {
 
 
     public static ProductResponseDto of(Product product) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        String stringDate = dateFormat.format(product.getReceivingDate());
+
         return ProductResponseDto.builder()
                 .no(product.getNo())
                 .name(product.getName())
                 .stock(product.getStock())
                 .minStock(product.getMinStock())
-                .receivingDate(product.getReceivingDate())
+                .receivingDate(stringDate)
                 .location(product.getLocation())
                 .cost(product.getCost())
                 .price(product.getPrice())

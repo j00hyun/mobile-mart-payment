@@ -52,7 +52,7 @@ public class AdminSignController {
     private RedisTemplate<String, Object> redisTemplate;
 
 
-    @ApiOperation(value = "관리자 회원가입", notes = "개발자가 관리자를 추가하는데 사용, Front와 연결 X")
+    @ApiOperation(value = "(개발용) 관리자 회원가입", notes = "개발자가 관리자를 추가하는데 사용, Front와 연결 X")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 회원가입이 완료되었습니다."),
             @ApiResponse(code = 406, message = "아이디가 중복되어 회원가입에 실패하였습니다.")

@@ -1,19 +1,21 @@
 package com.automart.product.controller;
 
-import com.automart.product.service.ProductService;
+import com.automart.advice.exception.ForbiddenMakeProductException;
 import com.automart.product.dto.ProductResponseDto;
 import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.dto.ProductUpdateRequestDto;
-import io.swagger.annotations.ApiOperation;
+import com.automart.product.service.ProductService;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.text.ParseException;
-import java.util.List;
 
+@Api(tags = {"5. Product Management"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
@@ -21,12 +23,22 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @ApiOperation("상품 등록")
+
+    @ApiOperation(value = "4 상품 추가", notes = "새로운 상품을 등록한다.\n" +
+            "swagger에서는 테스트 오류나므로 postman으로 테스트\n" +
+            "상품 이미지 크기는 1MB이하여야함\n" +
+            "상품 이미지 저장 경로는 products/{categoryNo}/{productNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, authorizations = { @Authorization(value = "jwtToken")})
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "상품이 정상적으로 등록되었습니다."),
+            @ApiResponse(code = 403, message = "상품 등록에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 카테고리 오류)")
+    })
     @PostMapping("/register")
-    public ResponseEntity<ProductResponseDto> saveProduct(@RequestBody @Valid ProductSaveRequestDto requestDto) throws ParseException {
+    public ResponseEntity<ProductResponseDto> saveProduct(@ApiIgnore @RequestHeader("Authorization") String token,
+                                                          @ModelAttribute ProductSaveRequestDto requestDto) throws ForbiddenMakeProductException {
         ProductResponseDto productResponseDto = productService.saveProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
+
 
     @ApiOperation("상품 수정")
     @PutMapping("/edit/{productNo}")
