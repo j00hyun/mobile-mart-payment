@@ -1,4 +1,4 @@
-package com.automart.admin.dto;
+package com.automart.user.dto;
 
 import lombok.Builder;
 import lombok.Data;

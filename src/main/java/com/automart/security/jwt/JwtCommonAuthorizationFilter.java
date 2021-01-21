@@ -8,10 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.automart.admin.domain.Admin;
-import com.automart.admin.repository.AdminRepository;
+import com.automart.user.domain.Admin;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
+import com.automart.user.repository.AdminRepository;
 import com.automart.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.data.redis.core.RedisTemplate;

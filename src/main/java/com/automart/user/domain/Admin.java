@@ -1,4 +1,4 @@
-package com.automart.admin.domain;
+package com.automart.user.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;
