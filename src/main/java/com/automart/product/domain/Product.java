@@ -124,17 +124,21 @@ public class Product {
     /**
      * 제품 수정
      */
-    public Product update(Category category, String name, int price, int cost, int stock, int code, String imgUrl, String location) {
+    public Product update(String name, int price, int cost, int stock, int minStock, String stringDate, int code, String location) throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        Date receivingDate = dateFormat.parse(stringDate);
+
         if (this.category != null) { // 양방향 연관관계를 다시 생성하기위해 기존의 관계를 제거
             this.category.getProducts().remove(this);
         }
-        this.category = category;
+
         this.name = name;
         this.price = price;
         this.cost = cost;
         this.stock = stock;
+        this.minStock = minStock;
+        this.receivingDate = receivingDate;
         this.code = code;
-        this.imgUrl = imgUrl;
         this.location = location;
 
         category.getProducts().add(this); // 양방향 연관관계 설정

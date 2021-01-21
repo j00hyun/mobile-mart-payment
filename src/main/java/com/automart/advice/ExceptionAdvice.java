@@ -36,8 +36,8 @@ public class ExceptionAdvice {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(e.getMessage());
     }
 
-    @ExceptionHandler(ForbiddenMakeProductException.class)
-    protected ResponseEntity<String> forbiddenMakeProduct (ForbiddenMakeProductException e) {
+    @ExceptionHandler(ForbiddenSaveProductException.class)
+    protected ResponseEntity<String> forbiddenMakeProduct (ForbiddenSaveProductException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
