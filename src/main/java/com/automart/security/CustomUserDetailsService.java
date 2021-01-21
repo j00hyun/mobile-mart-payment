@@ -1,8 +1,8 @@
 package com.automart.security;
 
-import com.automart.admin.domain.Admin;
-import com.automart.admin.repository.AdminRepository;
+import com.automart.user.domain.Admin;
 import com.automart.user.domain.User;
+import com.automart.user.repository.AdminRepository;
 import com.automart.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

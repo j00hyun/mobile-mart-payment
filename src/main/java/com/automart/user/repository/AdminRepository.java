@@ -1,6 +1,6 @@
-package com.automart.admin.repository;
+package com.automart.user.repository;
 
-import com.automart.admin.domain.Admin;
+import com.automart.user.domain.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

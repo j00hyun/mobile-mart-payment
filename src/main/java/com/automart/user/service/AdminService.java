@@ -1,34 +1,17 @@
-package com.automart.admin.service;
+package com.automart.user.service;
 
-import com.automart.admin.domain.Admin;
-import com.automart.admin.repository.AdminRepository;
+import com.automart.user.domain.Admin;
+import com.automart.user.repository.AdminRepository;
 import com.automart.advice.exception.ForbiddenSignUpException;
 import com.automart.advice.exception.NotFoundUserException;
 import com.automart.advice.exception.SignInTypeErrorException;
-import com.automart.security.UserPrincipal;
-import com.automart.security.jwt.JwtTokenProvider;
-import com.automart.user.domain.User;
-import com.automart.user.dto.AuthResponseDto;
-import io.leangen.graphql.annotations.GraphQLQuery;
-import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
