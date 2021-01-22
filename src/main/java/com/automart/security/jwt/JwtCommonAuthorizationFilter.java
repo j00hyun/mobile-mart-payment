@@ -6,12 +6,13 @@ import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import com.automart.admin.domain.Admin;
-import com.automart.admin.repository.AdminRepository;
+import com.automart.user.domain.Admin;
 import com.automart.security.UserPrincipal;
 import com.automart.user.domain.User;
+import com.automart.user.repository.AdminRepository;
 import com.automart.user.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -55,10 +56,20 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         // 만약 header가 존재한다면, DB로 부터 user의 권한을 확인하고, authorization을 수행한다.
+        HttpServletRequestWrapper myRequest = new HttpServletRequestWrapper((HttpServletRequest) request) {
+            @Override
+            public String getHeader(String name) {
+                if (name.equals("Authorization")) {
+                    String basic = request.getHeader("Authorization").replace("Bearer", "");
+                    return basic;
+                }
+                return super.getHeader(name);
+            }
+        };
         Authentication authentication = getUsernamePasswordAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // filter 수행을 계속한다.
-        chain.doFilter(request, response);
+        chain.doFilter(myRequest, response);
     }
 
     /**
