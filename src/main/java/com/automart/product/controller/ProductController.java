@@ -55,8 +55,8 @@ public class ProductController {
 
 
     @ApiOperation("상품 제거")
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> removeProduct(@RequestParam(value="productNo") int productNo) {
+    @DeleteMapping("/delete/{productNo}")
+    public ResponseEntity<Void> removeProduct(@PathVariable int productNo) {
         productService.removeProduct(productNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

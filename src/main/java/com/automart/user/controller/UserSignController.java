@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -73,7 +74,13 @@ public class UserSignController {
             @ApiResponse(code = 428, message = "비밀번호를 변경해야 합니다.", response = AuthResponseDto.class)
     })
     @PostMapping("/users/signin")
-    public ResponseEntity<AuthResponseDto> signIn(@ApiParam("로그인 정보") @Valid @RequestBody UserSignInRequestDto requestDto) throws NotFoundUserException, SignInTypeErrorException {
+    public ResponseEntity<AuthResponseDto> signIn(@ApiParam("로그인 정보") @Valid @RequestBody UserSignInRequestDto requestDto, BindingResult result) throws NotFoundUserException, SignInTypeErrorException {
+
+        /* 입력값 유효성 검증 실패 처리 */
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach(f-> log.info(f.getField() +": " + f.getDefaultMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         User user = userService.checkLogIn(requestDto.getEmail(), requestDto.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(
@@ -123,10 +130,18 @@ public class UserSignController {
     @ApiOperation(value = "3-2 로컬 회원가입", notes = "로컬 회원가입을 한다")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 회원가입이 완료되었습니다."),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 406, message = "이메일 또는 핸드폰번호가 중복되어 회원가입에 실패하였습니다.")
     })
     @PostMapping("/users/signup")
-    public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody UserSignUpRequestDto requestDto) throws ForbiddenSignUpException{
+    public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody UserSignUpRequestDto requestDto, BindingResult result) throws ForbiddenSignUpException{
+
+        /* 입력값 유효성 검증 실패 처리 */
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach(f-> log.info(f.getField() +": " + f.getDefaultMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         userService.checkDuplicateEmail(requestDto.getEmail());
         userService.checkDuplicateTel(requestDto.getTel());
 
@@ -147,10 +162,18 @@ public class UserSignController {
     @ApiOperation(value = "(개발용) 관리자 회원가입", notes = "개발자가 관리자를 추가하는데 사용, Front와 연결 X")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 회원가입이 완료되었습니다."),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 406, message = "아이디가 중복되어 회원가입에 실패하였습니다.")
     })
     @PostMapping("/admin/signup")
-    public ResponseEntity<Void> adminSignUp(@ApiParam("가입 회원 정보") @Valid @RequestBody AdminSignUpRequestDto requestDto) throws ForbiddenSignUpException {
+    public ResponseEntity<Void> adminSignUp(@ApiParam("가입 회원 정보") @Valid @RequestBody AdminSignUpRequestDto requestDto, BindingResult result) throws ForbiddenSignUpException {
+
+        /* 입력값 유효성 검증 실패 처리 */
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach(f-> log.info(f.getField() +": " + f.getDefaultMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         adminService.checkDuplicateId(requestDto.getId());
 
         Admin admin = Admin.builder()
@@ -168,13 +191,26 @@ public class UserSignController {
     @ApiOperation(value = "1 관리자 로그인", notes = "관리자 로그인을 시도한다")
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 로그인 되었습니다.", response = AuthResponseDto.class),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 403, message = "아이디 또는 비밀번호가 일치하지 않습니다."),
             @ApiResponse(code = 406, message = "아이디에는 '@'가 포함될 수 없습니다.")
     })
     @PostMapping("/admin/signin")
-    public ResponseEntity<AuthResponseDto> adminSignIn(@ApiParam("로그인 정보") @Valid @RequestBody AdminSignInRequestDto requestDto) throws NotFoundUserException, SignInTypeErrorException {
+    public ResponseEntity<AuthResponseDto> adminSignIn(@ApiParam("로그인 정보") @Valid @RequestBody AdminSignInRequestDto requestDto, BindingResult result) throws NotFoundUserException, SignInTypeErrorException {
+
+        /* 입력값 유효성 검증 실패 처리 */
+        if (result.hasErrors()) {
+            result.getFieldErrors().forEach(f-> log.info(f.getField() +": " + f.getDefaultMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         /* '@'포함여부, 관리자 일치여부 체크 */
-        Admin admin = adminService.checkLogIn(requestDto.getId(), requestDto.getPassword());
+        try {
+            adminService.checkLogIn(requestDto.getId(), requestDto.getPassword());
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
