@@ -63,7 +63,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "일치하는 회원이 존재합니다."),
             @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/email")
     public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
@@ -158,7 +158,7 @@ public class UserController {
     public ResponseEntity<Void> logout(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                        HttpServletRequest request) {
         String accessToken = jwtTokenProvider.extractToken(request);
-        log.info("accessToken : "+accessToken);
+        log.info("accessToken : " + accessToken);
         String principal = null;
 
         //* access token을 통해 userEmail or adminId를 찾아 redis에 저장된 refresh token을 삭제한다.*//

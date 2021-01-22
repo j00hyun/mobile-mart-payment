@@ -53,7 +53,7 @@ public class AdminService {
      * @param password : 비밀번호
      * @return : 해당 관리자 정보
      */
-    public Admin checkLogIn(String id, String password) throws NotFoundUserException, SignInTypeErrorException {
+    public void checkLogIn(String id, String password) throws NotFoundUserException, SignInTypeErrorException {
         if(id.contains("@")) {
             throw new SignInTypeErrorException("올바른 아이디 형식이 아닙니다.");
         }
@@ -64,6 +64,6 @@ public class AdminService {
             throw new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        return admin;
+        return;
     }
 }
