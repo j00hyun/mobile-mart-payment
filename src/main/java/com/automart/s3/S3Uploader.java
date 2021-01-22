@@ -2,6 +2,7 @@ package com.automart.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +29,26 @@ public class S3Uploader implements Uploader {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
 
+    /**
+     * 파일 업로드
+     * @param multipartFile 업로드할 파일
+     * @param dirName 업로드 경로
+     * @param fileName 설정할 파일 이름
+     * @return 파일 저장 경로
+     */
     public String upload(MultipartFile multipartFile, String dirName, String fileName) throws IOException {
         File convertedFile = convert(multipartFile);
         return upload(convertedFile, dirName, fileName);
     }
+
+    /**
+     * 파일 삭제
+     * @param fileLocation 삭제할 파일 경로
+     */
+    public void delete(String fileLocation) {
+        amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileLocation));
+    }
+
 
     private String upload(File uploadFile, String dirName, String fileName) {
         fileName = dirName + "/" + fileName;
