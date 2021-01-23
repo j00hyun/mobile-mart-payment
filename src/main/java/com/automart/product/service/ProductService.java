@@ -99,11 +99,12 @@ public class ProductService {
      * 상품 제거하기
      * @param productNo : 제거할 상품에 대한 상품 고유번호
      */
-
     @Transactional
-    public void removeProduct(Integer productNo) {
+    public void removeProduct(Integer productNo) throws NotFoundDataException {
         Product product = productRepository.findByNo(productNo)
-                .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
+                .orElseThrow(()->new NotFoundDataException("상품이 존재하지 않습니다."));
+
+        uploader.delete(product.getImgUrl());
         productRepository.delete(product);
     }
 

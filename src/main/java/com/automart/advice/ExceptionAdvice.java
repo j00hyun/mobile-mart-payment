@@ -65,7 +65,6 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleDateFormatNotValidException (DateFormatNotValidException e) {
         return ErrorResponse.ErrorOf(400, e.getMessage());
-    }
 
     @ExceptionHandler(OAuth2AuthenticationProcessingException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)

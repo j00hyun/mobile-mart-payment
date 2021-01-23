@@ -21,7 +21,6 @@ public class ProductResolver {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-
     /**
      * 상품 단건 조회하기
      * @param productNo : 조회할 상품의 번호

@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+
 @Api(tags = {"5. Product Management"})
 @RestController
 @RequiredArgsConstructor
@@ -29,9 +31,9 @@ public class ProductController {
             @ApiResponse(code = 201, message = "상품이 정상적으로 등록되었습니다."),
             @ApiResponse(code = 403, message = "상품 등록에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 카테고리 오류)")
     })
-    @PostMapping("/register")
+    @PostMapping("")
     public ResponseEntity<ProductResponseDto> saveProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                          @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
+                                                          @Valid @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.saveProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -41,21 +43,28 @@ public class ProductController {
             "이미지를 바꿀시 swagger에서는 테스트 오류나므로 postman으로 테스트\n" +
             "상품 이미지 크기는 1MB이하여야함\n" +
             "상품 이미지 저장 경로는 products/{categoryNo}/{productNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, authorizations = { @Authorization(value = "jwtToken")})
+    @ApiImplicitParam(name = "productNo", value = "수정하려는 상품 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "상품이 정상적으로 수정되었습니다."),
             @ApiResponse(code = 403, message = "상품 수정에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 제품 고유번호 오류)")
     })
-    @PutMapping("/edit")
+    @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                            @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
+                                                            @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.updateProduct(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
     }
 
 
-    @ApiOperation("상품 제거")
-    @DeleteMapping("/delete/{productNo}")
-    public ResponseEntity<Void> removeProduct(@PathVariable int productNo) {
+    @ApiOperation(value = "상품 제거", notes = "등록된 상품을 삭제한다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiImplicitParam(name = "productNo", value = "삭제하려는 상품 고유번호", required = true, dataType = "int", defaultValue = "1")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "상품이 정상적으로 삭제되었습니다."),
+            @ApiResponse(code = 403, message = "상품 삭제에 실패하였습니다. (제품 고유번호 오류)")
+    })
+    @DeleteMapping("/{productNo}")
+    public ResponseEntity<Void> removeProduct(@ApiIgnore @RequestHeader("Authorization") String token,
+                                              @PathVariable int productNo) {
         productService.removeProduct(productNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
