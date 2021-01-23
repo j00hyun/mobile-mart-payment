@@ -1,8 +1,9 @@
 package com.automart.user.controller;
 
 import com.automart.advice.exception.InvalidTokenException;
-import com.automart.advice.exception.NotFoundUserException;
+import com.automart.advice.exception.NotFoundDataException;
 import com.automart.advice.exception.SMSException;
+import com.automart.advice.exception.SessionUnstableException;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.User;
@@ -65,7 +66,7 @@ public class UserController {
     })
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/email")
-    public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException {
+    public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundDataException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
         return ResponseEntity.status(HttpStatus.OK).body(user.getEmail());
     }
@@ -93,7 +94,7 @@ public class UserController {
     })
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/reissue/password")
-    public ResponseEntity<Void> findPassword(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException, SMSException {
+    public ResponseEntity<Void> findPassword(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundDataException, SMSException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
         String newPassword = userService.generateTempPw(requestDto.getPhone());
         userService.changePassword(user.getNo(), newPassword);
@@ -112,7 +113,7 @@ public class UserController {
     @GetMapping("/me")
     public User getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return userRepository.findByNo(userPrincipal.getNo())
-                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
     }
 
     @ApiOperation(value = "(개발용) 이메일로 회원 조회", notes = "이메일로 회원을 조회한다.", authorizations = { @Authorization(value = "jwtToken")})
@@ -217,7 +218,7 @@ public class UserController {
     @PostMapping(value = "/change/password")
     public ResponseEntity<AuthResponseDto> changePassword(@ApiIgnore @RequestHeader("Authorization") String token,
                                                           @AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                          @RequestParam String newPassword) throws NotFoundUserException {
+                                                          @RequestParam String newPassword) throws SessionUnstableException {
         /* password 변경 */
         User user = userService.changePassword(userPrincipal.getNo(), newPassword);
         user.makeFalseTempPw();

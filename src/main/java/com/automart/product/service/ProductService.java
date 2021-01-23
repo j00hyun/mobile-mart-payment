@@ -1,7 +1,8 @@
 package com.automart.product.service;
 
-import com.automart.advice.exception.ForbiddenDeleteException;
-import com.automart.advice.exception.ForbiddenSaveException;
+import com.automart.advice.exception.DateFormatNotValidException;
+import com.automart.advice.exception.MultipartException;
+import com.automart.advice.exception.NotFoundDataException;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.product.domain.Product;
@@ -32,13 +33,13 @@ public class ProductService {
      * @return 등록한 상품 식별자
      */
     @Transactional
-    public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) throws ForbiddenSaveException {
+    public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) throws Exception {
         Product product = null;
         // 파일 저장 경로 : products/{categoryNo}/{productNo}
         String dirName = "products/" + requestDto.getCategoryNo();
 
         Category category = categoryRepository.findByNo(requestDto.getCategoryNo())
-                .orElseThrow(() -> new ForbiddenSaveException("해당 카테고리가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundDataException("해당 카테고리가 존재하지 않습니다."));
 
         try {
             product = Product.createProduct(category, requestDto.getName(),
@@ -49,10 +50,10 @@ public class ProductService {
             uploader.upload(requestDto.getImg(), dirName, Integer.toString(product.getNo()));
 
         } catch (ParseException e) {
-            throw new ForbiddenSaveException("마지막 입고 날짜의 형식이 올바르지 않습니다.");
+            throw new DateFormatNotValidException("마지막 입고 날짜의 형식이 올바르지 않습니다.");
         } catch (IOException e) {
             productRepository.delete(product);
-            throw new ForbiddenSaveException("이미지 업로드에 실패하였습니다.");
+            throw new MultipartException("이미지 업로드에 실패하였습니다.");
         }
 
         product.setImgUrl(dirName + "/" + product.getNo());
@@ -67,9 +68,9 @@ public class ProductService {
      * @return 수정된 상품에 대한 Dto
      */
     @Transactional
-    public ProductResponseDto updateProduct(int productNo, ProductUpdateRequestDto requestDto) throws ForbiddenSaveException {
-        Product product = productRepository.findByNo(productNo)
-                .orElseThrow(()->new ForbiddenSaveException("상품이 존재하지 않습니다."));
+    public ProductResponseDto updateProduct(ProductUpdateRequestDto requestDto) throws Exception {
+        Product product = productRepository.findByNo(requestDto.getNo())
+                .orElseThrow(()->new NotFoundDataException("상품이 존재하지 않습니다."));
         int categoryNo = product.getCategory().getNo();
         String dirName = "products/" + categoryNo;
 
@@ -84,9 +85,9 @@ public class ProductService {
             }
 
         } catch (ParseException e) {
-            throw new ForbiddenSaveException("마지막 입고 날짜의 형식이 올바르지 않습니다.");
+            throw new DateFormatNotValidException ("마지막 입고 날짜의 형식이 올바르지 않습니다.");
         } catch (IOException e) {
-            throw new ForbiddenSaveException("이미지 업로드에 실패하였습니다.");
+            throw new MultipartException("이미지 업로드에 실패하였습니다.");
         }
 
         productRepository.save(product);
@@ -99,9 +100,9 @@ public class ProductService {
      * @param productNo : 제거할 상품에 대한 상품 고유번호
      */
     @Transactional
-    public void removeProduct(Integer productNo) throws ForbiddenDeleteException {
+    public void removeProduct(Integer productNo) throws NotFoundDataException {
         Product product = productRepository.findByNo(productNo)
-                .orElseThrow(()->new ForbiddenDeleteException("상품이 존재하지 않습니다."));
+                .orElseThrow(()->new NotFoundDataException("상품이 존재하지 않습니다."));
 
         uploader.delete(product.getImgUrl());
         productRepository.delete(product);

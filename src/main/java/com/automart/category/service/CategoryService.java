@@ -1,8 +1,8 @@
 package com.automart.category.service;
 
+import com.automart.advice.exception.DuplicateDataException;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
-import com.automart.advice.exception.ForbiddenMakeCategoryException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,11 @@ public class CategoryService {
      * @param name : 생성할 카테고리 이름
      * @return : 생성된 카테고리
      */
-    public Category saveCategory(String name) throws ForbiddenMakeCategoryException {
+    public Category saveCategory(String name) throws DuplicateDataException {
         log.info("카테고리 생성");
 
         if(categoryRepository.findByName(name).isPresent()) {
-            throw new ForbiddenMakeCategoryException("동일한 카테고리명이 존재합니다.");
+            throw new DuplicateDataException("동일한 카테고리명이 존재합니다.");
         }
         int no = categoryRepository.save(Category.builder().name(name).build()).getNo();
         return categoryRepository.findByNo(no).get();

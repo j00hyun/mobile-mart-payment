@@ -1,6 +1,7 @@
 package com.automart.security.oauth2;
 
-import com.automart.advice.exception.OAuth2AuthenticationProcessingException;
+import com.automart.advice.exception.DuplicateDataException;
+import com.automart.advice.exception.SessionUnstableException;
 import com.automart.security.UserPrincipal;
 import com.automart.security.oauth2.user.OAuth2UserInfo;
 import com.automart.security.oauth2.user.OAuth2UserInfoFactory;
@@ -63,7 +64,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, userNameAttributeName, oAuth2User.getAttributes());
         if(StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
-            throw new OAuth2AuthenticationProcessingException("회원정보에 이메일이 존재하지 않습니다.");
+            throw new SessionUnstableException("회원정보에 이메일이 존재하지 않습니다.");
         }
 
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
@@ -71,7 +72,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if(userOptional.isPresent()) {
             user = userOptional.get();
             if(!user.getSnsType().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
-                throw new OAuth2AuthenticationProcessingException("이미 " +
+                throw new DuplicateDataException("이미 " +
                         user.getSnsType() + " 를 통해 등록된 이메일 입니다. " + user.getSnsType() +
                         " 으로 로그인 해주세요.");
             }
