@@ -1,6 +1,6 @@
 package com.automart.product.resolver;
 
-import com.automart.advice.exception.ForbiddenSaveException;
+import com.automart.advice.exception.NotFoundDataException;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.product.domain.Product;
@@ -20,7 +20,6 @@ public class ProductResolver {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-
 
     /**
      * 상품 단건 조회하기
@@ -42,7 +41,7 @@ public class ProductResolver {
     @GraphQLQuery(name = "showProducts")
     public List<ProductResponseDto> showProducts(String categoryCode) {
         Category category = categoryRepository.findByCode(categoryCode)
-                .orElseThrow(() -> new ForbiddenSaveException("해당 카테고리가 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundDataException("해당 카테고리가 존재하지 않습니다."));
         List<Product> products = productRepository.findAllByCategory(category);
         return ProductResponseDto.listOf(products);
     }

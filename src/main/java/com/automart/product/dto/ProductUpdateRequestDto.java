@@ -6,7 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class ProductUpdateRequestDto {
 
-    private String name; // 상품명
+    private int no; // 상품 고유 번호
+    private String name; // 상품 이름
     private int stock; // 남은 수량
     private int minStock; // 자동주문 수량
     private String receivingDate; // 마지막 입고 날짜
@@ -18,7 +19,8 @@ public class ProductUpdateRequestDto {
 
 
     @Builder
-    public ProductUpdateRequestDto(String name, int stock, int minStock, String receivingDate, String location, int price, int cost, int code, MultipartFile img) {
+    public ProductUpdateRequestDto(int no, String name, int stock, int minStock, String receivingDate, String location, int price, int cost, int code, MultipartFile img) {
+        this.no = no;
         this.name = name;
         this.stock = stock;
         this.minStock = minStock;

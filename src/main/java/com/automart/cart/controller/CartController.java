@@ -1,7 +1,7 @@
 package com.automart.cart.controller;
 
 import com.automart.advice.exception.NotEnoughStockException;
-import com.automart.advice.exception.NotFoundUserException;
+import com.automart.advice.exception.SessionUnstableException;
 import com.automart.cart.dto.CartResponseDto;
 import com.automart.cart.service.CartService;
 import com.automart.security.UserPrincipal;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/create/{productCode}")
     public ResponseEntity<Void> addProductByCode(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                 @PathVariable int productCode) throws NotFoundUserException, NotEnoughStockException {
+                                                 @PathVariable int productCode) throws SessionUnstableException, NotEnoughStockException {
         cartService.addProductByCode(userPrincipal.getNo(), productCode);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -51,7 +50,7 @@ public class CartController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/list")
-    public ResponseEntity<List<CartResponseDto>> showUserCart(@AuthenticationPrincipal UserPrincipal userPrincipal) throws NotFoundUserException {
+    public ResponseEntity<List<CartResponseDto>> showUserCart(@AuthenticationPrincipal UserPrincipal userPrincipal) throws SessionUnstableException {
         List<CartResponseDto> cartResponseDtos = cartService.showUserCarts(userPrincipal.getNo());
         return ResponseEntity.status(HttpStatus.OK).body(cartResponseDtos);
     }
@@ -68,7 +67,7 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/add/{productNo}")
     public ResponseEntity<Void> addProductCount(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                @PathVariable int productNo)  throws NotFoundUserException, NotEnoughStockException {
+                                                @PathVariable int productNo)  throws SessionUnstableException, NotEnoughStockException {
         cartService.addProduct(userPrincipal.getNo(), productNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -84,7 +83,7 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/sub/{productNo}")
     public ResponseEntity<Void> subProductCount(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                @PathVariable int productNo) throws NotFoundUserException {
+                                                @PathVariable int productNo) throws SessionUnstableException {
         cartService.subtractProduct(userPrincipal.getNo(), productNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -100,7 +99,7 @@ public class CartController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/delete/{productNo}")
     public ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                              @PathVariable int productNo) throws NotFoundUserException {
+                                              @PathVariable int productNo) throws SessionUnstableException {
         cartService.takeProductOutOfCart(userPrincipal.getNo(), productNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

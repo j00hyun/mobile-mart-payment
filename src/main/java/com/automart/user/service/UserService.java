@@ -35,11 +35,11 @@ public class UserService {
      * 로컬 회원 이메일 확인
      * @param email : 이메일 주소
      */
-    public void checkDuplicateEmail(String email) throws ForbiddenSignUpException {
+    public void checkDuplicateEmail(String email) throws DuplicateDataException {
         Optional<User> findUser = userRepository.findByEmail(email);
 
         if(findUser.isPresent()) {
-            throw new ForbiddenSignUpException("동일한 이메일의 회원이 이미 존재합니다.");
+            throw new DuplicateDataException("동일한 이메일의 회원이 이미 존재합니다.");
         }
     }
 
@@ -47,11 +47,11 @@ public class UserService {
      * 휴대폰 중복확인
      * @param phone_no : 휴대폰 번호
      */
-    public void checkDuplicateTel(String phone_no) throws ForbiddenSignUpException {
+    public void checkDuplicateTel(String phone_no) throws DuplicateDataException {
         Optional<User> findUser = userRepository.findByTel(phone_no);
 
         if(findUser.isPresent()) {
-            throw new ForbiddenSignUpException("동일한 휴대폰 번호의 회원이 이미 존재합니다.");
+            throw new DuplicateDataException("동일한 휴대폰 번호의 회원이 이미 존재합니다.");
         }
     }
 
@@ -96,9 +96,9 @@ public class UserService {
      * @return : 유저 정보
      */
     @Transactional
-    public User changePassword(int no, String password) throws NotFoundUserException {
+    public User changePassword(int no, String password) throws SessionUnstableException {
         User user = userRepository.findByNo(no)
-                .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new SessionUnstableException("해당하는 회원을 찾을 수 없습니다."));
 
         user.setPassword(passwordEncoder.encode(password)); // 패스워드를 인코딩을 써서 암호화한다.
         userRepository.save(user);
@@ -112,15 +112,12 @@ public class UserService {
      * @param password : 비밀번호
      * @return : 해당 유저 정보
      */
-    public User checkLogIn(String email, String password) throws NotFoundUserException, SignInTypeErrorException {
-        if(!email.contains("@")) {
-            throw new SignInTypeErrorException("올바른 형식의 이메일 주소가 아닙니다.");
-        }
+    public User checkLogIn(String email, String password) throws SessionUnstableException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new SessionUnstableException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
         if(!passwordEncoder.matches(password, user.getPassword())) {
-            throw new NotFoundUserException("아이디 또는 비밀번호가 일치하지 않습니다.");
+            throw new SessionUnstableException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
         return user;
@@ -132,7 +129,7 @@ public class UserService {
      * @return : 회원 고유 번호
      */
     @Transactional
-    public Integer saveUser(User user) throws ForbiddenSignUpException {
+    public Integer saveUser(User user) throws DuplicateDataException {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // 패스워드 인코딩을 써서 암호화한다.
         userRepository.save(user);
         return user.getNo();
@@ -143,9 +140,9 @@ public class UserService {
      * @param name : 이름
      * @param phone : 휴대폰 번호
      */
-    public User findUserByNameAndTel(String name, String phone) throws NotFoundUserException {
+    public User findUserByNameAndTel(String name, String phone) throws NotFoundDataException {
         User user = userRepository.findByNameAndTel(name, phone)
-                .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundDataException("해당하는 회원을 찾을 수 없습니다."));
 
         return user;
     }
@@ -160,7 +157,7 @@ public class UserService {
 
         if (jwtTokenProvider.validateToken(token)) {
             User user = userRepository.findByEmail(jwtTokenProvider.getPrincipal(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
-                    .orElseThrow(() -> new NotFoundUserException("해당하는 회원을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new SessionUnstableException("해당하는 회원을 찾을 수 없습니다."));
             userRepository.delete(user);
             return "delete success";
         } else {

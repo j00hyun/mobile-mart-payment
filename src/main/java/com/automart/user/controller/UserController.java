@@ -1,8 +1,9 @@
 package com.automart.user.controller;
 
 import com.automart.advice.exception.InvalidTokenException;
-import com.automart.advice.exception.NotFoundUserException;
+import com.automart.advice.exception.NotFoundDataException;
 import com.automart.advice.exception.SMSException;
+import com.automart.advice.exception.SessionUnstableException;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.User;
@@ -61,37 +62,36 @@ public class UserController {
             @ApiResponse(code = 200, message = "일치하는 회원이 존재합니다."),
             @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
     })
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/email")
-    public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException {
+    public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundDataException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
         return ResponseEntity.status(HttpStatus.OK).body(user.getEmail());
     }
 
 
     @ApiOperation(value = "8 비밀번호 찾기 시 핸드폰 본인인증", notes = "비밀번호를 찾기 위해 본인인증 메세지를 전송한다.")
-//    @ApiImplicitParam(name = "phoneNo", value = "인증번호를 전송할 핸드폰번호", required = true, dataType = "string", defaultValue = "01012345678")
     @ApiResponses({
             @ApiResponse(code = 200, message = "전송된 인증번호 반환"),
             @ApiResponse(code = 500, message = "메세지 전송 실패"),
     })
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping("/find/message")
+//    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/find/password/message")
     public ResponseEntity<Integer> sendPhoneForFindPw(@ApiParam("휴대폰 번호") @Valid @RequestBody SendMessageRequestDto requestDto) throws SMSException {
         int validNum = userService.validatePhone(requestDto.getPhoneNo());
         return ResponseEntity.status(HttpStatus.OK).body(validNum);
     }
 
 
-    @ApiOperation(value = "8 새 비밀번호 발급", notes = "해당 회원이 존재하면 새 비밀번호를 문자로 발급한다.")
+    @ApiOperation(value = "8 임시 비밀번호 발급", notes = "해당 회원이 존재하면 새 비밀번호를 문자로 발급한다.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "새 비밀번호 발급 후 전송 완료"),
             @ApiResponse(code = 500, message = "메세지 전송 실패"),
             @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
     })
-    @PreAuthorize("hasRole('USER')")
-    @PostMapping("/find/message/password")
-    public ResponseEntity<Void> findPassword(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundUserException, SMSException {
+//    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/find/password")
+    public ResponseEntity<Void> findPassword(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundDataException, SMSException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
         String newPassword = userService.generateTempPw(requestDto.getPhone());
         userService.changePassword(user.getNo(), newPassword);
@@ -110,7 +110,7 @@ public class UserController {
     @GetMapping("/me")
     public User getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return userRepository.findByNo(userPrincipal.getNo())
-                .orElseThrow(() -> new NotFoundUserException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
     }
 
     @ApiOperation(value = "(개발용) 이메일로 회원 조회", notes = "이메일로 회원을 조회한다.", authorizations = { @Authorization(value = "jwtToken")})
@@ -119,9 +119,9 @@ public class UserController {
             @ApiResponse(code = 200, message = "정상적으로 해당 회원정보가 조회되었습니다.")
     })
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{email}")
+    @GetMapping("")
     public ResponseEntity<UserResponseDto> showUser(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                    @PathVariable String email) {
+                                                    @RequestParam String email) {
         UserResponseDto userResponseDto = userService.showUser(email);
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
@@ -212,10 +212,10 @@ public class UserController {
             @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않아 비밀번호 변경에 실패하였습니다.")
     })
     @PreAuthorize("hasRole('USER')")
-    @PatchMapping(value = "/me/password")
+    @PutMapping(value = "/me/password")
     public ResponseEntity<AuthResponseDto> changePassword(@ApiIgnore @RequestHeader("Authorization") String token,
                                                           @AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                          @ApiParam("새 비밀번호") @Valid @RequestBody ChangePasswordRequestDto requestDto) throws NotFoundUserException {
+                                                          @ApiParam("새 비밀번호") @Valid @RequestBody ChangePasswordRequestDto requestDto) throws SessionUnstableException {
         /* password 변경 */
         User user = userService.changePassword(userPrincipal.getNo(), requestDto.getPassword());
         user.makeFalseTempPw();
