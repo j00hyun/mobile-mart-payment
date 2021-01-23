@@ -36,12 +36,12 @@ public class ProductResolver {
 
     /**
      * 해당 카테고리의 상품 조회하기
-     * @param categoryNo : 조회할 카테고리 고유번호
+     * @param categoryCode : 조회할 카테고리 고유 코드
      * @return 전체 상품에 대한 정보를 담은 Dto를 반환
      */
     @GraphQLQuery(name = "showProducts")
-    public List<ProductResponseDto> showProducts(int categoryNo) {
-        Category category = categoryRepository.findByNo(categoryNo)
+    public List<ProductResponseDto> showProducts(String categoryCode) {
+        Category category = categoryRepository.findByCode(categoryCode)
                 .orElseThrow(() -> new ForbiddenSaveException("해당 카테고리가 존재하지 않습니다."));
         List<Product> products = productRepository.findAllByCategory(category);
         return ProductResponseDto.listOf(products);

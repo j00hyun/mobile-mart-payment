@@ -1,12 +1,12 @@
 package com.automart.order.service;
 
-import com.automart.cart.domain.Cart;
+import com.automart.cart.domain.CartItem;
 import com.automart.order.domain.Order;
 import com.automart.order.domain.OrderDetail;
 import com.automart.order.dto.OrderRequestDto;
 import com.automart.order.dto.OrderResponseDto;
 import com.automart.user.domain.User;
-import com.automart.cart.repository.CartRepository;
+import com.automart.cart.repository.CartItemRepository;
 import com.automart.order.repository.OrderRepository;
 import com.automart.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     /***
      * 주문하기
@@ -42,8 +42,8 @@ public class OrderService {
         // 주문상품정보를 생성한다.
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (Integer cartNo : requestDto.getCartNos()) {
-            Cart cart = cartRepository.findByNo(cartNo).get();
-            orderDetails.add(OrderDetail.createOrderDetail(cart.getProduct(), cart.getCount(), cart.getPrice()));
+            CartItem cartItem = cartItemRepository.findByNo(cartNo).get();
+            orderDetails.add(OrderDetail.createOrderDetail(cartItem.getProduct(), cartItem.getCount(), cartItem.getPrice()));
         }
 
         // 주문 생성

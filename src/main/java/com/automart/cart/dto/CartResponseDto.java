@@ -1,6 +1,6 @@
 package com.automart.cart.dto;
 
-import com.automart.cart.domain.Cart;
+import com.automart.cart.domain.CartItem;
 import com.automart.product.domain.Product;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,19 +26,19 @@ public class CartResponseDto {
         this.count = count;
     }
 
-    public static CartResponseDto of(Cart cart) {
-        Product product = cart.getProduct();
+    public static CartResponseDto of(CartItem cartItem) {
+        Product product = cartItem.getProduct();
 
         return CartResponseDto.builder()
                 .productCode(product.getNo())
                 .productName(product.getName())
                 .productPrice(product.getPrice())
                 .categoryName(product.getCategory().getName())
-                .count(cart.getCount())
+                .count(cartItem.getCount())
                 .build();
     }
 
-    public static List<CartResponseDto> listOf(List<Cart> carts) {
+    public static List<CartResponseDto> listOf(List<CartItem> carts) {
         return carts.stream().map(CartResponseDto::of)
                 .collect(Collectors.toList());
     }

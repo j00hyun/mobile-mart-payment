@@ -34,10 +34,10 @@ public class ProductService {
     @Transactional
     public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) throws ForbiddenSaveException {
         Product product = null;
-        // 파일 저장 경로 : products/{categoryNo}/{productNo}
-        String dirName = "products/" + requestDto.getCategoryNo();
+        // 파일 저장 경로 : products/{categoryCode}/{productNo}
+        String dirName = "products/" + requestDto.getCategoryCode();
 
-        Category category = categoryRepository.findByNo(requestDto.getCategoryNo())
+        Category category = categoryRepository.findByCode(requestDto.getCategoryCode())
                 .orElseThrow(() -> new ForbiddenSaveException("해당 카테고리가 존재하지 않습니다."));
 
         try {
@@ -70,8 +70,8 @@ public class ProductService {
     public ProductResponseDto updateProduct(int productNo, ProductUpdateRequestDto requestDto) throws ForbiddenSaveException {
         Product product = productRepository.findByNo(productNo)
                 .orElseThrow(()->new ForbiddenSaveException("상품이 존재하지 않습니다."));
-        int categoryNo = product.getCategory().getNo();
-        String dirName = "products/" + categoryNo;
+        String categoryCode = product.getCategory().getCode();
+        String dirName = "products/" + categoryCode;
 
         try {
             product = product.update(requestDto.getName(), requestDto.getPrice(),

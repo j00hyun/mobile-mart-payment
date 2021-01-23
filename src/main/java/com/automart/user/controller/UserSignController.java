@@ -59,8 +59,8 @@ public class UserSignController {
             @ApiResponse(code = 200, message = "이메일이 중복되지 않습니다."),
             @ApiResponse(code = 406, message = "동일한 이메일의 회원이 이미 존재합니다.")
     })
-    @PostMapping("/users/valid/email")
-    public ResponseEntity<Void> validEmail(@RequestBody String email) throws ForbiddenSignUpException {
+    @GetMapping("/users/signup/{email}")
+    public ResponseEntity<Void> validEmail(@PathVariable String email) throws ForbiddenSignUpException {
         userService.checkDuplicateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -113,16 +113,15 @@ public class UserSignController {
 
 
     @ApiOperation(value = "3-2 회원가입시 핸드폰 본인인증", notes = "회원가입시 핸드폰 중복확인 후 본인인증 메세지를 전송한다.")
-    @ApiImplicitParam(name = "phoneNo", value = "인증번호를 전송할 핸드폰번호", required = true, dataType = "string", defaultValue = "01012345678")
     @ApiResponses({
             @ApiResponse(code = 200, message = "전송된 인증번호 반환"),
             @ApiResponse(code = 500, message = "메세지 전송 실패"),
             @ApiResponse(code = 406, message = "동일한 휴대폰 번호의 회원이 이미 존재합니다.")
     })
-    @PostMapping("/users/valid/phone")
-    public ResponseEntity<Integer> validPhoneForSignUp(@RequestParam String phoneNo) throws SMSException, ForbiddenSignUpException {
-        userService.checkDuplicateTel(phoneNo);
-        int validNum = userService.validatePhone(phoneNo);
+    @PostMapping("/users/signup/message")
+    public ResponseEntity<Integer> validPhoneForSignUp(@ApiParam("휴대폰 번호") @Valid @RequestBody SendMessageRequestDto requestDto) throws SMSException, ForbiddenSignUpException {
+        userService.checkDuplicateTel(requestDto.getPhoneNo());
+        int validNum = userService.validatePhone(requestDto.getPhoneNo());
         return ResponseEntity.status(HttpStatus.OK).body(validNum);
     }
 
@@ -165,7 +164,7 @@ public class UserSignController {
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 406, message = "아이디가 중복되어 회원가입에 실패하였습니다.")
     })
-    @PostMapping("/admin/signup")
+    @PostMapping("/admins/signup")
     public ResponseEntity<Void> adminSignUp(@ApiParam("가입 회원 정보") @Valid @RequestBody AdminSignUpRequestDto requestDto, BindingResult result) throws ForbiddenSignUpException {
 
         /* 입력값 유효성 검증 실패 처리 */
@@ -195,7 +194,7 @@ public class UserSignController {
             @ApiResponse(code = 403, message = "아이디 또는 비밀번호가 일치하지 않습니다."),
             @ApiResponse(code = 406, message = "아이디에는 '@'가 포함될 수 없습니다.")
     })
-    @PostMapping("/admin/signin")
+    @PostMapping("/admins/signin")
     public ResponseEntity<AuthResponseDto> adminSignIn(@ApiParam("로그인 정보") @Valid @RequestBody AdminSignInRequestDto requestDto, BindingResult result) throws NotFoundUserException, SignInTypeErrorException {
 
         /* 입력값 유효성 검증 실패 처리 */

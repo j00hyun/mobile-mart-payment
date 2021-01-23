@@ -1,5 +1,7 @@
 package com.automart.category.controller;
 
+import com.automart.category.dto.CategorySaveRequestDto;
+import com.automart.category.dto.CategoryUpdateRequestDto;
 import com.automart.category.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -11,29 +13,30 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @ApiOperation("카테고리 등록")
-    @PostMapping(value = "/register", produces = "text/plain;charset=UTF-8")
-    public ResponseEntity<Void> saveCategory(@RequestBody @Valid String categoryName) {
-        categoryService.saveCategory(categoryName);
+    @PostMapping(value = "")
+    public ResponseEntity<Void> saveCategory(@Valid @RequestBody CategorySaveRequestDto requestDto) {
+        categoryService.saveCategory(requestDto.getCode(), requestDto.getName());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-//    @ApiOperation("카테고리 이름 수정")
-//    @PutMapping(value = "/edit/{categoryNo}/{categoryName}", produces = "text/plain;charset=UTF-8")
-//    public ResponseEntity<Void> updateCategory(@PathVariable int categoryNo, @PathVariable String categoryName) {
-//        categoryService.updateCategory(categoryNo, categoryName);
-//        return ResponseEntity.status(HttpStatus.OK).build();
-//    }
+    @ApiOperation("카테고리 이름 수정")
+    @PutMapping(value = "/{categoryCode}")
+    public ResponseEntity<Void> updateCategory(@PathVariable String categoryCode,
+                                               @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
+        categoryService.updateCategory(categoryCode, requestDto.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     @ApiOperation("카테고리 제거")
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> removeCategory(@RequestParam(value = "categoryNo") int categoryNo) {
-        categoryService.deleteCategory(categoryNo);
+    @DeleteMapping("/{categoryCode}")
+    public ResponseEntity<Void> removeCategory(@PathVariable String categoryCode) {
+        categoryService.deleteCategory(categoryCode);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

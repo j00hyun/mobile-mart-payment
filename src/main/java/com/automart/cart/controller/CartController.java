@@ -35,7 +35,7 @@ public class CartController {
             @ApiResponse(code = 406, message = "상품을 찾을 수 없거나 재고가 부족합니다.")
     })
     @PreAuthorize("hasRole('USER')")
-    @PutMapping("/create/{productCode}")
+    @PostMapping("/create/{productCode}")
     public ResponseEntity<Void> addProductByCode(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                  @PathVariable int productCode) throws NotFoundUserException, NotEnoughStockException {
         cartService.addProductByCode(userPrincipal.getNo(), productCode);

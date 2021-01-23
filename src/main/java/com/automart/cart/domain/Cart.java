@@ -1,13 +1,17 @@
 package com.automart.cart.domain;
 
-import com.automart.product.domain.Product;
+
+import com.automart.order.domain.OrderDetail;
 import com.automart.user.domain.User;
-import com.automart.advice.exception.NotEnoughStockException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "cart")
@@ -19,89 +23,41 @@ public class Cart {
     @Column(name = "cart_no")
     private int no; // 장바구니 고유번호
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_no", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_no")
     private User user; // 고객 고유번호
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_no", nullable = false)
-    private Product product; // 상품 고유번호
+    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CartItem> cartItems = new ArrayList<>();
 
-    @Column(name = "cart_count", columnDefinition = "integer default 1")
-    private int count; // 담은 상품 수량
+    @CreatedDate
+    @Column(name = "cart_date")
+    private LocalDateTime cartDate; // 장바구니 생성 날짜
 
-    @Column(name = "cart_price")
-    private int price; // 수량 포함 제품 가격
 
     public void setUser(User user) {
         this.user = user;
-        user.getCarts().add(this); // 양방향 연관관계 설정
+        user.setCart(this);
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
-        product.getCarts().add(this);
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    /**
-     * 카트에 물건 담기
-     */
-    public static Cart createCart(User user, Product product) throws NotEnoughStockException {
+    // 장바구니 생성
+    public static Cart createCart(User user) {
         Cart cart = new Cart();
-        System.out.println("cart user : " + user.getNo());
         cart.setUser(user);
-
-        // 재고가 존재해야만 가능
-        if(product.getStock() < 1) {
-            throw new NotEnoughStockException("재고 부족으로 인해 상품을 담을 수 없습니다.");
-        }
-
-        cart.setProduct(product);
-        cart.setCount(1);
-        cart.setPrice(product.getPrice());
 
         return cart;
     }
 
-    /**
-     * 카트에 담긴 물건 수량 증가
-     */
-    public void addCart() throws NotEnoughStockException {
-        // 재고가 존재해야만 가능
-        if(this.getProduct().getStock() < 1) {
-            throw new NotEnoughStockException("재고 부족으로 인해 상품을 담을 수 없습니다.");
-        }
-        this.count ++;
-        this.price += this.getProduct().getPrice();
+    // 해당 유저의 장바구니중 특정 제품 제거
+    public void removeCartItem(CartItem cartItem) {
+        this.cartItems.remove(cartItem);
     }
 
-    /**
-     * 카트에 담긴 물건 수량 감소
-     */
-    public void subtractCart() {
-        // 현재 카트에 담긴 물건의 수량이 2개 이상일 경우에만 감소 가능
-        if(this.getCount() > 1) {
-            this.count --;
-            this.price -= this.getProduct().getPrice();
+    // 해당 장바구니 목록 모두 삭제
+    public void clear() {
+        for(CartItem cartItem : cartItems) {
+            cartItem.removeCartItem();
         }
-    }
-
-    /**
-     * 카트에 담긴 물건 삭제
-     */
-    public void removeCart() {
-        this.user.removeCart(this);
-        this.product.removeCart(this);
         this.user = null;
-        this.product = null;
     }
-
 }

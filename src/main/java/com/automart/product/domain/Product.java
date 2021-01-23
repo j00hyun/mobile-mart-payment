@@ -1,11 +1,10 @@
 package com.automart.product.domain;
 
-import com.automart.cart.domain.Cart;
+import com.automart.cart.domain.CartItem;
 import com.automart.category.domain.Category;
 import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.order.domain.OrderDetail;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,10 +31,10 @@ public class Product {
     // 제품이 품절되거나 사라지면 카트에 들어있던 동일 제품도 사라져야한다
     @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Cart> carts = new ArrayList<>();
+    private List<CartItem> cartItems = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_no")
+    @JoinColumn(name = "category_code")
     private Category category; // 카테고리 고유번호
 
     @JsonIgnore
@@ -149,8 +148,8 @@ public class Product {
     /**
      * 해당 제품의 카트 삭제
      */
-    public void removeCart(Cart cart) {
-        this.carts.remove(cart);
+    public void removeCartItem(CartItem cartItem) {
+        this.cartItems.remove(cartItem);
     }
 
     /**

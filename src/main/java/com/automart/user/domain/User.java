@@ -1,6 +1,7 @@
 package com.automart.user.domain;
 
 import com.automart.cart.domain.Cart;
+import com.automart.cart.domain.CartItem;
 import com.automart.order.domain.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
@@ -44,8 +45,8 @@ public class User {
     private String snsKey; // 사용자 SNS 고유 key
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Cart> carts = new ArrayList<>();
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Cart cart;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -88,14 +89,14 @@ public class User {
     // 소셜로그인 유저 이메일 변겅
     public void setEmail(String email) { this.email = email; }
 
-    // 해당 유저의 장바구니중 특정 제품 제거
-    public void removeCart(Cart cart) {
-        this.carts.remove(cart);
-    }
+    // 장바구니 생성
+    public void setCart(Cart cart) { this.cart = cart; }
 
     // 해당 유저에 해당하는 장바구니 모두 제거
-    public void removeAllCart() {
-        this.carts.forEach(cart -> cart.removeCart());
-        this.carts.clear();
+    public void clearCart() {
+        if(this.cart != null) {
+            this.cart.clear();
+            this.cart = null;
+        }
     }
 }
