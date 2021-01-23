@@ -32,13 +32,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             String accessToken = (String) request.getAttribute("token");
             setResponse(response, accessToken);
 
-        } else {
-            /*
-            Default: Authentication Required 일때, Login URL로 Redirect 된다.
-            하지만 안드로이드 앱에서는 Redirect가 불필요하므로 401 에러와 에러 메세지를 return 한다.
-            */
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
         }
+//        else {
+//            /*
+//            Default: Authentication Required 일때, Login URL로 Redirect 된다.
+//            하지만 안드로이드 앱에서는 Redirect가 불필요하므로 401 에러와 에러 메세지를 return 한다.
+//            */
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
+//        }
     }
 
     /**

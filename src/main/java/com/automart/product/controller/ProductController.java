@@ -1,6 +1,5 @@
 package com.automart.product.controller;
 
-import com.automart.advice.exception.ForbiddenSaveProductException;
 import com.automart.product.dto.ProductResponseDto;
 import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.dto.ProductUpdateRequestDto;
@@ -32,7 +31,7 @@ public class ProductController {
     })
     @PostMapping("/register")
     public ResponseEntity<ProductResponseDto> saveProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                          @ModelAttribute ProductSaveRequestDto requestDto) throws ForbiddenSaveProductException {
+                                                          @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.saveProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -48,7 +47,7 @@ public class ProductController {
     })
     @PutMapping("/edit")
     public ResponseEntity<ProductResponseDto> updateProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                            @ModelAttribute ProductUpdateRequestDto requestDto) throws ForbiddenSaveProductException {
+                                                            @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.updateProduct(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
     }

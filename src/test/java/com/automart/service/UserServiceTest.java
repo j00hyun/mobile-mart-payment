@@ -1,5 +1,6 @@
 package com.automart.service;
 
+import com.automart.advice.exception.DuplicateDataException;
 import com.automart.cart.domain.Cart;
 import com.automart.cart.dto.CartResponseDto;
 import com.automart.cart.repository.CartRepository;
@@ -7,7 +8,6 @@ import com.automart.cart.service.CartService;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.category.service.CategoryService;
-import com.automart.advice.exception.ForbiddenSignUpException;
 import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.order.service.OrderService;
 import com.automart.order.domain.Order;
@@ -178,7 +178,7 @@ class UserServiceTest {
                 .build();
 
         // when
-        ForbiddenSignUpException exception = assertThrows(ForbiddenSignUpException.class, () -> {
+        DuplicateDataException exception = assertThrows(DuplicateDataException.class, () -> {
             userService.saveUser(user2);
         });
 
@@ -207,7 +207,7 @@ class UserServiceTest {
                 .build();
 
         // when
-        ForbiddenSignUpException exception = assertThrows(ForbiddenSignUpException.class, () -> {
+        DuplicateDataException exception = assertThrows(DuplicateDataException.class, () -> {
             userService.saveUser(user2);
         });
 
