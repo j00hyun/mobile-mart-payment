@@ -63,8 +63,9 @@ public class CategoryService {
      * 카테고리 삭제
      * @param code : 삭제할 카테고리 고유 코드
      */
-    public void deleteCategory(String code) {
-
+    public void deleteCategory(String code) throws NotFoundDataException{
+        Category category = categoryRepository.findByCode(code)
+                .orElseThrow(() -> new NotFoundDataException("해당 카테고리가 존재하지 않습니다."));
         categoryRepository.deleteByCode(code);
     }
 

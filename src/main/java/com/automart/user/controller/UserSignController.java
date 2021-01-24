@@ -64,6 +64,7 @@ public class UserSignController {
     @ApiImplicitParam(name = "email", value = "중복확인을 진행할 이메일주소", required = true, dataType = "string", defaultValue = "example@google.com")
     @ApiResponses({
             @ApiResponse(code = 200, message = "이메일이 중복되지 않습니다."),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 403, message = "동일한 이메일의 회원이 이미 존재합니다.")
     })
     @GetMapping("/users/signup")
@@ -110,13 +111,14 @@ public class UserSignController {
             return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new AuthResponseDto(accessToken));
         }
 
-        return ResponseEntity.ok(new AuthResponseDto(accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(accessToken));
     }
 
 
     @ApiOperation(value = "3-2 회원가입시 핸드폰 본인인증", notes = "회원가입시 핸드폰 중복확인 후 본인인증 메세지를 전송한다.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "전송된 인증번호 반환"),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 403, message = "동일한 휴대폰 번호의 회원이 이미 존재합니다."),
             @ApiResponse(code = 500, message = "메세지 전송 실패")
     })
@@ -206,6 +208,6 @@ public class UserSignController {
                 expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
         log.info("redis value : " + redisTemplate.opsForValue().get(userPrincipal.getPrincipal()));
 
-        return ResponseEntity.ok(new AuthResponseDto(accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(accessToken));
     }
 }

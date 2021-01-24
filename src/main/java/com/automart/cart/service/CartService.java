@@ -72,13 +72,13 @@ public class CartService {
      * @param userNo : 사용자 고유번호
      * @param productNo : 갯수 증가시킬 상품 고유번호
      */
-    public void addProduct(int userNo, int productNo) throws SessionUnstableException, NotEnoughStockException, NotFoundDataException {
+    public void addProduct(int userNo, int productNo) throws SessionUnstableException, NotFoundDataException {
         log.info("카트에 담긴 상품 증가");
 
         User user = userRepository.findByNo(userNo)
                 .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
         Product product = productRepository.findByNo(productNo)
-                .orElseThrow(() -> new NotEnoughStockException("해당 제품이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundDataException("해당 제품이 존재하지 않습니다."));
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new NotFoundDataException("해당 유저의 장바구니가 존재하지 않습니다."));
 
@@ -121,13 +121,13 @@ public class CartService {
      * @param userNo : 사용자 고유번호
      * @param productNo : 제거할 상품 고유번호
      */
-    public void takeProductOutOfCart(int userNo, int productNo) throws SessionUnstableException, NotEnoughStockException, NotFoundDataException {
+    public void takeProductOutOfCart(int userNo, int productNo) throws SessionUnstableException, NotFoundDataException {
         log.info("카트에 담긴 상품 삭제");
 
         User user = userRepository.findByNo(userNo)
                 .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
         Product product = productRepository.findByNo(productNo)
-                .orElseThrow(() -> new NotEnoughStockException("해당 제품이 존재하지 않습니다."));
+                .orElseThrow(() -> new NotFoundDataException("해당 제품이 존재하지 않습니다."));
         Cart cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new NotFoundDataException("해당 유저의 장바구니가 존재하지 않습니다."));
 
