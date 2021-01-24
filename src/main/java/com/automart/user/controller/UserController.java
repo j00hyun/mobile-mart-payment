@@ -28,6 +28,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,6 @@ public class UserController {
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 404, message = "일치하는 회원이 존재하지 않습니다.")
     })
-//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/email")
     public ResponseEntity<String> findEmail(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundDataException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
@@ -77,7 +77,6 @@ public class UserController {
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 500, message = "메세지 전송 실패"),
     })
-//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/password/message")
     public ResponseEntity<Integer> sendPhoneForFindPw(@ApiParam("휴대폰 번호") @Valid @RequestBody SendMessageRequestDto requestDto) throws SMSException {
         int validNum = userService.validatePhone(requestDto.getPhoneNo());
@@ -92,7 +91,6 @@ public class UserController {
             @ApiResponse(code = 404, message = "일치하는 회원이 존재하지 않습니다."),
             @ApiResponse(code = 500, message = "메세지 전송 실패")
     })
-//    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/password")
     public ResponseEntity<Void> findPassword(@ApiParam("이름, 휴대폰번호 정보") @Valid @RequestBody FindRequestDto requestDto) throws NotFoundDataException, SMSException {
         User user = userService.findUserByNameAndTel(requestDto.getName(), requestDto.getPhone());
@@ -130,7 +128,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
     public ResponseEntity<UserResponseDto> showUser(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                    @RequestParam String email) throws NotFoundDataException {
+                                                    @RequestParam @Email String email) throws NotFoundDataException {
         UserResponseDto userResponseDto = userService.showUser(email);
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
@@ -158,7 +156,7 @@ public class UserController {
                                                 "3. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
             @ApiResponse(code = 403, message = "유저만 접근 가능")
     })
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping(value = "/me")
     public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) throws SessionUnstableException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN));
@@ -262,21 +260,5 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(newAccessToken));
     }
-
-
-    /*@ApiOperation(value = "비밀번호 변경", notes = "회원의 비밀번호를 변경한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "userPassword", value = "변경할 새로운 비밀번호", required = true, dataType = "string", defaultValue = "newpassword")
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "성공적으로 비밀번호가 변경되었습니다. \n변경된 비밀번호로 다시 로그인해주세요. \nPOST: /logout이 이후에 필요"),
-            @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class)
-    })
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @PostMapping(value = "/changePassword")
-    public ResponseEntity<Void> changePassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                          @RequestParam String userPassword) {
-        userService.changePassword(userPrincipal.getNo(), userPassword);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }*/
-
 
 }

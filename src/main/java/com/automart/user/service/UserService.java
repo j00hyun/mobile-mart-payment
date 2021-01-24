@@ -159,7 +159,7 @@ public class UserService {
             User user = userRepository.findByEmail(jwtTokenProvider.getPrincipal(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
                     .orElseThrow(() -> new SessionUnstableException("해당하는 회원을 찾을 수 없습니다."));
             userRepository.delete(user);
-            return "delete success";
+            return "정상적으로 탈퇴되었습니다.";
         } else {
             throw new InvalidTokenException("Expried Token");
         }

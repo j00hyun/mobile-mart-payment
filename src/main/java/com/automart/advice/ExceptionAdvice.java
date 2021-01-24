@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -71,6 +74,15 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     protected ErrorResponse handleOAuth2AuthenticationProcessingException (OAuth2AuthenticationProcessingException e) {
         return ErrorResponse.ErrorOf(403, e.getMessage());
+    }
+
+    // query 파라미터 검사
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleConstraintViolationException (ConstraintViolationException e) {
+        int idx = e.getMessage().indexOf(" ");
+        String message = e.getMessage().substring(idx+1);
+        return ErrorResponse.ErrorOf(400, message);
     }
 
     // DTO 검사

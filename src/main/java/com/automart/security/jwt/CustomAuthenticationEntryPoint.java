@@ -41,6 +41,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             String accessToken = (String) request.getAttribute("token");
             setResponse(response, accessToken);
 
+        } else if(request.getAttribute("exception").equals("BLOCKED_TOKEN")) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "로그아웃된 유저입니다.");
         }
     }
 
