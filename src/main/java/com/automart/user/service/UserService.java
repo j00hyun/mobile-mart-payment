@@ -152,14 +152,13 @@ public class UserService {
      * @param token jwt 토큰
      */
     @Transactional
-    public String withdraw(String token, JwtTokenProvider.TokenType tokenType) throws SessionUnstableException {
+    public void withdraw(String token, JwtTokenProvider.TokenType tokenType) throws SessionUnstableException {
         token = token.replace("Bearer", "");
 
         if (jwtTokenProvider.validateToken(token)) {
             User user = userRepository.findByEmail(jwtTokenProvider.getPrincipal(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
                     .orElseThrow(() -> new SessionUnstableException("해당하는 회원을 찾을 수 없습니다."));
             userRepository.delete(user);
-            return "정상적으로 탈퇴되었습니다.";
         } else {
             throw new InvalidTokenException("Expried Token");
         }

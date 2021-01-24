@@ -12,6 +12,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Data
 public class ProductSaveRequestDto {
 
+    @NotBlank(message = "카테고리 고유 코드를 입력해주세요.")
     private String categoryCode; // 카테고리 고유 코드
 
     @NotBlank(message = "상품명을 입력해주세요.")

@@ -110,7 +110,7 @@ public class UserSignController {
             return ResponseEntity.status(HttpStatus.PRECONDITION_REQUIRED).body(new AuthResponseDto(accessToken));
         }
 
-        return ResponseEntity.ok(new AuthResponseDto(accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(accessToken));
     }
 
 
@@ -206,6 +206,6 @@ public class UserSignController {
                 expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
         log.info("redis value : " + redisTemplate.opsForValue().get(userPrincipal.getPrincipal()));
 
-        return ResponseEntity.ok(new AuthResponseDto(accessToken));
+        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(accessToken));
     }
 }

@@ -24,15 +24,15 @@ public class OrderController {
     @PostMapping("")
     public ResponseEntity<OrderResponseDto> order(@RequestBody @Valid OrderRequestDto requestDto) throws Exception {
         OrderResponseDto orderResponseDto = orderService.order(requestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(orderResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
     }
 
     @ApiOperation("주문 취소")
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{orderNo}/cancel")
-    public ResponseEntity<OrderResponseDto> cancel(@PathVariable int orderNo) {
+    public ResponseEntity<String> cancel(@PathVariable int orderNo) {
         orderService.cancel(orderNo);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("해당 상품에 대한 주문이 취소되었습니다.");
     }
 
     @ApiOperation("주문 상세 조회")

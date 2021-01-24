@@ -172,7 +172,8 @@ public class UserController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping(value = "/me")
     public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) throws SessionUnstableException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN));
+        userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 
@@ -272,7 +273,7 @@ public class UserController {
         UserPrincipal newUserPrincipal = (UserPrincipal) authentication.getPrincipal();
         String newAccessToken = jwtTokenProvider.generateAccessToken(newUserPrincipal);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(newAccessToken));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDto(newAccessToken));
     }
 
 }

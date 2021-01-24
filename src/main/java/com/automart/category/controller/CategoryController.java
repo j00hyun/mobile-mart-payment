@@ -34,7 +34,7 @@ public class CategoryController {
     public ResponseEntity<Void> updateCategory(@PathVariable String categoryCode,
                                                @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
         categoryService.updateCategory(categoryCode, requestDto.getName());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation("카테고리 제거")
@@ -42,7 +42,7 @@ public class CategoryController {
     @DeleteMapping("")
     public ResponseEntity<Void> removeCategory(@RequestBody CategoryRemoveRequestDto categoryRemoveRequestDto) {
         categoryService.deleteCategory(categoryRemoveRequestDto.getCode());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
 

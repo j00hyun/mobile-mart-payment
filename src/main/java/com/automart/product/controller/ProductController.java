@@ -1,5 +1,6 @@
 package com.automart.product.controller;
 
+import com.automart.product.dto.ProductRemoveRequestDto;
 import com.automart.product.dto.ProductResponseDto;
 import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.dto.ProductUpdateRequestDto;
@@ -55,7 +56,7 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> updateProduct(@ApiIgnore @RequestHeader("Authorization") String token,
                                                             @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.updateProduct(requestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
 
 
@@ -67,10 +68,10 @@ public class ProductController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
-    public ResponseEntity<Void> removeProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                              @PathVariable int productNo) {
-        productService.removeProduct(productNo);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<String> removeProduct(@ApiIgnore @RequestHeader("Authorization") String token,
+                                                @RequestBody ProductRemoveRequestDto productRemoveRequestDto) {
+        productService.removeProduct(productRemoveRequestDto.getNo());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 //    @ApiOperation("상품 상세 조회")

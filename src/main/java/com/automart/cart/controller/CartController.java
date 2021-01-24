@@ -40,7 +40,7 @@ public class CartController {
     public ResponseEntity<Void> addProductByCode(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                  @RequestBody CartAddProductRequestDto cartAddProductRequestDto) throws SessionUnstableException, NotEnoughStockException {
         cartService.addProductByCode(userPrincipal.getNo(), cartAddProductRequestDto.getProductCode());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -71,7 +71,7 @@ public class CartController {
     public ResponseEntity<Void> addProductCount(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                 @PathVariable int productNo)  throws SessionUnstableException, NotEnoughStockException {
         cartService.addProduct(userPrincipal.getNo(), productNo);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -87,7 +87,7 @@ public class CartController {
     public ResponseEntity<Void> subProductCount(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                 @PathVariable int productNo) throws SessionUnstableException {
         cartService.subtractProduct(userPrincipal.getNo(), productNo);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
@@ -103,6 +103,6 @@ public class CartController {
     public ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                               @RequestBody CartRemoveProductRequestDto cartRemoveProductRequestDto) throws SessionUnstableException {
         cartService.takeProductOutOfCart(userPrincipal.getNo(), cartRemoveProductRequestDto.getProductNo());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
