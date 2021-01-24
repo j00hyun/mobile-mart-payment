@@ -31,12 +31,13 @@ public class ProductController {
             "상품 이미지 저장 경로는 products/{categoryNo}/{productNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponses({
             @ApiResponse(code = 201, message = "상품이 정상적으로 등록되었습니다."),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 403, message = "상품 등록에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 카테고리 오류)")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ResponseEntity<ProductResponseDto> saveProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                          @Valid @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
+                                                          @ApiParam("등록할 상품 정보") @Valid @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.saveProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -49,12 +50,13 @@ public class ProductController {
     @ApiImplicitParam(name = "productNo", value = "수정하려는 상품 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "상품이 정상적으로 수정되었습니다."),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 403, message = "상품 수정에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 제품 고유번호 오류)")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                            @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
+                                                            @ApiParam("수정할 상품 정보") @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.updateProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -69,7 +71,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
     public ResponseEntity<String> removeProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                @RequestBody ProductRemoveRequestDto productRemoveRequestDto) {
+                                                @ApiParam("제거할 상품의 고유 번호") @RequestBody ProductRemoveRequestDto productRemoveRequestDto) {
         productService.removeProduct(productRemoveRequestDto.getNo());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

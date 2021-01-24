@@ -110,8 +110,7 @@ public class UserController {
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 내정보가 불러와졌습니다."),
             @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
-                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
-            @ApiResponse(code = 403, message = "유저만 접근 가능")
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class)
     })
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/me")
@@ -133,6 +132,7 @@ public class UserController {
     @ApiImplicitParam(name = "email", value = "조회할 회원의 이메일주소", required = true, dataType = "string", defaultValue = "example@google.com")
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 해당 회원정보가 조회되었습니다."),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
                                                 "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
             @ApiResponse(code = 403, message = "관리자만 접근 가능"),
@@ -163,11 +163,9 @@ public class UserController {
 
     @ApiOperation(value = "(개발용) 회원 탈퇴", notes = "특정 회원을 삭제한다", authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponses({
-            @ApiResponse(code = 200, message = "회원이 정상적으로 탈퇴되었습니다."),
-            @ApiResponse(code = 401, message = "1. 해당하는 회원을 찾을 수 없습니다.\n" +
-                                                "2. 로그인이 필요합니다.\n" +
-                                                "3. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
-            @ApiResponse(code = 403, message = "유저만 접근 가능")
+            @ApiResponse(code = 204, message = "회원이 정상적으로 탈퇴되었습니다."),
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
     })
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping(value = "/me")
@@ -222,12 +220,13 @@ public class UserController {
     @ApiImplicitParam(name = "userPassword", value = "해당 회원의 현재 비밀번호", required = true, dataType = "string", defaultValue = "oldpassword")
     @ApiResponses({
             @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class)
     })
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/me/valid")
     public ResponseEntity<Boolean> verifyPassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                  @RequestBody VerifyPasswordRequestDto verifyPasswordRequestDto) throws SessionUnstableException{
+                                                  @Valid @RequestBody VerifyPasswordRequestDto verifyPasswordRequestDto) throws SessionUnstableException{
         User user = userRepository.findByNo(userPrincipal.getNo())
                 .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
 

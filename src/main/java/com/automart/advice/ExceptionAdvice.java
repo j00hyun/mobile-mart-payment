@@ -22,6 +22,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ExceptionAdvice {
 
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ErrorResponse handleNullPointerException (NullPointerException e) {
+        return ErrorResponse.ErrorOf(400, e.getMessage());
+    }
+
     @ExceptionHandler(NotEnoughStockException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleNotEnoughStockException (NotEnoughStockException e) {
@@ -48,7 +54,7 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(SessionUnstableException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    protected ErrorResponse handleNotFoundDataException (SessionUnstableException e) {
+    protected ErrorResponse handleSessionUnstableException (SessionUnstableException e) {
         return ErrorResponse.ErrorOf(401, e.getMessage());
     }
 
