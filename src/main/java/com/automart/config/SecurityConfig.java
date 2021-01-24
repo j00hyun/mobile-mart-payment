@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 인증시 사용할 custom User Service
@@ -83,8 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtBasicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository, adminRepository, redisTemplate))
                 .authorizeRequests() // 이후 요청에 대한 사용권한 체크
-                    .antMatchers("/", "/*/signin", "/*/signup", "/*/valid/**", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
-                    .antMatchers("/graphql", "/products/**").hasRole("ADMIN")
+                    .antMatchers("/", "/*/signin", "/*/signup", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                    .antMatchers("/graphql").hasRole("ADMIN")
                     .anyRequest().authenticated() // 그 외의 모든 요청은 인증된 사용자만 접근 가능
                     .and()
                 .exceptionHandling()

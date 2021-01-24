@@ -60,7 +60,8 @@ public class UserController {
     @ApiOperation(value = "7 이메일 찾기", notes = "해당 회원의 이메일 주소를 찾는다.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "일치하는 회원이 존재합니다."),
-            @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
+            @ApiResponse(code = 404, message = "일치하는 회원이 존재하지 않습니다.")
     })
 //    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/email")
@@ -73,6 +74,7 @@ public class UserController {
     @ApiOperation(value = "8 비밀번호 찾기 시 핸드폰 본인인증", notes = "비밀번호를 찾기 위해 본인인증 메세지를 전송한다.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "전송된 인증번호 반환"),
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
             @ApiResponse(code = 500, message = "메세지 전송 실패"),
     })
 //    @PreAuthorize("hasRole('USER')")
@@ -86,8 +88,9 @@ public class UserController {
     @ApiOperation(value = "8 임시 비밀번호 발급", notes = "해당 회원이 존재하면 새 비밀번호를 문자로 발급한다.")
     @ApiResponses({
             @ApiResponse(code = 200, message = "새 비밀번호 발급 후 전송 완료"),
-            @ApiResponse(code = 500, message = "메세지 전송 실패"),
-            @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않습니다.")
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
+            @ApiResponse(code = 404, message = "일치하는 회원이 존재하지 않습니다."),
+            @ApiResponse(code = 500, message = "메세지 전송 실패")
     })
 //    @PreAuthorize("hasRole('USER')")
     @PostMapping("/find/password")
@@ -104,7 +107,9 @@ public class UserController {
     @ApiOperation(value = "(개발용) 내정보 조회", notes = "현재 인증된 유저의 정보를 가져온다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponses({
             @ApiResponse(code = 200, message = "정상적으로 내정보가 불러와졌습니다."),
-            @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class)
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "유저만 접근 가능")
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
@@ -116,19 +121,26 @@ public class UserController {
     @ApiOperation(value = "(개발용) 이메일로 회원 조회", notes = "이메일로 회원을 조회한다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "email", value = "조회할 회원의 이메일주소", required = true, dataType = "string", defaultValue = "example@google.com")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "정상적으로 해당 회원정보가 조회되었습니다.")
+            @ApiResponse(code = 200, message = "정상적으로 해당 회원정보가 조회되었습니다."),
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "관리자만 접근 가능"),
+            @ApiResponse(code = 404, message = "일치하는 회원이 존재하지 않습니다.")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
     public ResponseEntity<UserResponseDto> showUser(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                    @RequestParam String email) {
+                                                    @RequestParam String email) throws NotFoundDataException {
         UserResponseDto userResponseDto = userService.showUser(email);
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 
     @ApiOperation(value = "(개발용) 회원 전체 조회", notes = "회원목록을 조회한다", authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponses({
-            @ApiResponse(code = 200, message = "회원목록을 조회하는데 성공했습니다.")
+            @ApiResponse(code = 200, message = "회원목록을 조회하는데 성공했습니다."),
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "관리자만 접근 가능")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/all")
@@ -140,17 +152,25 @@ public class UserController {
 
     @ApiOperation(value = "(개발용) 회원 탈퇴", notes = "특정 회원을 삭제한다", authorizations = { @Authorization(value = "jwtToken")})
     @ApiResponses({
-            @ApiResponse(code = 200, message = "회원이 정상적으로 탈퇴되었습니다.")
+            @ApiResponse(code = 200, message = "회원이 정상적으로 탈퇴되었습니다."),
+            @ApiResponse(code = 401, message = "1. 해당하는 회원을 찾을 수 없습니다.\n" +
+                                                "2. 로그인이 필요합니다.\n" +
+                                                "3. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "유저만 접근 가능")
     })
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping(value = "/me")
-    public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) throws SessionUnstableException {
         return ResponseEntity.status(HttpStatus.OK).body(userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN));
     }
 
 
     @ApiOperation(value = "로그아웃", notes = "로그인된 계정을 로그아웃한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiResponse(code = 200, message = "로그아웃 되었습니다.")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "로그아웃 되었습니다."),
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+    })
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/me/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal UserPrincipal userPrincipal,
@@ -208,8 +228,11 @@ public class UserController {
     @ApiImplicitParam(name = "newPassword", value = "해당 회원의 새 비밀번호", required = true, dataType = "string", defaultValue = "newpassword")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 비밀번호를 변경 후, 새로운 토큰을 발급한다."),
-            @ApiResponse(code = 401, message = "토큰 만료로 인해 비밀번호 변경 불가 -> 새로운 토큰 발급", response = AuthResponseDto.class),
-            @ApiResponse(code = 403, message = "일치하는 회원이 존재하지 않아 비밀번호 변경에 실패하였습니다.")
+            @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
+            @ApiResponse(code = 401, message = "1. 일치하는 회원이 존재하지 않아 비밀번호 변경에 실패하였습니다.\n" +
+                                                "2. 로그인이 필요합니다.\n" +
+                                                "3. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "유저만 접근 가능")
     })
     @PreAuthorize("hasRole('USER')")
     @PutMapping(value = "/me/password")

@@ -50,7 +50,6 @@ public class AdminService {
      * 아이디, 비밀번호 올바른지 확인
      * @param id : 아이디
      * @param password : 비밀번호
-     * @return : 해당 관리자 정보
      */
     public void checkLogIn(String id, String password) throws SessionUnstableException {
         Admin admin = adminRepository.findById(id)
@@ -60,6 +59,5 @@ public class AdminService {
             throw new SessionUnstableException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
 
-        return;
     }
 }

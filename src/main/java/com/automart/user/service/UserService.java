@@ -152,7 +152,7 @@ public class UserService {
      * @param token jwt 토큰
      */
     @Transactional
-    public String withdraw(String token, JwtTokenProvider.TokenType tokenType) {
+    public String withdraw(String token, JwtTokenProvider.TokenType tokenType) throws SessionUnstableException {
         token = token.replace("Bearer", "");
 
         if (jwtTokenProvider.validateToken(token)) {
@@ -170,9 +170,9 @@ public class UserService {
      * @param email 조회할 회원의 이메일
      * @return : UserResponseDto를 반환
      */
-    public UserResponseDto showUser(String email) {
+    public UserResponseDto showUser(String email) throws NotFoundDataException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()->new IllegalStateException("해당하는 회원을 찾을 수 없습니다."));
+                .orElseThrow(()->new NotFoundDataException("해당하는 회원을 찾을 수 없습니다."));
         return UserResponseDto.of(user);
     }
 
