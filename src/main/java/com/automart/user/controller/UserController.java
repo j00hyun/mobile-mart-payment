@@ -8,6 +8,7 @@ import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.JwtTokenProvider;
 import com.automart.user.domain.User;
 import com.automart.user.dto.*;
+import com.automart.user.repository.AdminRepository;
 import com.automart.user.repository.UserRepository;
 import com.automart.user.service.UserService;
 import io.swagger.annotations.*;
@@ -44,6 +45,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -109,11 +113,20 @@ public class UserController {
                                                 "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
             @ApiResponse(code = 403, message = "유저만 접근 가능")
     })
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/me")
-    public User getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return userRepository.findByNo(userPrincipal.getNo())
-                .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        if (userPrincipal.getPrincipal().contains("@")) {
+            UserResponseDto userResponseDto = UserResponseDto.of(userRepository.findByNo(userPrincipal.getNo())
+                    .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다.")));
+            return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
+
+        } else {
+            AdminResponseDto adminResponseDto = AdminResponseDto.of(adminRepository.findByNo(userPrincipal.getNo())
+                    .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다.")));
+            return ResponseEntity.status(HttpStatus.OK).body(adminResponseDto);
+        }
     }
 
     @ApiOperation(value = "(개발용) 이메일로 회원 조회", notes = "이메일로 회원을 조회한다.", authorizations = { @Authorization(value = "jwtToken")})
@@ -204,23 +217,24 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-//    @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
-//    @ApiImplicitParam(name = "userPassword", value = "해당 회원의 현재 비밀번호", required = true, dataType = "string", defaultValue = "oldpassword")
-//    @ApiResponses({
-//            @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
-//            @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class)
-//    })
-//    @PreAuthorize("hasRole('USER')")
-//    @PostMapping(value = "/valid/password")
-//    public ResponseEntity<Boolean> verifyPassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
-//                                                  @RequestParam String userPassword) {
-//        User user = getCurrentUser(userPrincipal);
-//
-//        if (!passwordEncoder.matches(userPassword, user.getPassword()))
-//            return ResponseEntity.status(HttpStatus.OK).body(false);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(true);
-//    }
+    @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiImplicitParam(name = "userPassword", value = "해당 회원의 현재 비밀번호", required = true, dataType = "string", defaultValue = "oldpassword")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
+            @ApiResponse(code = 401, message = "토큰 만료", response = AuthResponseDto.class)
+    })
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping(value = "/me/valid")
+    public ResponseEntity<Boolean> verifyPassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                  @RequestBody VerifyPasswordRequestDto verifyPasswordRequestDto) throws SessionUnstableException{
+        User user = userRepository.findByNo(userPrincipal.getNo())
+                .orElseThrow(() -> new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
+
+        if (passwordEncoder.matches(verifyPasswordRequestDto.getPassword(), user.getPassword()))
+            return ResponseEntity.status(HttpStatus.OK).body(true);
+
+        return ResponseEntity.status(HttpStatus.OK).body(false);
+    }
 
     @ApiOperation(value = "8 로그인 후 비밀번호 변경", notes = "로그인 후 임시비밀번호를 변경한다.", authorizations = {@Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "newPassword", value = "해당 회원의 새 비밀번호", required = true, dataType = "string", defaultValue = "newpassword")
