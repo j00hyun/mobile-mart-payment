@@ -23,16 +23,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Api(tags = {"1. Managing User Authentication "})
+@Validated
 @RestController
 @Slf4j
 public class UserSignController {
@@ -60,7 +67,7 @@ public class UserSignController {
             @ApiResponse(code = 403, message = "동일한 이메일의 회원이 이미 존재합니다.")
     })
     @GetMapping("/users/signup")
-    public ResponseEntity<Void> validEmail(@RequestParam String email) throws DuplicateDataException {
+    public ResponseEntity<Void> validEmail(@RequestParam @Email(message = "이메일 양식을 지켜주세요.") String email) throws DuplicateDataException {
         userService.checkDuplicateEmail(email);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -130,12 +137,6 @@ public class UserSignController {
     @PostMapping("/users/signup")
     public ResponseEntity<Void> signUp(@ApiParam("가입 회원 정보") @Valid @RequestBody UserSignUpRequestDto requestDto) throws DuplicateDataException{
 
-//        /* 입력값 유효성 검증 실패 처리 */
-//        if (result.hasErrors()) {
-//            result.getFieldErrors().forEach(f-> log.info(f.getField() +": " + f.getDefaultMessage()));
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        }
-
         userService.checkDuplicateEmail(requestDto.getEmail());
         userService.checkDuplicateTel(requestDto.getTel());
 
@@ -145,7 +146,6 @@ public class UserSignController {
                 .tel(requestDto.getTel())
                 .name(requestDto.getName())
                 .snsType(AuthProvider.local)
-                .roles(Collections.singletonList("ROLE_USER"))
                 .build();
         userService.saveUser(user);
 
@@ -160,20 +160,13 @@ public class UserSignController {
             @ApiResponse(code = 403, message = "아이디가 중복되어 회원가입에 실패하였습니다.")
     })
     @PostMapping("/admins/signup")
-    public ResponseEntity<Void> adminSignUp(@ApiParam("가입 회원 정보") @Valid @RequestBody AdminSignUpRequestDto requestDto, BindingResult result) throws DuplicateDataException {
-
-        /* 입력값 유효성 검증 실패 처리 */
-        if (result.hasErrors()) {
-            result.getFieldErrors().forEach(f-> log.info(f.getField() +": " + f.getDefaultMessage()));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<Void> adminSignUp(@ApiParam("가입 회원 정보") @Valid @RequestBody AdminSignUpRequestDto requestDto) throws DuplicateDataException {
 
         adminService.checkDuplicateId(requestDto.getId());
 
         Admin admin = Admin.builder()
                 .id(requestDto.getId())
                 .password(requestDto.getPassword())
-                .roles(Collections.singletonList("ROLE_ADMIN"))
                 .build();
 
         adminService.saveAdmin(admin);
@@ -191,13 +184,7 @@ public class UserSignController {
     @PostMapping("/admins/signin")
     public ResponseEntity<AuthResponseDto> adminSignIn(@ApiParam("로그인 정보") @Valid @RequestBody AdminSignInRequestDto requestDto) throws SessionUnstableException {
 
-        /* '@'포함여부, 관리자 일치여부 체크 */
-        try {
-            adminService.checkLogIn(requestDto.getId(), requestDto.getPassword());
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        adminService.checkLogIn(requestDto.getId(), requestDto.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

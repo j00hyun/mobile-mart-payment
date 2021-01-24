@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,31 +15,36 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/purchase")
 public class OrderController {
     private final OrderService orderService;
 
     @ApiOperation("주문 하기")
-    @PostMapping("/order/done")
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping("")
     public ResponseEntity<OrderResponseDto> order(@RequestBody @Valid OrderRequestDto requestDto) throws Exception {
         OrderResponseDto orderResponseDto = orderService.order(requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponseDto);
     }
 
     @ApiOperation("주문 취소")
-    @PostMapping("/{orderNo}/cancel")
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/{orderNo}/cancel")
     public ResponseEntity<OrderResponseDto> cancel(@PathVariable int orderNo) {
         orderService.cancel(orderNo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @ApiOperation("주문 상세 조회")
-    @GetMapping("/purchase/detail/{orderNo}")
-    public ResponseEntity<OrderResponseDto> showOrder(@PathVariable int orderNo) {
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("")
+    public ResponseEntity<OrderResponseDto> showOrder(@RequestParam int orderNo) {
         OrderResponseDto orderResponseDto = orderService.showOrder(orderNo);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponseDto);
     }
 
     @ApiOperation("주문 목록 조회")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/purchase/list")
     public ResponseEntity<List<OrderResponseDto>> showOrders() {
         List<OrderResponseDto> orderResponseDtos = orderService.showOrders();

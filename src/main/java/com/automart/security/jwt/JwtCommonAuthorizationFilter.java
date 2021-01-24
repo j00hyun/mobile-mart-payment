@@ -55,7 +55,7 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        // 만약 header가 존재한다면, DB로 부터 user의 권한을 확인하고, authorization을 수행한다.
+        // 토큰 인증을 위한 전처리
         HttpServletRequestWrapper myRequest = new HttpServletRequestWrapper((HttpServletRequest) request) {
             @Override
             public String getHeader(String name) {
@@ -66,7 +66,8 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
                 return super.getHeader(name);
             }
         };
-        Authentication authentication = getUsernamePasswordAuthentication(request);
+        // 만약 header가 존재한다면, DB로 부터 user의 권한을 확인하고, authorization을 수행한다.
+        Authentication authentication = getUsernamePasswordAuthentication(myRequest);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         // filter 수행을 계속한다.
         chain.doFilter(myRequest, response);
@@ -76,10 +77,15 @@ public class JwtCommonAuthorizationFilter extends BasicAuthenticationFilter {
      * 헤더의 jwtToken 내부에 있는 정보를 통해 DB와 일치하는 유저를 찾아 인증이 완료한다. (UserPrincipal 객체 생성)
      */
     private Authentication getUsernamePasswordAuthentication(HttpServletRequest request) {
-        String token = request.getHeader("Authorization")
-                .replace("Bearer", "");
+        String token = request.getHeader("Authorization");
         String principal = null;
         UserPrincipal userPrincipal = null;
+
+        if (redisTemplate.opsForValue().get(token) != null) { // access token이 블랙리스트(=로그아웃된 유저)라면 요청실패
+            request.setAttribute("exception", "BLOCKED_TOKEN");
+            return null;
+        }
+
         try {
 
             // 만약 token이 존재한다면, token을 통해 user의 이메일을 얻는다.

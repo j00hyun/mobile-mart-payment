@@ -2,6 +2,8 @@ package com.automart.cart.controller;
 
 import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.advice.exception.SessionUnstableException;
+import com.automart.cart.dto.CartAddProductRequestDto;
+import com.automart.cart.dto.CartRemoveProductRequestDto;
 import com.automart.cart.dto.CartResponseDto;
 import com.automart.cart.service.CartService;
 import com.automart.security.UserPrincipal;
@@ -34,10 +36,10 @@ public class CartController {
             @ApiResponse(code = 406, message = "상품을 찾을 수 없거나 재고가 부족합니다.")
     })
     @PreAuthorize("hasRole('USER')")
-    @PostMapping("/create/{productCode}")
+    @PostMapping("")
     public ResponseEntity<Void> addProductByCode(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                 @PathVariable int productCode) throws SessionUnstableException, NotEnoughStockException {
-        cartService.addProductByCode(userPrincipal.getNo(), productCode);
+                                                 @RequestBody CartAddProductRequestDto cartAddProductRequestDto) throws SessionUnstableException, NotEnoughStockException {
+        cartService.addProductByCode(userPrincipal.getNo(), cartAddProductRequestDto.getProductCode());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -97,10 +99,10 @@ public class CartController {
             @ApiResponse(code = 403, message = "사용자 정보가 올바르지 않습니다.")
     })
     @PreAuthorize("hasRole('USER')")
-    @DeleteMapping("/delete/{productNo}")
+    @DeleteMapping("")
     public ResponseEntity<Void> deleteProduct(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                              @PathVariable int productNo) throws SessionUnstableException {
-        cartService.takeProductOutOfCart(userPrincipal.getNo(), productNo);
+                                              @RequestBody CartRemoveProductRequestDto cartRemoveProductRequestDto) throws SessionUnstableException {
+        cartService.takeProductOutOfCart(userPrincipal.getNo(), cartRemoveProductRequestDto.getProductNo());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

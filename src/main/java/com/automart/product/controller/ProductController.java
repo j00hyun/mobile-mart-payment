@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -31,6 +32,7 @@ public class ProductController {
             @ApiResponse(code = 201, message = "상품이 정상적으로 등록되었습니다."),
             @ApiResponse(code = 403, message = "상품 등록에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 카테고리 오류)")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ResponseEntity<ProductResponseDto> saveProduct(@ApiIgnore @RequestHeader("Authorization") String token,
                                                           @Valid @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
@@ -48,6 +50,7 @@ public class ProductController {
             @ApiResponse(code = 200, message = "상품이 정상적으로 수정되었습니다."),
             @ApiResponse(code = 403, message = "상품 수정에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 제품 고유번호 오류)")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{productNo}")
     public ResponseEntity<ProductResponseDto> updateProduct(@ApiIgnore @RequestHeader("Authorization") String token,
                                                             @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
@@ -62,7 +65,8 @@ public class ProductController {
             @ApiResponse(code = 200, message = "상품이 정상적으로 삭제되었습니다."),
             @ApiResponse(code = 403, message = "상품 삭제에 실패하였습니다. (제품 고유번호 오류)")
     })
-    @DeleteMapping("/{productNo}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("")
     public ResponseEntity<Void> removeProduct(@ApiIgnore @RequestHeader("Authorization") String token,
                                               @PathVariable int productNo) {
         productService.removeProduct(productNo);

@@ -9,6 +9,7 @@ import com.automart.product.repository.ProductRepository;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class ProductResolver {
      * @return 주문 단건에 대한 정보를 담은 Dto를 반환
      */
     @GraphQLQuery(name = "showProduct")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponseDto showProduct(Integer productNo) {
         Product product = productRepository.findByNo(productNo)
                 .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
@@ -39,6 +41,7 @@ public class ProductResolver {
      * @return 전체 상품에 대한 정보를 담은 Dto를 반환
      */
     @GraphQLQuery(name = "showProducts")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ProductResponseDto> showProducts(String categoryCode) {
         Category category = categoryRepository.findByCode(categoryCode)
                 .orElseThrow(() -> new NotFoundDataException("해당 카테고리가 존재하지 않습니다."));

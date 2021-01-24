@@ -11,35 +11,23 @@ import java.util.stream.Collectors;
 @Getter
 public class UserResponseDto {
 
-    private int no;
     private String email;
-    private String password;
     private String tel;
     private String name;
-    private AuthProvider snsType;
-    private String snsKey;
 
 
     @Builder
-    public UserResponseDto(int no, String email, String password, String tel, String name, AuthProvider snsType, String snsKey) {
-        this.no = no;
+    public UserResponseDto(String email, String password, String tel, String name, AuthProvider snsType, String snsKey) {
         this.email = email;
-        this.password = password;
         this.tel = tel;
         this.name = name;
-        this.snsType = snsType;
-        this.snsKey = snsKey;
     }
 
     public static UserResponseDto of(User user) {
         return UserResponseDto.builder()
-                .no(user.getNo())
                 .email(user.getEmail())
-                .password(user.getPassword())
                 .tel(user.getTel())
                 .name(user.getName())
-                .snsType(user.getSnsType())
-                .snsKey(user.getSnsKey())
                 .build();
     }
 
