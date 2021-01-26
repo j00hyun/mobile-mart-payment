@@ -36,8 +36,7 @@ public class ProductController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
-    public ResponseEntity<ProductResponseDto> saveProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                          @ApiParam("등록할 상품 정보") @Valid @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
+    public ResponseEntity<ProductResponseDto> saveProduct(@ApiParam("등록할 상품 정보") @Valid @ModelAttribute ProductSaveRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.saveProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -55,8 +54,7 @@ public class ProductController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{productNo}")
-    public ResponseEntity<ProductResponseDto> updateProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                            @ApiParam("수정할 상품 정보") @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
+    public ResponseEntity<ProductResponseDto> updateProduct(@ApiParam("수정할 상품 정보") @Valid @ModelAttribute ProductUpdateRequestDto requestDto) throws Exception {
         ProductResponseDto productResponseDto = productService.updateProduct(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(productResponseDto);
     }
@@ -70,8 +68,7 @@ public class ProductController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
-    public ResponseEntity<String> removeProduct(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                @ApiParam("제거할 상품의 고유 번호") @RequestBody ProductRemoveRequestDto productRemoveRequestDto) {
+    public ResponseEntity<String> removeProduct(@ApiParam("제거할 상품의 고유 번호") @RequestBody ProductRemoveRequestDto productRemoveRequestDto) {
         productService.removeProduct(productRemoveRequestDto.getNo());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

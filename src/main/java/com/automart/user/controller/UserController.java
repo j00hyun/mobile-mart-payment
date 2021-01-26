@@ -140,8 +140,7 @@ public class UserController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
-    public ResponseEntity<UserResponseDto> showUser(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                    @RequestParam @Email String email) throws NotFoundDataException {
+    public ResponseEntity<UserResponseDto> showUser(@RequestParam @Email(message = "이메일 양식을 지켜주세요") String email) throws NotFoundDataException {
         UserResponseDto userResponseDto = userService.showUser(email);
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
@@ -155,7 +154,7 @@ public class UserController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/all")
-    public ResponseEntity<List<UserResponseDto>> showUsers(@ApiIgnore @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<UserResponseDto>> showUsers() {
         List<UserResponseDto> userResponseDtos = userService.showUsers();
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDtos);
     }
@@ -169,8 +168,9 @@ public class UserController {
     })
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping(value = "/me")
-    public ResponseEntity<String> withdraw(@ApiIgnore @RequestHeader("Authorization") String token) throws SessionUnstableException {
-        userService.withdraw(token, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+    public ResponseEntity<String> withdraw(@ApiIgnore HttpServletRequest request) throws SessionUnstableException {
+        String accessToken = jwtTokenProvider.extractToken(request);
+        userService.withdraw(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -184,7 +184,7 @@ public class UserController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping(value = "/me/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                       HttpServletRequest request) {
+                                       @ApiIgnore HttpServletRequest request) {
         String accessToken = jwtTokenProvider.extractToken(request);
         log.info("accessToken : " + accessToken);
         String principal = null;
@@ -217,7 +217,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "userPassword", value = "해당 회원의 현재 비밀번호", required = true, dataType = "string", defaultValue = "oldpassword")
     @ApiResponses({
             @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
@@ -237,7 +236,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "8 로그인 후 비밀번호 변경", notes = "로그인 후 임시비밀번호를 변경한다.", authorizations = {@Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "newPassword", value = "해당 회원의 새 비밀번호", required = true, dataType = "string", defaultValue = "newpassword")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 비밀번호를 변경 후, 새로운 토큰을 발급한다."),
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
@@ -248,20 +246,21 @@ public class UserController {
     })
     @PreAuthorize("hasRole('USER')")
     @PutMapping(value = "/me/password")
-    public ResponseEntity<AuthResponseDto> changePassword(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                          @AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                          @ApiParam("새 비밀번호") @Valid @RequestBody ChangePasswordRequestDto requestDto) throws SessionUnstableException {
+    public ResponseEntity<AuthResponseDto> changePassword(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                          @ApiParam("새 비밀번호") @Valid @RequestBody ChangePasswordRequestDto requestDto,
+                                                          @ApiIgnore HttpServletRequest request) throws SessionUnstableException {
+        String accessToken = jwtTokenProvider.extractToken(request);
         /* password 변경 */
         User user = userService.changePassword(userPrincipal.getNo(), requestDto.getPassword());
         user.makeFalseTempPw();
 
         /* access token이 유효한 토큰인 경우 더 이상 사용하지 못하게 블랙리스트에 등록 */
-        if (jwtTokenProvider.validateToken(token)) {
-            Date expirationDate = jwtTokenProvider.getExpirationDate(token, JwtTokenProvider.TokenType.ACCESS_TOKEN);
+        if (jwtTokenProvider.validateToken(accessToken)) {
+            Date expirationDate = jwtTokenProvider.getExpirationDate(accessToken, JwtTokenProvider.TokenType.ACCESS_TOKEN);
             redisTemplate.opsForValue().set(
-                    token, true,
+                    accessToken, true,
                     expirationDate.getTime() - System.currentTimeMillis(), TimeUnit.MILLISECONDS); // 토큰의 유효기간이 지나면 자동 삭제
-            log.info("redis value : " + redisTemplate.opsForValue().get(token));
+            log.info("redis value : " + redisTemplate.opsForValue().get(accessToken));
         }
 
         /* 새로운 access 토큰 발급 */

@@ -153,8 +153,6 @@ public class UserService {
      */
     @Transactional
     public void withdraw(String token, JwtTokenProvider.TokenType tokenType) throws SessionUnstableException {
-        token = token.replace("Bearer", "");
-
         if (jwtTokenProvider.validateToken(token)) {
             User user = userRepository.findByEmail(jwtTokenProvider.getPrincipal(token, JwtTokenProvider.TokenType.ACCESS_TOKEN))
                     .orElseThrow(() -> new SessionUnstableException("해당하는 회원을 찾을 수 없습니다."));

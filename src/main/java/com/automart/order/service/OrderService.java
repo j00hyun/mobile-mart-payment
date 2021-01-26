@@ -37,13 +37,13 @@ public class OrderService {
         User user = userRepository.findByNo(requestDto.getUserNo()).orElseThrow(
                 ()->new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
 
-        if (requestDto.getCartNos().size() == 0) { // 카트가 존재하지 않을 때 예외처리
+        if (requestDto.getCartNo().size() == 0) { // 카트가 존재하지 않을 때 예외처리
             throw new NullPointerException("장바구니에 상품을 담아주세요.");
         }
 
         // 주문상품정보를 생성한다.
         List<OrderDetail> orderDetails = new ArrayList<>();
-        for (Integer cartNo : requestDto.getCartNos()) {
+        for (Integer cartNo : requestDto.getCartNo()) {
             CartItem cartItem = cartItemRepository.findByNo(cartNo).get();
             orderDetails.add(OrderDetail.createOrderDetail(cartItem.getProduct(), cartItem.getCount(), cartItem.getPrice()));
         }

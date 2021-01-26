@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 @Api(tags = {"4. Category Management"})
 @RestController
@@ -34,14 +35,12 @@ public class CategoryController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "")
-    public ResponseEntity<Void> saveCategory(@ApiIgnore @RequestHeader("Authorization") String token,
-                                             @ApiParam("생성할 카테고리의 고유 코드와 이름") @Valid @RequestBody CategorySaveRequestDto requestDto) {
+    public ResponseEntity<Void> saveCategory(@ApiParam("생성할 카테고리의 고유 코드와 이름") @Valid @RequestBody CategorySaveRequestDto requestDto) {
         categoryService.saveCategory(requestDto.getCode(), requestDto.getName());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation(value = "카테고리 이름 수정", notes = "카테고리 이름을 수정한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "categoryCode", value = "수정할 카테고리의 고유 코드", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 카테고리명이 수정되었습니다."),
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
@@ -52,8 +51,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{categoryCode}")
-    public ResponseEntity<Void> updateCategory(@ApiIgnore @RequestHeader("Authorization") String token,
-                                               @PathVariable String categoryCode,
+    public ResponseEntity<Void> updateCategory(@PathVariable @Pattern(regexp = "^(?=.*[A-Z])(?=.*[0-9]).{0,15}$", message = "카테고리 고유코드(대문자,숫자조합)를 입력해주세요.") String categoryCode,
                                                @ApiParam("수정된 카테고리 이름") @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
         categoryService.updateCategory(categoryCode, requestDto.getName());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -70,8 +68,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
-    public ResponseEntity<Void> removeCategory(@ApiIgnore @RequestHeader("Authorization") String token,
-                                               @ApiParam("삭제할 카테고리의 고유 코드") @Valid @RequestBody CategoryRemoveRequestDto categoryRemoveRequestDto) {
+    public ResponseEntity<Void> removeCategory(@ApiParam("삭제할 카테고리의 고유 코드") @Valid @RequestBody CategoryRemoveRequestDto categoryRemoveRequestDto) {
         categoryService.deleteCategory(categoryRemoveRequestDto.getCode());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
