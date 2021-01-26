@@ -1,6 +1,7 @@
 package com.automart.user.domain;
 
 import com.automart.cart.domain.Cart;
+import com.automart.cart.domain.CartItem;
 import com.automart.order.domain.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
@@ -30,7 +31,7 @@ public class User {
     @Column(name = "user_temp_pw", columnDefinition = "boolean default false")
     private boolean tempPassword; // 사용자 임시비밀번호 여부
 
-    @Column(name = "user_tel", length = 45)
+    @Column(name = "user_tel", length = 45, unique = true)
     private String tel; // 사용자 전화번호
 
     @Column(name = "user_name", length = 45)
@@ -44,18 +45,15 @@ public class User {
     private String snsKey; // 사용자 SNS 고유 key
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Cart> carts = new ArrayList<>();
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Cart cart;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.EAGER) // = @OneToMany, but @ElementCollection은 비엔티티를 매핑하는데 사용
-    private List<String> roles = new ArrayList<>();
-
     @Builder
-    public User(String email, String password, boolean tempPassword, String tel, String name, AuthProvider snsType, String snsKey, List roles) {
+    public User(String email, String password, boolean tempPassword, String tel, String name, AuthProvider snsType, String snsKey) {
         this.email = email;
         this.password = password;
         this.tempPassword = tempPassword;
@@ -63,7 +61,6 @@ public class User {
         this.name = name;
         this.snsType = snsType;
         this.snsKey = snsKey;
-        this.roles = roles;
     }
 
     // 비밀번호 변경
@@ -88,14 +85,14 @@ public class User {
     // 소셜로그인 유저 이메일 변겅
     public void setEmail(String email) { this.email = email; }
 
-    // 해당 유저의 장바구니중 특정 제품 제거
-    public void removeCart(Cart cart) {
-        this.carts.remove(cart);
-    }
+    // 장바구니 생성
+    public void setCart(Cart cart) { this.cart = cart; }
 
     // 해당 유저에 해당하는 장바구니 모두 제거
-    public void removeAllCart() {
-        this.carts.forEach(cart -> cart.removeCart());
-        this.carts.clear();
+    public void clearCart() {
+        if(this.cart != null) {
+            this.cart.clear();
+            this.cart = null;
+        }
     }
 }

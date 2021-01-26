@@ -17,15 +17,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_no")
-    private int no; // 카테고리 고유번호
+    @Id
+    @Column(name = "category_code", length = 45)
+    private String code; // 카테고리 고유 코드
 
     @Column(name = "category_name", length = 45, unique = true)
     private String name; // 카테고리 이름
-
-    @Column(name = "category_code", length = 45, unique = true)
-    private String code; // 카테고리 코드
 
     @JsonIgnore
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
@@ -34,17 +31,16 @@ public class Category {
     /**
      * 카테고리 수정
      */
-    public void setName(String name, String code) {
+    public void setName(String name) {
         this.name = name;
-        this.code = code;
     }
 
     /**
      * 카테고리 생성
      */
     @Builder
-    public Category(String name, String code) {
-        this.name = name;
+    public Category(String code, String name) {
         this.code = code;
+        this.name = name;
     }
 }

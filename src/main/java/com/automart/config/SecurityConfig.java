@@ -1,42 +1,34 @@
 package com.automart.config;
 
-import com.automart.admin.repository.AdminRepository;
 import com.automart.security.CustomUserDetailsService;
 import com.automart.security.UserPrincipal;
 import com.automart.security.jwt.*;
 import com.automart.security.oauth2.CustomOAuth2UserService;
+import com.automart.user.repository.AdminRepository;
 import com.automart.user.repository.UserRepository;
-import com.automart.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 인증시 사용할 custom User Service
@@ -93,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new JwtBasicAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtCommonAuthorizationFilter(authenticationManager(), tokenProvider, userRepository, adminRepository, redisTemplate))
                 .authorizeRequests() // 이후 요청에 대한 사용권한 체크
-                    .antMatchers("/", "/*/signin", "/*/signup", "/*/valid/**", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
+                    .antMatchers("/", "/*/signin", "/*/signup", "/*/find/**", "/oauth2/**", "/login**", "/logout**", "/error**").permitAll() // 가입 및 인증 주소는 누구나 접근가능
                     .antMatchers("/graphql").hasRole("ADMIN")
                     .anyRequest().authenticated() // 그 외의 모든 요청은 인증된 사용자만 접근 가능
                     .and()

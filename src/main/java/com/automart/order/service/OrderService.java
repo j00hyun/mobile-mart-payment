@@ -1,12 +1,14 @@
 package com.automart.order.service;
 
-import com.automart.cart.domain.Cart;
+import com.automart.advice.exception.NotFoundDataException;
+import com.automart.advice.exception.SessionUnstableException;
+import com.automart.cart.domain.CartItem;
 import com.automart.order.domain.Order;
 import com.automart.order.domain.OrderDetail;
 import com.automart.order.dto.OrderRequestDto;
 import com.automart.order.dto.OrderResponseDto;
 import com.automart.user.domain.User;
-import com.automart.cart.repository.CartRepository;
+import com.automart.cart.repository.CartItemRepository;
 import com.automart.order.repository.OrderRepository;
 import com.automart.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     /***
      * 주문하기
@@ -33,17 +35,17 @@ public class OrderService {
     @Transactional
     public OrderResponseDto order(OrderRequestDto requestDto) throws Exception {
         User user = userRepository.findByNo(requestDto.getUserNo()).orElseThrow(
-                ()->new IllegalAccessException("잘못된 유저입니다."));
+                ()->new SessionUnstableException("해당 유저를 찾을 수 없습니다."));
 
-        if (requestDto.getCartNos().size() == 0) { // 카트가 존재하지 않을 때 예외처리
+        if (requestDto.getCartNo().size() == 0) { // 카트가 존재하지 않을 때 예외처리
             throw new NullPointerException("장바구니에 상품을 담아주세요.");
         }
 
         // 주문상품정보를 생성한다.
         List<OrderDetail> orderDetails = new ArrayList<>();
-        for (Integer cartNo : requestDto.getCartNos()) {
-            Cart cart = cartRepository.findByNo(cartNo).get();
-            orderDetails.add(OrderDetail.createOrderDetail(cart.getProduct(), cart.getCount(), cart.getPrice()));
+        for (Integer cartNo : requestDto.getCartNo()) {
+            CartItem cartItem = cartItemRepository.findByNo(cartNo).get();
+            orderDetails.add(OrderDetail.createOrderDetail(cartItem.getProduct(), cartItem.getCount(), cartItem.getPrice()));
         }
 
         // 주문 생성
@@ -60,7 +62,7 @@ public class OrderService {
     @Transactional
     public void cancel(Integer orderNo) {
         Order order = orderRepository.findByNo(orderNo).orElseThrow(
-                () -> new IllegalStateException("취소할 주문이 존재하지 않습니다.")
+                () -> new NotFoundDataException("취소할 주문이 존재하지 않습니다.")
         );
         order.cancel(); // 취소한 주문의 경우 상태만 바뀌고 남아있는걸로 설정해놔서 영속성 제거가 안된상태
     }
@@ -72,7 +74,7 @@ public class OrderService {
      */
     public OrderResponseDto showOrder(Integer orderNo) {
         Order order = orderRepository.findByNo(orderNo)
-                .orElseThrow(()->new IllegalStateException("주문이 존재하지 않습니다."));
+                .orElseThrow(()->new NotFoundDataException("주문이 존재하지 않습니다."));
         return OrderResponseDto.of(order);
     }
 

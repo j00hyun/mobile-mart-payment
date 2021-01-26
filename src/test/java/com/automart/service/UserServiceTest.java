@@ -1,13 +1,13 @@
 package com.automart.service;
 
-import com.automart.cart.domain.Cart;
+import com.automart.advice.exception.DuplicateDataException;
+import com.automart.cart.domain.CartItem;
 import com.automart.cart.dto.CartResponseDto;
-import com.automart.cart.repository.CartRepository;
+import com.automart.cart.repository.CartItemRepository;
 import com.automart.cart.service.CartService;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.category.service.CategoryService;
-import com.automart.advice.exception.ForbiddenSignUpException;
 import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.order.service.OrderService;
 import com.automart.order.domain.Order;
@@ -55,7 +55,7 @@ class OrderServiceTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    CartRepository cartRepository;
+    CartItemRepository cartItemRepository;
     @Autowired EntityManager em;
 
     @Test
@@ -81,21 +81,21 @@ class OrderServiceTest {
 
         em.persist(user);
 
-        Cart cart1 = Cart.createCart(user,product1);
-        Cart cart2 = Cart.createCart(user,product2);
+        CartItem cartItem1 = CartItem.createCartItem(user,product1);
+        CartItem cartItem2 = CartItem.createCartItem(user,product2);
 
-        cart1.addCart(); // 카트1에 담긴 바나나의 수량 증가
-        cart1.addCart(); // 카트1에 담긴 바나나의 수량 증가
-        cart2.addCart(); // 카트2에 담긴 바나나의 수량 증가
+        cartItem1.addCartItem(); // 카트1에 담긴 바나나의 수량 증가
+        cartItem1.addCartItem(); // 카트1에 담긴 바나나의 수량 증가
+        cartItem2.addCartItem(); // 카트2에 담긴 바나나의 수량 증가
 
-        em.persist(cart1);
-        em.persist(cart2);
+        em.persist(cartItem1);
+        em.persist(cartItem2);
 
         // when : 주문을 할 때
 
         List<Integer> carts = new ArrayList<>();
-        carts.add(cart1.getNo());
-        carts.add(cart2.getNo());
+        carts.add(cartItem1.getNo());
+        carts.add(cartItem2.getNo());
         OrderRequestDto requestDto = new OrderRequestDto(user.getNo(),carts);
 
         OrderResponseDto orderDto = orderService.order(requestDto);
@@ -178,7 +178,7 @@ class UserServiceTest {
                 .build();
 
         // when
-        ForbiddenSignUpException exception = assertThrows(ForbiddenSignUpException.class, () -> {
+        DuplicateDataException exception = assertThrows(DuplicateDataException.class, () -> {
             userService.saveUser(user2);
         });
 
@@ -207,7 +207,7 @@ class UserServiceTest {
                 .build();
 
         // when
-        ForbiddenSignUpException exception = assertThrows(ForbiddenSignUpException.class, () -> {
+        DuplicateDataException exception = assertThrows(DuplicateDataException.class, () -> {
             userService.saveUser(user2);
         });
 
@@ -269,13 +269,13 @@ class CartServiceTest {
     @Autowired
     ProductRepository productRepository;
     @Autowired
-    CartRepository cartRepository;
+    CartItemRepository cartItemRepository;
 
     /**
      * 테스트에 필요한 기본적인 유저, 카테고리, 상품 생성
      */
     @BeforeEach
-    public void prepare() throws ParseException {
+    public void prepare() throws Exception {
         User user = User.builder()
                 .email("loove1997@naver.com")
                 .password("1234")
@@ -285,10 +285,10 @@ class CartServiceTest {
                 .build();
 
         userService.saveUser(user);
-        categoryService.saveCategory("과일");
+        categoryService.saveCategory("N-1", "과일");
 
         ProductSaveRequestDto productDto1 = ProductSaveRequestDto.builder()
-                .categoryNo(1)
+                .categoryCode("N-1")
                 .name("사과")
                 .price(2000)
                 .cost(1000)
@@ -298,7 +298,7 @@ class CartServiceTest {
                 .build();
 
         ProductSaveRequestDto productDto2 = ProductSaveRequestDto.builder()
-                .categoryNo(1)
+                .categoryCode("N-1")
                 .name("바나나")
                 .price(2000)
                 .cost(1000)
@@ -321,9 +321,9 @@ class CartServiceTest {
         cartService.addProductByCode(1, 1);
 
         // then
-        assertEquals("장바구니의 유저가 존재해야함.", user, cartRepository.findByNo(1).get().getUser());
-        assertEquals("해당 유저의 장바구니가 존재해야함.", cartRepository.findByNo(1).get(), user.getCarts().get(0));
-        assertEquals("해당 상품에서 카트를 조회할수 있어야함.", product.getCarts().get(0).getNo(), cartRepository.findByNo(1).get().getNo());
+        assertEquals("장바구니의 유저가 존재해야함.", user, cartItemRepository.findByNo(1).get().getCart().getUser());
+        assertEquals("해당 유저의 장바구니가 존재해야함.", cartItemRepository.findByNo(1).get(), user.getCart().getCartItems().get(0));
+        assertEquals("해당 상품에서 카트를 조회할수 있어야함.", product.getCartItems().get(0).getNo(), cartItemRepository.findByNo(1).get().getNo());
         assertEquals("해당 상품의 재고가 바뀌지 않아야함.", 10, product.getStock());
     }
 
@@ -338,9 +338,9 @@ class CartServiceTest {
         cartService.addProduct(1, 1);
 
         // then
-        assertEquals("해당 유저의 장바구니가 1개여야함.", 1, user.getCarts().size());
-        assertEquals("장바구니의 상품 개수가 2개여야함.", 2, cartRepository.findByNo(1).get().getCount());
-        assertEquals("장바구니의 상품 총 가격이 (가격 X 개수) 야함.", product.getPrice() * 2, cartRepository.findByNo(1).get().getPrice());
+        assertEquals("해당 유저의 장바구니가 1개여야함.", 1, user.getCart().getCartItems().size());
+        assertEquals("장바구니의 상품 개수가 2개여야함.", 2, cartItemRepository.findByNo(1).get().getCount());
+        assertEquals("장바구니의 상품 총 가격이 (가격 X 개수) 야함.", product.getPrice() * 2, cartItemRepository.findByNo(1).get().getPrice());
         assertEquals("상품의 재고가 바뀌지 않아야함.", 10, product.getStock());
     }
 
@@ -371,7 +371,7 @@ class CartServiceTest {
         cartService.subtractProduct(1, 1);
 
         // then
-        assertEquals("장바구니 상품 개수 1개여야함.", 1, cartRepository.findByNo(1).get().getCount());
+        assertEquals("장바구니 상품 개수 1개여야함.", 1, cartItemRepository.findByNo(1).get().getCount());
     }
 
     @Test
@@ -386,9 +386,9 @@ class CartServiceTest {
         cartService.takeProductOutOfCart(1, 1);
 
         // then
-        assertEquals("해당 카트가 존재하지 않아야함.", false, cartRepository.findByNo(1).isPresent());
-        assertEquals("해당 유저의 카트가 존재하지 않아야함.", 0, user.getCarts().size());
-        assertEquals("해당 상품의 카트가 존재하지 않아야함.", 0, product.getCarts().size());
+        assertEquals("해당 카트가 존재하지 않아야함.", false, cartItemRepository.findByNo(1).isPresent());
+        assertEquals("해당 유저의 카트가 존재하지 않아야함.", 0, user.getCart().getCartItems().size());
+        assertEquals("해당 상품의 카트가 존재하지 않아야함.", 0, product.getCartItems().size());
     }
 
     @Test

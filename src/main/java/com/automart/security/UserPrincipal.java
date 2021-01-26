@@ -1,6 +1,6 @@
 package com.automart.security;
 
-import com.automart.admin.domain.Admin;
+import com.automart.user.domain.Admin;
 import com.automart.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

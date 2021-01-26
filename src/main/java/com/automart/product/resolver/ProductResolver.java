@@ -1,6 +1,6 @@
 package com.automart.product.resolver;
 
-import com.automart.advice.exception.ForbiddenMakeProductException;
+import com.automart.advice.exception.NotFoundDataException;
 import com.automart.category.domain.Category;
 import com.automart.category.repository.CategoryRepository;
 import com.automart.product.domain.Product;
@@ -9,6 +9,7 @@ import com.automart.product.repository.ProductRepository;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +22,13 @@ public class ProductResolver {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
-
     /**
      * 상품 단건 조회하기
      * @param productNo : 조회할 상품의 번호
      * @return 주문 단건에 대한 정보를 담은 Dto를 반환
      */
     @GraphQLQuery(name = "showProduct")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponseDto showProduct(Integer productNo) {
         Product product = productRepository.findByNo(productNo)
                 .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
@@ -36,13 +37,14 @@ public class ProductResolver {
 
     /**
      * 해당 카테고리의 상품 조회하기
-     * @param categoryNo : 조회할 카테고리 고유번호
+     * @param categoryCode : 조회할 카테고리 고유 코드
      * @return 전체 상품에 대한 정보를 담은 Dto를 반환
      */
     @GraphQLQuery(name = "showProducts")
-    public List<ProductResponseDto> showProducts(int categoryNo) {
-        Category category = categoryRepository.findByNo(categoryNo)
-                .orElseThrow(() -> new ForbiddenMakeProductException("해당 카테고리가 존재하지 않습니다."));
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ProductResponseDto> showProducts(String categoryCode) {
+        Category category = categoryRepository.findByCode(categoryCode)
+                .orElseThrow(() -> new NotFoundDataException("해당 카테고리가 존재하지 않습니다."));
         List<Product> products = productRepository.findAllByCategory(category);
         return ProductResponseDto.listOf(products);
     }
