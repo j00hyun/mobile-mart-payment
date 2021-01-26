@@ -61,7 +61,6 @@ public class ProductController {
 
 
     @ApiOperation(value = "상품 제거", notes = "등록된 상품을 삭제한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "productNo", value = "삭제하려는 상품 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
             @ApiResponse(code = 200, message = "상품이 정상적으로 삭제되었습니다."),
             @ApiResponse(code = 403, message = "상품 삭제에 실패하였습니다. (제품 고유번호 오류)")
