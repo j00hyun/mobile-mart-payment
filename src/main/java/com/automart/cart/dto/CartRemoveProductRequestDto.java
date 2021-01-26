@@ -4,11 +4,13 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 @Data
 public class CartRemoveProductRequestDto {
 
-    @NotBlank(message = "상품 고유 번호를 입력해주세요.")
+    @PositiveOrZero(message = "상품 고유번호를 입력해주세요.")
     private int productNo;
 
     public CartRemoveProductRequestDto() { }

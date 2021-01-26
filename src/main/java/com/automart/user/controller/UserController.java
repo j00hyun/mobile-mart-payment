@@ -217,7 +217,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "비밀번호 변경 전 확인", notes = "회원이 비밀번호 변경 전 비밀번호가 일치하는지 확인한다.", authorizations = { @Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "userPassword", value = "해당 회원의 현재 비밀번호", required = true, dataType = "string", defaultValue = "oldpassword")
     @ApiResponses({
             @ApiResponse(code = 200, message = "토큰에 해당하는 유저가 존재합니다.\n(비밀번호가 일치하면 true, 일치하지 않으면 false를 반환)"),
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
@@ -237,7 +236,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "8 로그인 후 비밀번호 변경", notes = "로그인 후 임시비밀번호를 변경한다.", authorizations = {@Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "newPassword", value = "해당 회원의 새 비밀번호", required = true, dataType = "string", defaultValue = "newpassword")
     @ApiResponses({
             @ApiResponse(code = 201, message = "정상적으로 비밀번호를 변경 후, 새로운 토큰을 발급한다."),
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),

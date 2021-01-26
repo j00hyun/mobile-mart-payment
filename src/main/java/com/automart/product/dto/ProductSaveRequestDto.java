@@ -4,10 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 
 @Data
 public class ProductSaveRequestDto {
@@ -32,7 +29,7 @@ public class ProductSaveRequestDto {
     @PositiveOrZero(message = "구매가를 입력해야합니다.")
     private int cost; // 구매가
 
-    @NotBlank(message = "바코드번호를 입력해주세요")
+    @Positive(message = "바코드번호를 입력해주세요.")
     private int code; // 제품 바코드 번호
     private MultipartFile img; // 제품 이미지
 
