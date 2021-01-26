@@ -30,4 +30,4 @@
 ![서버 아키텍처](https://user-images.githubusercontent.com/43433753/104724514-18dea780-5774-11eb-967d-d74189914d12.png)
 
 ## 안드로이드
-![안드로이드 Repository](https://github.com/ggj0418/Android.git)
+[안드로이드 Repository](https://github.com/ggj0418/Android.git)
