@@ -32,8 +32,7 @@ public class OrderController {
     })
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
-    public ResponseEntity<OrderResponseDto> order(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                  @ApiParam("주문하는 고객 번호와 주문할 카트 번호") @RequestBody @Valid OrderRequestDto requestDto) throws Exception {
+    public ResponseEntity<OrderResponseDto> order(@ApiParam("주문하는 고객 번호와 주문할 카트 번호") @RequestBody @Valid OrderRequestDto requestDto) throws Exception {
         OrderResponseDto orderResponseDto = orderService.order(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
     }
@@ -49,8 +48,7 @@ public class OrderController {
     })
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/{orderNo}/cancel")
-    public ResponseEntity<String> cancel(@ApiIgnore @RequestHeader("Authorization") String token,
-                                         @PathVariable int orderNo) {
+    public ResponseEntity<String> cancel(@PathVariable int orderNo) {
         orderService.cancel(orderNo);
         return ResponseEntity.status(HttpStatus.CREATED).body("해당 상품에 대한 주문이 취소되었습니다.");
     }
@@ -66,8 +64,7 @@ public class OrderController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("")
-    public ResponseEntity<OrderResponseDto> showOrder(@ApiIgnore @RequestHeader("Authorization") String token,
-                                                      @RequestParam int orderNo) {
+    public ResponseEntity<OrderResponseDto> showOrder(@RequestParam int orderNo) {
         OrderResponseDto orderResponseDto = orderService.showOrder(orderNo);
         return ResponseEntity.status(HttpStatus.OK).body(orderResponseDto);
     }
@@ -81,7 +78,7 @@ public class OrderController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/purchase/list")
-    public ResponseEntity<List<OrderResponseDto>> showOrders(@ApiIgnore @RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<OrderResponseDto>> showOrders() {
         List<OrderResponseDto> orderResponseDtos = orderService.showOrders();
         return ResponseEntity.status(HttpStatus.OK).body(orderResponseDtos);
     }

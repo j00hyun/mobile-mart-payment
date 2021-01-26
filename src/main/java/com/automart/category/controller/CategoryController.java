@@ -34,8 +34,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "")
-    public ResponseEntity<Void> saveCategory(@ApiIgnore @RequestHeader("Authorization") String token,
-                                             @ApiParam("생성할 카테고리의 고유 코드와 이름") @Valid @RequestBody CategorySaveRequestDto requestDto) {
+    public ResponseEntity<Void> saveCategory(@ApiParam("생성할 카테고리의 고유 코드와 이름") @Valid @RequestBody CategorySaveRequestDto requestDto) {
         categoryService.saveCategory(requestDto.getCode(), requestDto.getName());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -52,8 +51,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{categoryCode}")
-    public ResponseEntity<Void> updateCategory(@ApiIgnore @RequestHeader("Authorization") String token,
-                                               @PathVariable String categoryCode,
+    public ResponseEntity<Void> updateCategory(@PathVariable String categoryCode,
                                                @ApiParam("수정된 카테고리 이름") @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
         categoryService.updateCategory(categoryCode, requestDto.getName());
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -70,8 +68,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
-    public ResponseEntity<Void> removeCategory(@ApiIgnore @RequestHeader("Authorization") String token,
-                                               @ApiParam("삭제할 카테고리의 고유 코드") @Valid @RequestBody CategoryRemoveRequestDto categoryRemoveRequestDto) {
+    public ResponseEntity<Void> removeCategory(@ApiParam("삭제할 카테고리의 고유 코드") @Valid @RequestBody CategoryRemoveRequestDto categoryRemoveRequestDto) {
         categoryService.deleteCategory(categoryRemoveRequestDto.getCode());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
