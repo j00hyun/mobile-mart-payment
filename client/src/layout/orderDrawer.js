@@ -94,6 +94,12 @@ export default function TemporaryDrawer() {
         <List component="div" disablePadding>
           <ListItem button className={classes.nested}>
             <ListItemText primary="맛있는 리얼팜" />
+			<h5>50000원 </h5>
+			<Button color="secondary"style={{
+				fontSize: "1.333em",
+				color: "#FF0000"
+			}}>내역삭제
+			</Button>
           </ListItem>
           <ListItem button className={classes.nested}>
             <ListItemText primary="노브랜드 베이컨" />
