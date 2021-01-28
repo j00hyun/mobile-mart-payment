@@ -5,6 +5,7 @@ import com.automart.product.dto.ProductResponseDto;
 import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.dto.ProductUpdateRequestDto;
 import com.automart.product.service.ProductService;
+import com.automart.user.dto.AuthResponseDto;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,11 +47,13 @@ public class ProductController {
             "이미지를 바꿀시 swagger에서는 테스트 오류나므로 postman으로 테스트\n" +
             "상품 이미지 크기는 1MB이하여야함\n" +
             "상품 이미지 저장 경로는 products/{categoryNo}/{productNo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, authorizations = { @Authorization(value = "jwtToken")})
-    @ApiImplicitParam(name = "productNo", value = "수정하려는 상품 고유번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "상품이 정상적으로 수정되었습니다."),
+            @ApiResponse(code = 201, message = "상품이 정상적으로 수정되었습니다."),
             @ApiResponse(code = 400, message = "유효한 입력값이 아닙니다."),
-            @ApiResponse(code = 403, message = "상품 수정에 실패하였습니다. (날짜 형식 오류, 이미지 업로드 오류, 제품 고유번호 오류)")
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                                                "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "관리자만 접근 가능"),
+            @ApiResponse(code = 404, message = "수정할 상품이 존재하지 않음")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{productNo}")
@@ -68,7 +71,7 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
     public ResponseEntity<String> removeProduct(@ApiParam("제거할 상품의 고유 번호") @RequestBody ProductRemoveRequestDto productRemoveRequestDto) {
-        productService.removeProduct(productRemoveRequestDto.getNo());
+        productService.removeProduct(productRemoveRequestDto.getProductNo());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
