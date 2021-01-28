@@ -10,11 +10,11 @@ import java.text.SimpleDateFormat;
 @Data
 public class ProductRemoveRequestDto {
 
-    private int no; // 제품 고유 번호
+    private int productNo; // 제품 고유 번호
 
     @Builder
-    public ProductRemoveRequestDto(int no) {
-        this.no = no;
+    public ProductRemoveRequestDto(int productNo) {
+        this.productNo = productNo;
     }
 
 }

@@ -43,8 +43,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         try {
             return processOAuth2User(oAuth2UserRequest, oAuth2User);
         } catch (AuthenticationException ex) {
+            ex.printStackTrace(); // OAuth2 log 확인용
             throw ex;
         } catch (Exception ex) {
+            ex.printStackTrace(); // OAuth2 log 확인용
             // Throwing an instance of AuthenticationException will trigger the OAuth2AuthenticationFailureHandler
             throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
         }

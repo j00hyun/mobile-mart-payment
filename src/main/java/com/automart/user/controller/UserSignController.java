@@ -210,4 +210,16 @@ public class UserSignController {
 
         return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDto(accessToken));
     }
+
+    @ApiOperation(value = "(안드로이드)토큰 유효성 검증용", notes = "토큰 유효성 검증. 유효하면 true, 그렇지 않으면 false를 반환. POSTMAN으로 확인부탁드립니다. 왠진 모르겠는데 swagger결과가 다르게 나오네요.")
+    @PostMapping("/test/token")
+    public ResponseEntity<Boolean> verifyToken(HttpServletRequest request) {
+        String token = jwtTokenProvider.extractToken(request);
+
+        if(jwtTokenProvider.validateToken(token)){
+            return ResponseEntity.status(HttpStatus.OK).body(true);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(false);
+    }
 }
