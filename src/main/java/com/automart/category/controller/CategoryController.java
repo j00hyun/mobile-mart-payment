@@ -31,7 +31,7 @@ public class CategoryController {
             @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
                                                 "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
             @ApiResponse(code = 403, message = "관리자만 접근 가능 혹은 동일한 데이터가 존재합니다."),
-            @ApiResponse(code = 404, message = "해당 주문이 존재하지 않습니다.")
+            @ApiResponse(code = 404, message = "해당 카테고리가 존재하지 않습니다.")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "")

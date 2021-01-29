@@ -8,7 +8,7 @@ import javax.validation.constraints.*;
 @Data
 public class ProductUpdateRequestDto {
 
-    private int no; // 상품 고유 번호
+    private int productNo; // 상품 고유 번호
 
     @NotBlank(message = "상품명을 입력해주세요.")
     private String name; // 상품 이름
@@ -33,8 +33,8 @@ public class ProductUpdateRequestDto {
 
 
     @Builder
-    public ProductUpdateRequestDto(int no, String name, int stock, int minStock, String receivingDate, String location, int price, int cost, int code, MultipartFile img) {
-        this.no = no;
+    public ProductUpdateRequestDto(int productNo, String name, int stock, int minStock, String receivingDate, String location, int price, int cost, int code, MultipartFile img) {
+        this.productNo = productNo;
         this.name = name;
         this.stock = stock;
         this.minStock = minStock;

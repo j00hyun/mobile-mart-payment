@@ -69,7 +69,7 @@ public class ProductService {
      */
     @Transactional
     public ProductResponseDto updateProduct(ProductUpdateRequestDto requestDto) throws Exception {
-        Product product = productRepository.findByNo(requestDto.getNo())
+        Product product = productRepository.findByNo(requestDto.getProductNo())
                 .orElseThrow(()->new NotFoundDataException("상품이 존재하지 않습니다."));
         String categoryCode = product.getCategory().getCode();
         String dirName = "products/" + categoryCode;
