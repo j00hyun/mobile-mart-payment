@@ -11,14 +11,16 @@ import java.util.stream.Collectors;
 @Getter
 public class CartResponseDto {
 
-    private int productCode; // 제품 고유번호
+    private int productNo; // 제품 고유번호
+    private int productCode; // 제품 코드
     private String productName; // 제품 이름
     private int productPrice; // 제품 판매가격
     private String categoryName; // 카테고리 이름
     private int count; // 장바구니에 담은 제픔 수량
 
     @Builder
-    public CartResponseDto(int productCode, String productName, int productPrice, String categoryName, int count) {
+    public CartResponseDto(int productNo, int productCode, String productName, int productPrice, String categoryName, int count) {
+        this.productNo = productNo;
         this.productCode = productCode;
         this.productName = productName;
         this.productPrice = productPrice;
@@ -30,7 +32,8 @@ public class CartResponseDto {
         Product product = cartItem.getProduct();
 
         return CartResponseDto.builder()
-                .productCode(product.getNo())
+                .productNo(product.getNo())
+                .productCode(product.getCode())
                 .productName(product.getName())
                 .productPrice(product.getPrice())
                 .categoryName(product.getCategory().getName())
