@@ -1,7 +1,7 @@
 #!/bin/bash
 
-./gradlew bootJar 
-wait 
+#./gradlew bootJar 
+# wait 
 
 DOCKER_APP_NAME=automart-app
 
@@ -11,8 +11,11 @@ if [ -z "$EXIST_BLUE" ]; then
     echo "blue up"
     docker-compose -f docker-compose.yml up -d --build ${DOCKER_APP_NAME}-blue-A
     docker-compose -f docker-compose.yml up -d --build ${DOCKER_APP_NAME}-blue-B
-
-    sleep 10
+    echo "blue port(8081, 8083)로 변경합니다"
+    docker exec -it nginx-for-atmt-server sh -c "cd /etc/nginx/conf.d; echo \"server 127.0.0.1:8081 max_fails=3 fail_timeout=10s;\nserver 127.0.0.1:8083 max_fails=3 fail_timeout=10s;\" |tee /etc/nginx/conf.d/upstream.conf" 
+    echo "nginx reload"
+    docker exec -it nginx-for-atmt-server nginx -s reload
+    sleep 40
 
     docker stop ${DOCKER_APP_NAME}-green-A
     docker stop ${DOCKER_APP_NAME}-green-B
@@ -22,8 +25,11 @@ else
     echo "green up"
     docker-compose -f docker-compose.yml up -d --build ${DOCKER_APP_NAME}-green-A
     docker-compose -f docker-compose.yml up -d --build ${DOCKER_APP_NAME}-green-B
-
-    sleep 10
+    echo "green port(8082, 8084)로 변경합니다"
+    docker exec -it nginx-for-atmt-server sh -c "cd /etc/nginx/conf.d; echo \"server 127.0.0.1:8082 max_fails=3 fail_timeout=10s;\nserver 127.0.0.1:8084 max_fails=3 fail_timeout=10s;\" |tee /etc/nginx/conf.d/upstream.conf"
+    echo "nginx reload"
+    docker exec -it nginx-for-atmt-server nginx -s reload
+    sleep 40
 
     docker stop ${DOCKER_APP_NAME}-blue-A
     docker stop ${DOCKER_APP_NAME}-blue-B
