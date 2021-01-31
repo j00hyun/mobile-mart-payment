@@ -2,6 +2,7 @@ import React from 'react';
 import './table.css';
 import {red} from "@material-ui/core/colors";
 
+import Dialog1 from './dialog'
 import DialogDetail from './dialogDetail'
 
 import PropTypes from 'prop-types';
@@ -267,7 +268,7 @@ function BoardTable() {
 		<td className="blue">30000원</td>
 		</tr>
 		<tr style={{marginBottom: 20}}>
-		<td> <DialogDetail/></td>
+		<td> <Dialog1/></td>
 		<td>치즈크림케익</td>
 		<td className="yellow">32개</td>
 		<td>2020.12.10</td>

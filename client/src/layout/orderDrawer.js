@@ -44,7 +44,7 @@ export default function TemporaryDrawer() {
 
   const [open, setOpen] = React.useState(true);
 
-  const handleClick = () => {
+  const handleClick = (index) => {
     setOpen(!open);
   };
 
@@ -55,6 +55,7 @@ export default function TemporaryDrawer() {
 
     setState({ ...state, [anchor]: open });
   };
+
 
   const list = (anchor) => (
     <div
@@ -79,41 +80,39 @@ export default function TemporaryDrawer() {
       </IconButton>
 
 </div>
-      <Divider />
+<Divider />
 
-      <List>
-        {['ㆍ12월', 'ㆍ11월', 'ㆍ10월'].map((text, index) => (
-          <ListItem button key={text} onClick={handleClick}>
-            <ListItemText primary={text} />
-{open ? <ExpandLess /> : <ExpandMore />}
-
-          </ListItem>
-
-        ))}
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItem button className={classes.nested}>
-            <ListItemText primary="맛있는 리얼팜" />
+<List>
+{['ㆍ12월', 'ㆍ11월', 'ㆍ10월'].map((text, index) => (
+			<div>
+			<ListItem button key={text} onClick={handleClick.bind(this, text)}>
+			<ListItemText primary={text} />
+			{open ? <ExpandLess /> : <ExpandMore />}
+			</ListItem>
+			<Collapse in={open} timeout="auto" unmountOnExit>
+			<List component="div" disablePadding>
+			<ListItem button className={classes.nested}>
+			<ListItemText primary="맛있는 리얼팜" />
 			<h5>50000원 </h5>
 			<Button color="secondary"style={{
-				fontSize: "1.333em",
-				color: "#FF0000"
-			}}>내역삭제
-			</Button>
-          </ListItem>
-          <ListItem button className={classes.nested}>
-            <ListItemText primary="노브랜드 베이컨" />
-          </ListItem>
-          <ListItem button className={classes.nested}>
+fontSize: "1.333em",
+color: "#FF0000"
+}}>내역삭제
+</Button>
+</ListItem>
+<ListItem button className={classes.nested}>
+<ListItemText primary="노브랜드 베이컨" />
+</ListItem>
+<ListItem button className={classes.nested}>
 
-            <ListItemText primary="크림치즈케익" />
-          </ListItem>
-        </List>
-      </Collapse>
-      </List>
+<ListItemText primary="크림치즈케익" />
+</ListItem>
+</List>
+</Collapse>
 
-
-
+</div>
+))}
+</List>
 
     </div>
   );

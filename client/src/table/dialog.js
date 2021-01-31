@@ -1,5 +1,6 @@
 import React from 'react';
-import './dialogDetail.css';
+import './dialog.css';
+import DialogDetail from './dialogDetail'
 
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
@@ -135,24 +136,13 @@ function SimpleDialog(props) {
 									<p> 치즈크림케익 </p>
 		<br/><br/>
 		<label for="field_rest">
-		<span>남은 수량 &nbsp;&nbsp;</span>
+		<span>남은수량 &nbsp;&nbsp;</span>
 		</label>
-		<input type="text"name="field_rest" size="5"/>
+		<span class="span_1"> 34개 </span>
 		<label for="field_auto">
 		<span>&nbsp;자동 주문 &nbsp;</span>
 		</label>
-		<FormControl className={classes.formControl}>
-		<Select
-		labelId="demo-simple-select-label"
-		id="demo-simple-select"
-		value={age}
-		onChange={handleChange}
-		>
-		<MenuItem value={1}>1 개</MenuItem>
-		<MenuItem value={2}>2 개</MenuItem>
-		<MenuItem value={3}>3 개</MenuItem>
-		</Select>
-		</FormControl>
+		<span class="span_1"> 3개이하</span>
 		</div>
 		<br/>
 		<div class="form-group">
@@ -160,7 +150,7 @@ function SimpleDialog(props) {
 		<label for="field_last">
 		<span>마지막입고 </span>
 		</label>
-		<input type="text" name="field_last" size="7"/>
+		<span class="span_1">2021.1.31 </span>
 		</div>
 		<br/>
 		<div class="form-group">
@@ -168,7 +158,7 @@ function SimpleDialog(props) {
 		<label for="field_location">
 		<span>상품 위치 &nbsp; </span>  
 		</label>
-		<input type="text" name = "field_location" size="7"/>
+		<span class="span_1">A열 14번 </span>
 		</div>
 		<br/>
 		<div class="form-group">
@@ -176,7 +166,7 @@ function SimpleDialog(props) {
 		<label for="field_sell">
 		<span>판매가   &nbsp;&nbsp;&nbsp; &nbsp;</span>  
 		</label>
-		<input type="text" name="field_sell"size="7"/>
+		<span class="span_1">20000원 </span>
 		</div>
 		<br/>
 		<div class="form-group">
@@ -184,18 +174,10 @@ function SimpleDialog(props) {
 		<label for="field_buy">
 		<span>구매가  &nbsp;&nbsp;&nbsp;&nbsp;  </span>  
 		</label>
-		<input type="text" name="field_buy" size="7"/>
+		<span class="span_1">30000원 </span>
 		</div>
-		<Button     style={{
-			borderRadius: 5,
-				backgroundColor: "#FFCC33",
-				padding: "9px 18px",
-				fontSize: "14px",
-				float:"left",
-				margin:"10px 0px 0px 200px"	
-		}}>
-		완료
-		</Button>
+		<DialogDetail/>
+
 		</form>
 
 		</div>
@@ -216,7 +198,7 @@ SimpleDialog.propTypes = {
 	open: PropTypes.bool.isRequired,
 	selectedValue: PropTypes.string.isRequired,
 };
-function DialogDetail() {
+function Dialog1() {
 	const [open, setOpen] = React.useState(false);
 	const [selectedValue, setSelectedValue] = React.useState(emails[1]);
 
@@ -232,18 +214,11 @@ function DialogDetail() {
 <div>
 		<SimpleDialog selectedValue={selectedValue} open={open} onClose={handleClose}/>
 
-				<Button     style={{
-			borderRadius: 5,
-				backgroundColor: "#000000",
-				padding: "9px 18px",
-				fontSize: "12px",
-				float:"left",
-				margin:"10px 0px 0px 200px"	
-		}} onClick={handleClickOpen}>
-		<span style={{color: "#FFFFFF", fontSize:"12px"}}>내용편집</span>
-		</Button>
+		<button onClick={handleClickOpen}><img
+		src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044"
+		width="70px"/></button>
 </div>
 	)
 }
 
-export default DialogDetail
+export default Dialog1
