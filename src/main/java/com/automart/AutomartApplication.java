@@ -1,19 +1,24 @@
 package com.automart;
 
-import com.automart.config.AppProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableConfigurationProperties(AppProperties.class)
 @EnableCaching
 public class AutomartApplication {
 
+	public static final String APPLICATION_LOCATIONS = "spring.config.location="
+			+ "/home/ubuntu/devops/application.yml,"
+			+ "/home/ubuntu/devops/application-auth.yml";
+
 	public static void main(String[] args) {
-		SpringApplication.run(AutomartApplication.class, args);
+		new SpringApplicationBuilder(AutomartApplication.class)
+				.properties(APPLICATION_LOCATIONS)
+				.run(args);
 	}
 
 }
