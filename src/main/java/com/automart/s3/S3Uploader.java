@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 @Component
+@RefreshScope
 public class S3Uploader implements Uploader {
 
     private final static String TEMP_FILE_PATH = "src/main/resources/";
