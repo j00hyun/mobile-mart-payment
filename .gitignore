@@ -38,7 +38,6 @@ out/
 
 ### Custom ###
 .properties
-*.yml
 test/
 
 .idea
