@@ -60,4 +60,15 @@ public class Cart {
         }
         this.user = null;
     }
+
+    /**
+     * 장바구니 총 금액 조회
+     */
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        for (CartItem cartItem : cartItems) {
+            totalPrice += cartItem.getPrice();
+        }
+        return totalPrice;
+    }
 }

@@ -31,7 +31,7 @@ public class ProductResolver {
     @PreAuthorize("hasRole('ADMIN')")
     public ProductResponseDto showProduct(Integer productNo) {
         Product product = productRepository.findByNo(productNo)
-                .orElseThrow(()->new IllegalStateException("상품이 존재하지 않습니다."));
+                .orElseThrow(()->new NotFoundDataException("상품이 존재하지 않습니다."));
         return ProductResponseDto.of(product);
     }
 
