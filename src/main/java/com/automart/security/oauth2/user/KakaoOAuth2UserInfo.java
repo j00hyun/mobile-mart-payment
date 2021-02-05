@@ -15,4 +15,10 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
         HashMap<String, String> accountMap = (HashMap<String, String>) attributes.get("kakao_account");
         return accountMap.get("email");
     }
+
+    @Override
+    public String getName() {
+        HashMap<String, String> propertyMap = (HashMap<String, String>) attributes.get("properties");
+        return propertyMap.get("nickname");
+    }
 }

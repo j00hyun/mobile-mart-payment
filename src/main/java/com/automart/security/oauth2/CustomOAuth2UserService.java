@@ -94,6 +94,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .snsType(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
                 .snsKey(oAuth2UserInfo.getId())
                 .email(oAuth2UserInfo.getEmail())
+                .name(oAuth2UserInfo.getName())
                 .build();
 
         return userRepository.save(user);
@@ -104,6 +105,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
      */
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         existingUser.setEmail(oAuth2UserInfo.getEmail());
+        existingUser.setName(oAuth2UserInfo.getName());
         return userRepository.save(existingUser);
     }
 }

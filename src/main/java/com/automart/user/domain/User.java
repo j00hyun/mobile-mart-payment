@@ -85,6 +85,9 @@ public class User {
     // 소셜로그인 유저 이메일 변겅
     public void setEmail(String email) { this.email = email; }
 
+    // 소셜로그인 유저 이름 변경
+    public void setName(String name) { this.name = name; }
+
     // 장바구니 생성
     public void setCart(Cart cart) { this.cart = cart; }
 

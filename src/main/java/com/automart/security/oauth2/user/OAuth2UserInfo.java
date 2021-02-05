@@ -28,4 +28,7 @@ public abstract class OAuth2UserInfo {
     // 회원 이메일
     public abstract String getEmail();
 
+    // 회원 이름
+    public abstract String getName();
+
 }
