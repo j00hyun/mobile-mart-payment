@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: automart
+  profiles:
+    active: operation
+  cloud:
+    config:
+      label: main
+      uri: http://52.79.132.29:8888
+      fail-fast: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
