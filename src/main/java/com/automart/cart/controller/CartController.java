@@ -54,8 +54,8 @@ public class CartController {
     })
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/list")
-    public ResponseEntity<List<CartResponseDto>> showUserCart(@AuthenticationPrincipal UserPrincipal userPrincipal) throws SessionUnstableException {
-        List<CartResponseDto> cartResponseDtos = cartService.showUserCarts(userPrincipal.getNo());
+    public ResponseEntity<CartResponseDto> showUserCart(@AuthenticationPrincipal UserPrincipal userPrincipal) throws SessionUnstableException {
+        CartResponseDto cartResponseDtos = cartService.showUserCarts(userPrincipal.getNo());
         return ResponseEntity.status(HttpStatus.OK).body(cartResponseDtos);
     }
 

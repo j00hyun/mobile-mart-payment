@@ -403,9 +403,9 @@ class CartServiceTest {
         cartService.addProductByCode(1, 2);
 
         // when
-        List<CartResponseDto> cartResponseDtos = cartService.showUserCarts(1);
+        CartResponseDto cartResponseDtos = cartService.showUserCarts(1);
 
         // then
-        assertEquals("장바구니에 상품이 2개 담겨있어야함.", 2, cartResponseDtos.size());
+        assertEquals("장바구니에 상품이 2개 담겨있어야함.", 2, cartResponseDtos.getCartItems().size());
     }
 }
