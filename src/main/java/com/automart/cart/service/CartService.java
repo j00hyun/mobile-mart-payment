@@ -144,7 +144,7 @@ public class CartService {
      * @param userNo : 사용자 고유번호
      * @return 장바구니 목록 정보
      */
-    public List<CartResponseDto> showUserCarts(int userNo) throws SessionUnstableException, NotFoundDataException{
+    public CartResponseDto showUserCarts(int userNo) throws SessionUnstableException, NotFoundDataException{
         log.info("해당 사용자 장바구니 목록 조회");
 
         User user = userRepository.findByNo(userNo)
@@ -153,6 +153,6 @@ public class CartService {
                 .orElseThrow(() -> new NotFoundDataException("해당 유저의 장바구니가 존재하지 않습니다."));
 
         List<CartItem> cartItems = cartItemRepository.findAllByCart(cart);
-        return CartResponseDto.listOf(cartItems);
+        return CartResponseDto.of(cart);
     }
 }

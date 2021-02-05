@@ -38,7 +38,7 @@ out/
 
 ### Custom ###
 .properties
-test/
+test/resources/
 
 .idea
 node_modules
