@@ -1,6 +1,8 @@
 package com.automart.cart.domain;
 
 
+import com.automart.advice.exception.NotEnoughStockException;
+import com.automart.advice.exception.NotFoundDataException;
 import com.automart.order.domain.OrderDetail;
 import com.automart.user.domain.User;
 import lombok.AccessLevel;
@@ -11,6 +13,7 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Entity
@@ -48,7 +51,7 @@ public class Cart {
         return cart;
     }
 
-    // 해당 유저의 장바구니중 특정 제품 제거
+    // 해당 유저의 장바구니중 특정 제품에 대한 연관관계를 제거
     public void removeCartItem(CartItem cartItem) {
         this.cartItems.remove(cartItem);
     }

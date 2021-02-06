@@ -27,10 +27,10 @@ public class CartItem {
     @JoinColumn(name = "product_no", nullable = false)
     private Product product; // 상품 고유번호
 
-    @Column(name = "cart_count", columnDefinition = "integer default 1")
+    @Column(name = "cart_item_count", columnDefinition = "integer default 1")
     private int count; // 담은 상품 수량
 
-    @Column(name = "cart_price")
+    @Column(name = "cart_item_price")
     private int price; // 수량 포함 제품 가격
 
     public void setCart(Cart cart) {

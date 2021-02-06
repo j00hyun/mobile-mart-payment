@@ -26,11 +26,15 @@ public class OrderDetail {
     @JoinColumn(name = "product_no", nullable = false)
     private Product product; // 구매 제품 고유번호
 
-    @Column(name = "ord_detail_count", columnDefinition = "integer default 1")
+    @Column(name = "order_detail_count", columnDefinition = "integer default 1")
     private int count; // 구매 수량
 
-    @Column(name = "ord_detail_price")
+    @Column(name = "order_detail_price")
     private int price; // 수량 포함 제품 가격
+
+    @Convert(converter = OrderStateAttributeConverter.class)
+    @Column(name = "order_detail_status")
+    private String status; // 주문 제품 상태(ORDER, CANCEL)
 
     public void setOrder(Order order) {
         this.order = order;
@@ -49,8 +53,12 @@ public class OrderDetail {
         this.price = price;
     }
 
+    public void setStatus(String status) { this.status = status; }
+
     public void cancel() {
         getProduct().addStock(count);
+        setStatus("CANCEL");
+        // 환불에 대한 코드가 필요(?)
     }
 
     /**
@@ -62,6 +70,7 @@ public class OrderDetail {
         product.getOrderDetails().add(orderDetail);
         orderDetail.setCount(count);
         orderDetail.setPrice(price);
+        orderDetail.setStatus("ORDER");
 
         product.removeStock(count); // 주문상품의 개수만큼 상품현황에서 감소시킴
         return orderDetail;
