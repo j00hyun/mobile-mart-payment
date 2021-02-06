@@ -13,7 +13,6 @@ import com.automart.order.repository.OrderDetailRepository;
 import com.automart.product.domain.Product;
 import com.automart.product.repository.ProductRepository;
 import com.automart.user.domain.User;
-import com.automart.cart.repository.CartItemRepository;
 import com.automart.order.repository.OrderRepository;
 import com.automart.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,6 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
 
     /***
      * 주문하기

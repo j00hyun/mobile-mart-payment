@@ -3,8 +3,6 @@ package com.automart.order.controller;
 import com.automart.advice.exception.NotFoundDataException;
 import com.automart.cart.domain.Cart;
 import com.automart.cart.repository.CartRepository;
-import com.automart.cart.service.CartService;
-import com.automart.order.dto.ConfirmResponseDto;
 import com.automart.order.dto.ResponseDataDto;
 import com.automart.order.service.OrderService;
 import com.automart.order.dto.OrderRequestDto;
@@ -20,21 +18,16 @@ import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.*;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
@@ -150,9 +143,6 @@ public class OrderController {
     public ResponseEntity<Boolean> confirmPaymentInfo(@RequestParam String imp_uid, @RequestParam String merchant_uid,
                                                       @RequestParam boolean imp_success, @RequestParam int cartNo) throws Exception {
 
-        System.out.println("imp_uid : " +imp_uid + ", merchant_uid : " + merchant_uid);
-        System.out.println("imp_success : " + imp_success + ", cartNo : " + cartNo);
-
         String postUrl = "https://api.iamport.kr/users/getToken";
 
         UriComponents postBuilder = UriComponentsBuilder.fromHttpUrl(postUrl)
@@ -186,8 +176,6 @@ public class OrderController {
                 .build(false)
                 .expand(merchant_uid);
 
-        System.out.println("요청 URL : " + getUrl);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
         headers.add("X-ImpTokenHeader", token);
@@ -195,17 +183,14 @@ public class OrderController {
         ResponseDataDto<Map<String, Object>> getResult = httpService.get(getBuilder, headers).getBody();
         JSONObject jsonObject = httpService.MapConverterToJson(getResult.getResponse());
 
-        System.out.println("getResult: " + getResult);
         String status = (String) jsonObject.get("status");
 
-        System.out.println("status : " + status);
         if (status.equals("paid")) {
             Integer amount = (Integer) jsonObject.get("amount");
-            System.out.println("amount : " + amount);
             Cart cart = cartRepository.findByNo(cartNo).
                     orElseThrow(() -> new NotFoundDataException("카트를 불러올 수 없습니다."));
 
-            if (amount != cart.getTotalPrice()) {
+            if (amount == cart.getTotalPrice()) {
                 ResponseEntity.status(HttpStatus.OK).body(true);
             }
         }

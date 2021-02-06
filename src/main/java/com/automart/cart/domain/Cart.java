@@ -1,9 +1,6 @@
 package com.automart.cart.domain;
 
 
-import com.automart.advice.exception.NotEnoughStockException;
-import com.automart.advice.exception.NotFoundDataException;
-import com.automart.order.domain.OrderDetail;
 import com.automart.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @Entity

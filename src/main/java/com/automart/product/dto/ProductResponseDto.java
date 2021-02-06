@@ -1,13 +1,11 @@
 package com.automart.product.dto;
 
 import com.automart.product.domain.Product;
-import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
