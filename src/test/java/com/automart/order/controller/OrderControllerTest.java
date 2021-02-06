@@ -263,7 +263,7 @@ class OrderControllerTest {
             System.out.println("cart 금액 : " + cart.getTotalPrice());
             System.out.println("amount 금액 : " + amount);
 
-            if (amount != cart.getTotalPrice()) {
+            if (amount == cart.getTotalPrice()) {
                 System.out.println("true를 리턴한다.");
             }
         }

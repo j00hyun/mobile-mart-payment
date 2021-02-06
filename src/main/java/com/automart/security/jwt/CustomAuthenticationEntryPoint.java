@@ -3,7 +3,6 @@ package com.automart.security.jwt;
 import com.automart.user.dto.AuthResponseDto;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

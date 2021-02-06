@@ -1,7 +1,6 @@
 package com.automart.user.domain;
 
 import com.automart.cart.domain.Cart;
-import com.automart.cart.domain.CartItem;
 import com.automart.order.domain.Order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;

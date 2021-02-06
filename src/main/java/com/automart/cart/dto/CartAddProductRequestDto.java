@@ -3,7 +3,6 @@ package com.automart.cart.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 
 @Data

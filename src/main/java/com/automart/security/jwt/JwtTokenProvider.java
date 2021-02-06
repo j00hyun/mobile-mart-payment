@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

@@ -1,11 +1,8 @@
 package com.automart.product.dto;
 
-import com.automart.product.domain.Product;
 import lombok.Builder;
 import lombok.Data;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 @Data
 public class ProductRemoveRequestDto {

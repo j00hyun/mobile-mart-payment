@@ -3,7 +3,6 @@ package com.automart.cart.repository;
 import com.automart.cart.domain.Cart;
 import com.automart.cart.domain.CartItem;
 import com.automart.product.domain.Product;
-import com.automart.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

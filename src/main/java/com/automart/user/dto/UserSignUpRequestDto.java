@@ -1,6 +1,5 @@
 package com.automart.user.dto;
 
-import com.automart.user.domain.AuthProvider;
 import lombok.Builder;
 import lombok.Data;
 

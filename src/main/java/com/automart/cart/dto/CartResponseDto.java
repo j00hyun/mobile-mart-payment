@@ -2,7 +2,6 @@ package com.automart.cart.dto;
 
 import com.automart.cart.domain.Cart;
 import com.automart.cart.domain.CartItem;
-import com.automart.product.domain.Product;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;

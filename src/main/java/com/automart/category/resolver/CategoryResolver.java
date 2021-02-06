@@ -1,12 +1,8 @@
 package com.automart.category.resolver;
 
-import com.automart.advice.exception.NotFoundDataException;
 import com.automart.category.domain.Category;
 import com.automart.category.dto.CategoryResponseDto;
 import com.automart.category.repository.CategoryRepository;
-import com.automart.product.domain.Product;
-import com.automart.product.dto.ProductResponseDto;
-import com.automart.product.repository.ProductRepository;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
