@@ -5,6 +5,7 @@ import com.automart.advice.exception.SessionUnstableException;
 import com.automart.cart.domain.Cart;
 import com.automart.cart.domain.CartItem;
 import com.automart.cart.repository.CartRepository;
+import com.automart.cart.service.CartService;
 import com.automart.order.domain.Order;
 import com.automart.order.domain.OrderDetail;
 import com.automart.order.dto.OrderRequestDto;
@@ -32,6 +33,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
+    private final CartService cartService;
 
     /***
      * 주문하기
@@ -62,7 +64,8 @@ public class OrderService {
         orderRepository.save(order);
 
         // 주문이 완료되었으니 장바구니 상품들을 삭제시킨다.
-        cart.clear();
+        cartService.removeAllCartItem(user, cart);
+
         return OrderResponseDto.of(order);
     }
 

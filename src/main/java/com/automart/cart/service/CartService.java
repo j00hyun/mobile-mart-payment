@@ -138,6 +138,25 @@ public class CartService {
         }
     }
 
+    /**
+     * 카트 전체 삭제
+     * @param user : 사용자
+     * @param cart : 해당 사용자의 장바구니
+     */
+    public void removeAllCartItem(User user, Cart cart) {
+        List<CartItem> cartItems = cartItemRepository.findAllByCart(cart);
+
+        // 카트에 담겨있는 카트 아이템 모두 삭제
+        for(CartItem cartItem : cartItems) {
+            cartItem.removeCartItem();
+            cartItemRepository.delete(cartItem);
+        }
+
+        // 유저에게 할당된 카트 삭제
+        user.clearCart();
+        cartRepository.delete(cart);
+    }
+
 
     /**
      * 해당 사용자 장바구니 목록 조회하기

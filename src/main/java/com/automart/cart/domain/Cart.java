@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "cart")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,11 +54,8 @@ public class Cart {
         this.cartItems.remove(cartItem);
     }
 
-    // 해당 장바구니 목록 모두 삭제
+    // 장바구니 삭제
     public void clear() {
-        for(CartItem cartItem : cartItems) {
-            cartItem.removeCartItem();
-        }
         this.user = null;
     }
 
