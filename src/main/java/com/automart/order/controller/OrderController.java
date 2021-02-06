@@ -67,15 +67,16 @@ public class OrderController {
     })
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/purchase")
-    public ResponseEntity<OrderResponseDto> order(@ApiParam("주문하는 고객 번호와 주문할 카트 번호") @RequestBody @Valid OrderRequestDto requestDto) throws Exception {
-        OrderResponseDto orderResponseDto = orderService.order(requestDto);
+    public ResponseEntity<OrderResponseDto> order(@ApiParam("주문하는 고객 번호와 주문할 카트 번호") @AuthenticationPrincipal UserPrincipal userPrincipal,
+                                                  @RequestBody @Valid OrderRequestDto requestDto) throws Exception {
+        OrderResponseDto orderResponseDto = orderService.order(userPrincipal.getPrincipal(),requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(orderResponseDto);
     }
 
     @ApiOperation(value = "주문 취소", notes = "해당 주문건을 취소한다.", authorizations = { @Authorization(value = "jwtToken")})
     @ApiImplicitParam(name = "orderNo", value = "취소할 주문 번호", required = true, dataType = "int", defaultValue = "1")
     @ApiResponses({
-            @ApiResponse(code = 201, message = "정상적으로 주문되었습니다."),
+            @ApiResponse(code = 201, message = "해당 주문이 취소되었습니다."),
             @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
                                                 "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
             @ApiResponse(code = 403, message = "유저만 접근 가능"),
@@ -84,7 +85,26 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     @PutMapping("/purchase/{orderNo}/cancel")
     public ResponseEntity<String> cancel(@PathVariable int orderNo) {
-        orderService.cancel(orderNo);
+        orderService.cancelAll(orderNo);
+        return ResponseEntity.status(HttpStatus.CREATED).body("해당 주문이 취소되었습니다.");
+    }
+
+    @ApiOperation(value = "주문에서 특정 상품 취소", notes = "주문에서 특정 상품에 대한 주문만 취소한다.", authorizations = { @Authorization(value = "jwtToken")})
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "orderNo", value = "취소할 주문 번호", required = true, dataType = "int", defaultValue = "1"),
+            @ApiImplicitParam(name = "productNo", value = "취소할 상품 번호", required = true, dataType = "int", defaultValue = "1"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 201, message = "주문 단건이 취소되었습니다."),
+            @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
+                    "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
+            @ApiResponse(code = 403, message = "유저만 접근 가능"),
+            @ApiResponse(code = 404, message = "취소할 주문 상품이 존재하지 않습니다.")
+    })
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping("/purchase/{orderNo}/cancel/{productNo}")
+    public ResponseEntity<String> cancel(@PathVariable int orderNo, @PathVariable int productNo) {
+        orderService.cancelOne(orderNo, productNo);
         return ResponseEntity.status(HttpStatus.CREATED).body("해당 상품에 대한 주문이 취소되었습니다.");
     }
 
@@ -130,6 +150,9 @@ public class OrderController {
     public ResponseEntity<Boolean> confirmPaymentInfo(@RequestParam String imp_uid, @RequestParam String merchant_uid,
                                                       @RequestParam boolean imp_success, @RequestParam int cartNo) throws Exception {
 
+        System.out.println("imp_uid : " +imp_uid + ", merchant_uid : " + merchant_uid);
+        System.out.println("imp_success : " + imp_success + ", cartNo : " + cartNo);
+
         String postUrl = "https://api.iamport.kr/users/getToken";
 
         UriComponents postBuilder = UriComponentsBuilder.fromHttpUrl(postUrl)
@@ -163,6 +186,8 @@ public class OrderController {
                 .build(false)
                 .expand(merchant_uid);
 
+        System.out.println("요청 URL : " + getUrl);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
         headers.add("X-ImpTokenHeader", token);
@@ -170,11 +195,13 @@ public class OrderController {
         ResponseDataDto<Map<String, Object>> getResult = httpService.get(getBuilder, headers).getBody();
         JSONObject jsonObject = httpService.MapConverterToJson(getResult.getResponse());
 
+        System.out.println("getResult: " + getResult);
         String status = (String) jsonObject.get("status");
 
+        System.out.println("status : " + status);
         if (status.equals("paid")) {
             Integer amount = (Integer) jsonObject.get("amount");
-
+            System.out.println("amount : " + amount);
             Cart cart = cartRepository.findByNo(cartNo).
                     orElseThrow(() -> new NotFoundDataException("카트를 불러올 수 없습니다."));
 
