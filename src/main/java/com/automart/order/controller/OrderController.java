@@ -72,10 +72,10 @@ public class OrderController {
             @ApiResponse(code = 201, message = "해당 주문이 취소되었습니다."),
             @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
                                                 "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
-            @ApiResponse(code = 403, message = "유저만 접근 가능"),
+            @ApiResponse(code = 403, message = "관리자만 접근 가능"),
             @ApiResponse(code = 404, message = "취소할 주문이 존재하지 않습니다.")
     })
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/purchase/{orderNo}/cancel")
     public ResponseEntity<String> cancel(@PathVariable int orderNo) {
         orderService.cancelAll(orderNo);
@@ -91,10 +91,10 @@ public class OrderController {
             @ApiResponse(code = 201, message = "주문 단건이 취소되었습니다."),
             @ApiResponse(code = 401, message = "1. 로그인이 필요합니다.\n" +
                     "2. 토큰 만료 (새로운 토큰 발급)", response = AuthResponseDto.class),
-            @ApiResponse(code = 403, message = "유저만 접근 가능"),
+            @ApiResponse(code = 403, message = "관리자만 접근 가능"),
             @ApiResponse(code = 404, message = "취소할 주문 상품이 존재하지 않습니다.")
     })
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/purchase/{orderNo}/cancel/{productNo}")
     public ResponseEntity<String> cancel(@PathVariable int orderNo, @PathVariable int productNo) {
         orderService.cancelOne(orderNo, productNo);
