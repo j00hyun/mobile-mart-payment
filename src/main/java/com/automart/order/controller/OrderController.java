@@ -191,7 +191,7 @@ public class OrderController {
                     orElseThrow(() -> new NotFoundDataException("카트를 불러올 수 없습니다."));
 
             if (amount == cart.getTotalPrice()) {
-                ResponseEntity.status(HttpStatus.OK).body(true);
+                return ResponseEntity.status(HttpStatus.OK).body(true);
             }
         }
 
