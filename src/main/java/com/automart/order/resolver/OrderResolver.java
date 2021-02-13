@@ -1,5 +1,6 @@
 package com.automart.order.resolver;
 
+import com.automart.order.dto.TotalDailyMarginResponseDto;
 import com.automart.order.dto.TotalDailySalesResponseDto;
 import com.automart.order.repository.OrderRepository;
 import io.leangen.graphql.annotations.GraphQLQuery;
@@ -27,4 +28,11 @@ public class OrderResolver {
         return orderRepository.findTotalDailySales();
     }
 
+    /**
+     * 일별 총 순수익 계산
+     * @return 일별 순수익 반환
+     */
+    @GraphQLQuery(name = "showTotalDailyMargin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TotalDailyMarginResponseDto> showTotalDailyMargin() { return orderRepository.findTotalDailyMargin(); }
 }
