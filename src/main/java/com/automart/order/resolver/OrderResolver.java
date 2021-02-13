@@ -29,6 +29,16 @@ public class OrderResolver {
     }
 
     /**
+     * 일별 특정 카테고리 매출액 계산
+     * @return 해당 카테고리의 일별 매출액 반환
+     */
+    @GraphQLQuery(name = "showTotalDailySalesByCategory")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TotalDailySalesResponseDto> showTotalDailySalesByCategory(String categoryCode) {
+        return orderRepository.findTotalDailySalesByCategory(categoryCode);
+    }
+
+    /**
      * 일별 총 순수익 계산
      * @return 일별 순수익 반환
      */

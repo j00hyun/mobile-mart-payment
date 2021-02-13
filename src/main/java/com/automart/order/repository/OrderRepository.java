@@ -36,6 +36,29 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     public List<TotalDailySalesResponseDto> findTotalDailySales();
 
     /**
+     * 일별 매출 (카테고리)
+     *
+     * od : order_no 별 전체 주문 가격
+     * date : 주문이 존재하는 날짜
+     * price(SUM(od.price)) : 해당 날짜에 특정 카테고리 상품들의 총 판매액
+     */
+    @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.price) AS price" +
+                " FROM automart.order o" +
+                    " INNER JOIN (" +
+                        " SELECT d.order_no, SUM(d.order_detail_price) AS price" +
+                        " FROM automart.order_detail d, automart.product p" +
+                        " WHERE d.product_no = p.product_no" +
+                            " AND d.order_detail_status = 1" +
+                            " AND p.category_code = ?1" +
+                        " GROUP BY order_no" +
+                    " ) od" +
+                " ON o.order_no = od.order_no" +
+                " WHERE o.order_state = 1" +
+                " GROUP BY o.order_date" +
+                " ORDER BY o.order_date;", nativeQuery = true)
+    public List<TotalDailySalesResponseDto> findTotalDailySalesByCategory(String categoryCode);
+
+    /**
      * 일별 순수익 (전체)
      *
      * od : order_no 별 순수익
@@ -63,7 +86,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
      *
      * od : order_no 별 순수익
      * date : 주문이 존재하는 날짜
-     * margin(SUM(od.margin)) : 해당 날짜의 총 순수익
+     * margin(SUM(od.margin)) : 해당 날짜에 특정 카테고리 상품들의 총 순수익
      */
     @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.margin) AS margin" +
             " FROM automart.order o" +
