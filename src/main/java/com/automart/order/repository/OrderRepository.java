@@ -67,7 +67,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
      */
     @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.margin) AS margin" +
             " FROM automart.order o" +
-                " LEFT OUTER JOIN (" +
+                " INNER JOIN (" +
                     " SELECT order_no," +
                         " SUM(d.order_detail_price - p.product_cost * d.order_detail_count) AS margin" +
                     " FROM automart.order_detail d, automart.product p" +
