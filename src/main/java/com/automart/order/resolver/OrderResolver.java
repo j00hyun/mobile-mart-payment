@@ -34,5 +34,17 @@ public class OrderResolver {
      */
     @GraphQLQuery(name = "showTotalDailyMargin")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<TotalDailyMarginResponseDto> showTotalDailyMargin() { return orderRepository.findTotalDailyMargin(); }
+    public List<TotalDailyMarginResponseDto> showTotalDailyMargin() {
+        return orderRepository.findTotalDailyMargin();
+    }
+
+    /**
+     * 일별 특정 카테고리 순수익 계산
+     * @return 해당 카테고리의 일별 순수익 반환
+     */
+    @GraphQLQuery(name = "showTotalDailyMarginByCategory")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<TotalDailyMarginResponseDto> showTotalDailyMarginByCategory(String categoryCode) {
+        return orderRepository.findTotalDailyMarginByCategory(categoryCode);
+    }
 }

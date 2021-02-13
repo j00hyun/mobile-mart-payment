@@ -58,5 +58,27 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                 " ORDER BY o.order_date;", nativeQuery = true)
     public List<TotalDailyMarginResponseDto> findTotalDailyMargin();
 
-    
+    /**
+     * 일별 순수익 (카테고리별)
+     *
+     * od : order_no 별 순수익
+     * date : 주문이 존재하는 날짜
+     * margin(SUM(od.margin)) : 해당 날짜의 총 순수익
+     */
+    @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.margin) AS margin" +
+            " FROM automart.order o" +
+                " LEFT OUTER JOIN (" +
+                    " SELECT order_no," +
+                        " SUM(d.order_detail_price - p.product_cost * d.order_detail_count) AS margin" +
+                    " FROM automart.order_detail d, automart.product p" +
+                    " WHERE d.product_no = p.product_no" +
+                        " AND d.order_detail_status = 1" +
+                        " AND p.category_code = ?1" +
+                    " GROUP BY d.order_no" +
+                " ) od" +
+                " ON o.order_no = od.order_no" +
+            " WHERE o.order_state = 1" +
+            " GROUP BY o.order_date" +
+            " ORDER BY o.order_date;", nativeQuery = true)
+    public List<TotalDailyMarginResponseDto> findTotalDailyMarginByCategory(String categoryCode);
 }
