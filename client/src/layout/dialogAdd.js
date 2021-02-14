@@ -139,8 +139,7 @@ function SimpleDialog(props) {
 								float:"left"
 								}}>
 
-								<input type="file"  />
-								<img alt="nobrand_sample" src="https://img.danawa.com/prod_img/500000/528/389/img/5389528_1.jpg?shrink=360:360&_v=20170809160044" width="280" height="280"/>
+								<input type="file"width="280" height="280" />
 							</div>
 							<div style={{
 								display:"flex",
@@ -149,7 +148,7 @@ function SimpleDialog(props) {
 								}}>
 								<form role="form">
 								<div class="form-group">
-									<p> 치즈크림케익 </p>
+								        <TextField id="standard-basic" label="상품명"  />
 		<br/><br/>
 		<label for="field_rest">
 		<span>남은수량 &nbsp;&nbsp;</span>
