@@ -10,20 +10,20 @@ import java.util.stream.Collectors;
 @Getter
 public class CategoryResponseDto {
 
-    private String code; // 카테고리 고유 코드
+    private int no; // 카테고리 고유 번호
     private String name; // 제품 이름
 
 
     @Builder
-    public CategoryResponseDto(String code, String name) {
-        this.code = code;
+    public CategoryResponseDto(int no, String name) {
+        this.no = no;
         this.name = name;
     }
 
 
     public static CategoryResponseDto of(Category category) {
         return CategoryResponseDto.builder()
-                .code(category.getCode())
+                .no(category.getNo())
                 .name(category.getName())
                 .build();
     }

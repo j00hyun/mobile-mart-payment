@@ -4,6 +4,7 @@ import com.automart.cart.domain.CartItem;
 import com.automart.category.domain.Category;
 import com.automart.advice.exception.NotEnoughStockException;
 import com.automart.order.domain.OrderDetail;
+import com.automart.subdivision.domain.Subdivision;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,8 +35,12 @@ public class Product {
     private List<CartItem> cartItems = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_code")
+    @JoinColumn(name = "category_no")
     private Category category; // 카테고리 고유번호
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subdiv_no")
+    private Subdivision subdivision; // 소분류 고유번호
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
@@ -83,8 +88,9 @@ public class Product {
 
 
     @Builder
-    public Product(Category category, String name, int price, int cost, int stock, int minStock, Date receivingDate, int code, String imgUrl, String location) {
+    public Product(Category category, Subdivision subdivision, String name, int price, int cost, int stock, int minStock, Date receivingDate, int code, String imgUrl, String location) {
         this.category = category;
+        this.subdivision = subdivision;
         this.name = name;
         this.price = price;
         this.cost = cost;
@@ -96,17 +102,19 @@ public class Product {
         this.location = location;
 
         category.getProducts().add(this); // 양방향 연관관계 설정
+        subdivision.getProducts().add(this); // 양방향 연관관계 설정
     }
 
     /**
      * 제품 생성
      */
-    public static Product createProduct(Category category, String name, int price, int cost, int stock, int minStock, String stringDate, int code, String location) throws ParseException {
+    public static Product createProduct(Category category, Subdivision subdivision, String name, int price, int cost, int stock, int minStock, String stringDate, int code, String location) throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         Date receivingDate = dateFormat.parse(stringDate);
 
         Product product = Product.builder()
                 .category(category)
+                .subdivision(subdivision)
                 .name(name)
                 .price(price)
                 .cost(cost)
@@ -127,8 +135,9 @@ public class Product {
         DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
         Date receivingDate = dateFormat.parse(stringDate);
 
-        if (this.category != null) { // 양방향 연관관계를 다시 생성하기위해 기존의 관계를 제거
+        if (this.category != null && this.subdivision != null) { // 양방향 연관관계를 다시 생성하기위해 기존의 관계를 제거
             this.category.getProducts().remove(this);
+            this.subdivision.getProducts().remove(this);
         }
 
         this.name = name;
@@ -141,6 +150,7 @@ public class Product {
         this.location = location;
 
         category.getProducts().add(this); // 양방향 연관관계 설정
+        subdivision.getProducts().add(this); // 양방향 연관관계 설정
 
         return this;
     }

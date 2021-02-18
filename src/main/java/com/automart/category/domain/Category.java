@@ -1,6 +1,7 @@
 package com.automart.category.domain;
 
 import com.automart.product.domain.Product;
+import com.automart.subdivision.domain.Subdivision;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,12 +18,16 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
-    @Id
-    @Column(name = "category_code", length = 45)
-    private String code; // 카테고리 고유 코드
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_no")
+    private int no; // 카테고리 고유 번호
 
     @Column(name = "category_name", length = 45, unique = true)
     private String name; // 카테고리 이름
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Subdivision> subdivisions = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
@@ -39,8 +44,7 @@ public class Category {
      * 카테고리 생성
      */
     @Builder
-    public Category(String code, String name) {
-        this.code = code;
+    public Category(String name) {
         this.name = name;
     }
 }

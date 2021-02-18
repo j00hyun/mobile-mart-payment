@@ -49,14 +49,37 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                         " FROM automart.order_detail d, automart.product p" +
                         " WHERE d.product_no = p.product_no" +
                             " AND d.order_detail_status = 1" +
-                            " AND p.category_code = ?1" +
+                            " AND p.category_no = ?1" +
                         " GROUP BY order_no" +
                     " ) od" +
                 " ON o.order_no = od.order_no" +
                 " WHERE o.order_state = 1" +
                 " GROUP BY o.order_date" +
                 " ORDER BY o.order_date;", nativeQuery = true)
-    public List<TotalDailySalesResponseDto> findTotalDailySalesByCategory(String categoryCode);
+    public List<TotalDailySalesResponseDto> findTotalDailySalesByCategory(int categoryNo);
+//
+//    /**
+//     * 일별 매출 (상품)
+//     *
+//     * od : order_no 별 전체 주문 가격
+//     * date : 주문이 존재하는 날짜
+//     * price(SUM(od.price)) : 해당 날짜에 특정 상품의 총 판매액
+//     */
+//    @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.price) AS price" +
+//            " FROM automart.order o" +
+//            " INNER JOIN (" +
+//            " SELECT d.order_no, SUM(d.order_detail_price) AS price" +
+//            " FROM automart.order_detail d, automart.product p" +
+//            " WHERE d.product_no = p.product_no" +
+//            " AND d.order_detail_status = 1" +
+//            " AND p.product_no = ?1" +
+//            " GROUP BY order_no" +
+//            " ) od" +
+//            " ON o.order_no = od.order_no" +
+//            " WHERE o.order_state = 1" +
+//            " GROUP BY o.order_date" +
+//            " ORDER BY o.order_date;", nativeQuery = true)
+//    public List<TotalDailySalesResponseDto> findTotalDailySalesByProduct(int productNo);
 
     /**
      * 일별 순수익 (전체)
@@ -96,12 +119,27 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                     " FROM automart.order_detail d, automart.product p" +
                     " WHERE d.product_no = p.product_no" +
                         " AND d.order_detail_status = 1" +
-                        " AND p.category_code = ?1" +
+                        " AND p.category_no = ?1" +
                     " GROUP BY d.order_no" +
                 " ) od" +
                 " ON o.order_no = od.order_no" +
             " WHERE o.order_state = 1" +
             " GROUP BY o.order_date" +
             " ORDER BY o.order_date;", nativeQuery = true)
-    public List<TotalDailyMarginResponseDto> findTotalDailyMarginByCategory(String categoryCode);
+    public List<TotalDailyMarginResponseDto> findTotalDailyMarginByCategory(int categoryNo);
+
+    /*
+    SELECT p.product_name AS name,
+    FROM ( SELECT order_no
+           FROM automart.order
+           WHERE DATE_FORMAT(order_date, "%Y-%m-%d") = CURDATE()
+               AND o.order_state = 1 ) o,
+         automart.order_detail d, automart.product p
+    WHERE o.order_no = d.order_no
+        AND p.product_no = d.product_no
+        AND d.order_detail_status = 1
+        AND p.category_code = ?1
+    GROUP BY p.product_no
+    ORDER BY  desc limit 5
+    */
 }

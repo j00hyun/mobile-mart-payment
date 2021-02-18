@@ -9,8 +9,11 @@ import javax.validation.constraints.*;
 @Data
 public class ProductSaveRequestDto {
 
-    @NotBlank(message = "카테고리 고유 코드를 입력해주세요.")
-    private String categoryCode; // 카테고리 고유 코드
+    @NotBlank(message = "카테고리 고유 번호를 입력해주세요.")
+    private int categoryNo; // 카테고리 고유 번호
+
+    @NotBlank(message = "소분류 고유 번호를 입력해주세요.")
+    private int subdivNo; // 소분류 고유 번호
 
     @NotBlank(message = "상품명을 입력해주세요.")
     private String name; // 상품명
@@ -34,8 +37,9 @@ public class ProductSaveRequestDto {
     private MultipartFile img; // 제품 이미지
 
     @Builder
-    public ProductSaveRequestDto(String categoryCode, String name, int stock, int minStock, String receivingDate, String location, int price, int cost, int code, MultipartFile img) {
-        this.categoryCode = categoryCode;
+    public ProductSaveRequestDto(int categoryNo, int subdivNo, String name, int stock, int minStock, String receivingDate, String location, int price, int cost, int code, MultipartFile img) {
+        this.categoryNo = categoryNo;
+        this.subdivNo = subdivNo;
         this.name = name;
         this.stock = stock;
         this.minStock = minStock;

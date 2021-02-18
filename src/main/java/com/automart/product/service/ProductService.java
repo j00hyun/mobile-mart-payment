@@ -11,6 +11,8 @@ import com.automart.product.dto.ProductSaveRequestDto;
 import com.automart.product.dto.ProductUpdateRequestDto;
 import com.automart.product.repository.ProductRepository;
 import com.automart.s3.Uploader;
+import com.automart.subdivision.domain.Subdivision;
+import com.automart.subdivision.repository.SubdivisionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final SubdivisionRepository subdivisionRepository;
     private final Uploader uploader;
 
 
@@ -35,14 +38,16 @@ public class ProductService {
     @Transactional
     public ProductResponseDto saveProduct(ProductSaveRequestDto requestDto) throws Exception {
         Product product = null;
-        // 파일 저장 경로 : products/{categoryCode}/{productNo}
-        String dirName = "products/" + requestDto.getCategoryCode();
+        // 파일 저장 경로 : products/{categoryNo}/{productNo}
+        String dirName = "products/" + requestDto.getCategoryNo();
 
-        Category category = categoryRepository.findByCode(requestDto.getCategoryCode())
+        Category category = categoryRepository.findByNo(requestDto.getCategoryNo())
                 .orElseThrow(() -> new NotFoundDataException("해당 카테고리가 존재하지 않습니다."));
 
+        Subdivision subdivision = subdivisionRepository.findByNo(requestDto.getSubdivNo())
+                .orElseThrow(() -> new NotFoundDataException("해당 소분류가 존재하지 않습니다."));
         try {
-            product = Product.createProduct(category, requestDto.getName(),
+            product = Product.createProduct(category, subdivision, requestDto.getName(),
                     requestDto.getPrice(), requestDto.getCost(), requestDto.getStock(),
                     requestDto.getMinStock(), requestDto.getReceivingDate(), requestDto.getCode(), requestDto.getLocation());
 
@@ -71,8 +76,8 @@ public class ProductService {
     public ProductResponseDto updateProduct(ProductUpdateRequestDto requestDto) throws Exception {
         Product product = productRepository.findByNo(requestDto.getProductNo())
                 .orElseThrow(()->new NotFoundDataException("상품이 존재하지 않습니다."));
-        String categoryCode = product.getCategory().getCode();
-        String dirName = "products/" + categoryCode;
+        int categoryNo = product.getCategory().getNo();
+        String dirName = "products/" + categoryNo;
 
         try {
             product = product.update(requestDto.getName(), requestDto.getPrice(),

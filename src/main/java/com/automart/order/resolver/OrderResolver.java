@@ -34,8 +34,8 @@ public class OrderResolver {
      */
     @GraphQLQuery(name = "showTotalDailySalesByCategory")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<TotalDailySalesResponseDto> showTotalDailySalesByCategory(String categoryCode) {
-        return orderRepository.findTotalDailySalesByCategory(categoryCode);
+    public List<TotalDailySalesResponseDto> showTotalDailySalesByCategory(int categoryNo) {
+        return orderRepository.findTotalDailySalesByCategory(categoryNo);
     }
 
     /**
@@ -54,7 +54,7 @@ public class OrderResolver {
      */
     @GraphQLQuery(name = "showTotalDailyMarginByCategory")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<TotalDailyMarginResponseDto> showTotalDailyMarginByCategory(String categoryCode) {
-        return orderRepository.findTotalDailyMarginByCategory(categoryCode);
+    public List<TotalDailyMarginResponseDto> showTotalDailyMarginByCategory(int categoryNo) {
+        return orderRepository.findTotalDailyMarginByCategory(categoryNo);
     }
 }
