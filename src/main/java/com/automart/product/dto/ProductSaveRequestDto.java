@@ -9,10 +9,10 @@ import javax.validation.constraints.*;
 @Data
 public class ProductSaveRequestDto {
 
-    @NotBlank(message = "카테고리 고유 번호를 입력해주세요.")
+    @PositiveOrZero(message = "카테고리의 고유번호를 입력해주세요.")
     private int categoryNo; // 카테고리 고유 번호
 
-    @NotBlank(message = "소분류 고유 번호를 입력해주세요.")
+    @PositiveOrZero(message = "소분류의 고유번호를 입력해주세요.")
     private int subdivNo; // 소분류 고유 번호
 
     @NotBlank(message = "상품명을 입력해주세요.")
