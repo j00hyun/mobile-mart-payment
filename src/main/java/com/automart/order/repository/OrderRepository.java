@@ -170,4 +170,38 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             " GROUP BY p.product_no" +
             " ORDER BY price desc limit 5;", nativeQuery = true)
     public List<BestProductResponseDto> findWeeklyBestProductByCategory(int categoryNo);
+
+    /**
+     * 월간(이번달 1일부터 현재까지) 베스트 상품 5개 (카테고리별)
+     *
+     * no : 베스트 상품의 고유 번호
+     * subdiv : 상품의 소분류 이름
+     * name : 상품 이름
+     * price : 상품의 당월 매출
+     * beforePrice : 상품의 전월 매출
+     */
+    @Query(value="SELECT p.product_no AS no, s.subdiv_name AS subdiv, " +
+            " p.product_name AS name, SUM(d.order_detail_price) AS price, " +
+            " (SELECT SUM(order_detail_price)" +
+            " FROM automart.order_detail, automart.order" +
+            " WHERE no = product_no" +
+            " AND DATE(order_date) > LAST_DAY(NOW() - INTERVAL 2 MONTH)" +
+            " AND DATE(order_date) <= LAST_DAY(NOW() - INTERVAL 1 MONTH)" +
+            " AND order.order_no = order_detail.order_no" +
+            " AND order_state = 1" +
+            " AND order_detail_status = 1) AS beforePrice" +
+            " FROM ( SELECT order_no" +
+            " FROM automart.order" +
+            " WHERE DATE(order_date) > LAST_DAY(NOW() - INTERVAL 1 MONTH)" +
+            " AND DATE(order_date) <= NOW()" +
+            " AND order_state = 1 ) o," +
+            " automart.order_detail d, automart.product p, automart.subdivision s" +
+            " WHERE o.order_no = d.order_no" +
+            " AND p.product_no = d.product_no" +
+            " AND d.order_detail_status = 1" +
+            " AND p.category_no = ?1" +
+            " AND p.subdiv_no = s.subdiv_no" +
+            " GROUP BY p.product_no" +
+            " ORDER BY price desc limit 5;", nativeQuery = true)
+    public List<BestProductResponseDto> findMonthlyBestProductByCategory(int categoryNo);
 }

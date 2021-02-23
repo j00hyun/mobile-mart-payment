@@ -78,4 +78,14 @@ public class OrderResolver {
     public List<BestProductResponseDto> showWeeklyBestProduct(int categoryNo) {
         return orderRepository.findWeeklyBestProductByCategory(categoryNo);
     }
+
+    /**
+     * 월간 특정 카테고리의 매출 상위 5개 상품 계산
+     * @return 해당 카테고리의 월간 상위 매출 5개의 상품 목록과 매출액 반환
+     */
+    @GraphQLQuery(name = "showMonthlyBestProduct")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<BestProductResponseDto> showMonthlyBestProduct(int categoryNo) {
+        return orderRepository.findMonthlyBestProductByCategory(categoryNo);
+    }
 }
