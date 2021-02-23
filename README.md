@@ -34,8 +34,8 @@ GIF 준비중입니다.
 
 # ERD
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/43433753/107119380-804acb80-68ca-11eb-99af-1a7b479947da.png" width="80%" alt="ERD">
-  <img src="https://user-images.githubusercontent.com/43433753/107119799-3f07eb00-68cd-11eb-9715-bce5876298de.png" width="80%" alt="DB Columns">
+  <img src="https://user-images.githubusercontent.com/64248514/108815245-7b3e8980-75f7-11eb-8785-e8d9cffc4b11.png" width="80%" alt="ERD">
+  <img src="https://user-images.githubusercontent.com/64248514/108815255-7e397a00-75f7-11eb-841a-c0e73bb70695.png" width="80%" alt="DB Columns">
 </p>
 
 
