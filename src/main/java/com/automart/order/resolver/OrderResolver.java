@@ -1,6 +1,6 @@
 package com.automart.order.resolver;
 
-import com.automart.order.dto.DailyBestProductResponseDto;
+import com.automart.order.dto.BestProductResponseDto;
 import com.automart.order.dto.TotalDailyMarginResponseDto;
 import com.automart.order.dto.TotalDailySalesResponseDto;
 import com.automart.order.repository.OrderRepository;
@@ -65,7 +65,17 @@ public class OrderResolver {
      */
     @GraphQLQuery(name = "showDailyBestProduct")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<DailyBestProductResponseDto> showDailyBestProduct(int categoryNo) {
+    public List<BestProductResponseDto> showDailyBestProduct(int categoryNo) {
         return orderRepository.findDailyBestProductByCategory(categoryNo);
+    }
+
+    /**
+     * 주간 특정 카테고리의 매출 상위 5개 상품 계산
+     * @return 해당 카테고리의 주간 상위 매출 5개의 상품 목록과 매출액 반환
+     */
+    @GraphQLQuery(name = "showWeeklyBestProduct")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<BestProductResponseDto> showWeeklyBestProduct(int categoryNo) {
+        return orderRepository.findWeeklyBestProductByCategory(categoryNo);
     }
 }

@@ -31,35 +31,35 @@ class CategoryServiceTest {
     @Test
     public void 카테코리생성() {
         // when
-        Category category1 = categoryService.saveCategory("N-1", "과일");
-        Category category2 = categoryService.saveCategory("N-2", "채소");
+        Category category1 = categoryService.saveCategory("과일");
+        Category category2 = categoryService.saveCategory("채소");
 
         // then
-        assertEquals("카테고리 고유코드가 올바로 저장되어야 한다.", "N-1", category1.getCode());
-        assertEquals("카테고리 고유코드가 올바로 저장되어야 한다.", "N-2", category2.getCode());
+        assertEquals("카테고리 고유코드가 올바로 저장되어야 한다.", 1, category1.getNo());
+        assertEquals("카테고리 고유코드가 올바로 저장되어야 한다.", 2, category2.getNo());
     }
 
     @Test
     public void 카테고리이름변경() {
         // given
-        categoryService.saveCategory("N-1", "과일");
+        categoryService.saveCategory("과일");
 
         // when
-        categoryService.updateCategory("N-1", "채소");
+        categoryService.updateCategory(1, "채소");
 
         // then
-        assertEquals("카테고리 이름이 채소여야한다.", "채소", categoryRepository.findByCode("N-1").get().getName());
+        assertEquals("카테고리 이름이 채소여야한다.", "채소", categoryRepository.findByNo(1).get().getName());
     }
 
     @Test
     public void 카테고리삭제() {
         // given
-        categoryService.saveCategory("N-1", "과일");
-        categoryService.saveCategory("N-2", "채소");
+        categoryService.saveCategory("과일");
+        categoryService.saveCategory("채소");
 
         // when
-        categoryService.deleteCategory("N-1");
-        categoryService.deleteCategory("N-2");
+        categoryService.deleteCategory(1);
+        categoryService.deleteCategory(2);
 
         // then
         assertEquals("해당 카테고리가 존재하지 않는다.", false, categoryRepository.findByName("과일").isPresent());

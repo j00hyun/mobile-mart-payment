@@ -198,10 +198,10 @@ class CartServiceTest {
                 .build();
 
         userService.saveUser(user);
-        categoryService.saveCategory("N-1", "과일");
+        categoryService.saveCategory("과일");
 
         ProductSaveRequestDto productDto1 = ProductSaveRequestDto.builder()
-                .categoryCode("N-1")
+                .categoryNo(1)
                 .name("사과")
                 .price(2000)
                 .cost(1000)
@@ -211,7 +211,7 @@ class CartServiceTest {
                 .build();
 
         ProductSaveRequestDto productDto2 = ProductSaveRequestDto.builder()
-                .categoryCode("N-1")
+                .categoryNo(1)
                 .name("바나나")
                 .price(2000)
                 .cost(1000)

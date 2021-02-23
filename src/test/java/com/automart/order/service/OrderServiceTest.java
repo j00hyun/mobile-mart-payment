@@ -13,6 +13,7 @@ import com.automart.order.repository.OrderDetailRepository;
 import com.automart.order.repository.OrderRepository;
 import com.automart.product.domain.Product;
 import com.automart.product.repository.ProductRepository;
+import com.automart.subdivision.domain.Subdivision;
 import com.automart.user.domain.AuthProvider;
 import com.automart.user.domain.User;
 import com.automart.user.repository.UserRepository;
@@ -63,9 +64,11 @@ class OrderServiceTest {
         // given : 유저가 상품을 카트에 담은 상황에서
         Category category = Category.builder().name("foods").build();
         em.persist(category);
+        Subdivision subdivision = Subdivision.builder().category(category).name("fruits").build();
+        em.persist(subdivision);
 
-        Product product1 = Product.createProduct(category, "banana", 3200,4000, 3,50,"2020.10.10", 12345, null);
-        Product product2 = Product.createProduct(category, "apple", 2000,3000, 3,50,"2020.10.10",12344, null);
+        Product product1 = Product.createProduct(category, subdivision, "banana", 3200,4000, 3,50,"2020.10.10", 12345, null);
+        Product product2 = Product.createProduct(category, subdivision, "apple", 2000,3000, 3,50,"2020.10.10",12344, null);
 
         em.persist(product1);
         em.persist(product2);

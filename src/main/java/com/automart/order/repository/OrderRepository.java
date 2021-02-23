@@ -1,7 +1,7 @@
 package com.automart.order.repository;
 
 import com.automart.order.domain.Order;
-import com.automart.order.dto.DailyBestProductResponseDto;
+import com.automart.order.dto.BestProductResponseDto;
 import com.automart.order.dto.TotalDailyMarginResponseDto;
 import com.automart.order.dto.TotalDailySalesResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,9 +18,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     /**
      * 일별 매출 (전체)
      *
-     * od : order_no 별 전체 주문 가격
      * date : 주문이 존재하는 날짜
-     * price(SUM(od.price)) : 해당 날짜의 총 판매액
+     * price : 해당 날짜의 총 판매액
      */
     @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.price) AS price" +
                 " FROM automart.order o" +
@@ -39,9 +38,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     /**
      * 일별 매출 (카테고리)
      *
-     * od : order_no 별 전체 주문 가격
      * date : 주문이 존재하는 날짜
-     * price(SUM(od.price)) : 해당 날짜에 특정 카테고리 상품들의 총 판매액
+     * price : 해당 날짜에 특정 카테고리 상품들의 총 판매액
      */
     @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.price) AS price" +
                 " FROM automart.order o" +
@@ -62,9 +60,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     /**
      * 일별 순수익 (전체)
      *
-     * od : order_no 별 순수익
      * date : 주문이 존재하는 날짜
-     * margin(SUM(od.margin)) : 해당 날짜의 총 순수익
+     * margin : 해당 날짜의 총 순수익
      */
     @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.margin) AS margin" +
                 " FROM automart.order o" +
@@ -85,9 +82,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     /**
      * 일별 순수익 (카테고리별)
      *
-     * od : order_no 별 순수익
      * date : 주문이 존재하는 날짜
-     * margin(SUM(od.margin)) : 해당 날짜에 특정 카테고리 상품들의 총 순수익
+     * margin : 해당 날짜에 특정 카테고리 상품들의 총 순수익
      */
     @Query(value="SELECT DATE(o.order_date) AS date, SUM(od.margin) AS margin" +
             " FROM automart.order o" +
@@ -110,13 +106,24 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     /**
      * 당일 베스트 상품 5개 (카테고리별)
      *
-     * o : 당일 주문한 주문 번호 목록
+     * no : 베스트 상품의 고유 번호
+     * subdiv : 상품의 소분류 이름
+     * name : 상품 이름
+     * price : 상품의 당일 매출
+     * beforePrice : 상품의 전일 매출
      */
     @Query(value="SELECT p.product_no AS no, s.subdiv_name AS subdiv, " +
-            " p.product_name AS name, SUM(d.order_detail_price) AS price" +
+            " p.product_name AS name, SUM(d.order_detail_price) AS price, " +
+                " (SELECT SUM(order_detail_price)" +
+                    " FROM automart.order_detail, automart.order" +
+                    " WHERE no = product_no" +
+                        " AND DATE(order_date) = CURDATE() - INTERVAL 1 DAY" +
+                        " AND order.order_no = order_detail.order_no" +
+                        " AND order_state = 1 " +
+                        " AND order_detail_status = 1) AS beforePrice" +
             " FROM ( SELECT order_no" +
                 " FROM automart.order" +
-                " WHERE DATE_FORMAT(order_date, \"%Y-%m-%d\") = CURDATE()" +
+                " WHERE DATE(order_date) = CURDATE()" +
                     " AND order_state = 1 ) o," +
                 " automart.order_detail d, automart.product p, automart.subdivision s" +
             " WHERE o.order_no = d.order_no" +
@@ -126,7 +133,41 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
                 " AND p.subdiv_no = s.subdiv_no" +
             " GROUP BY p.product_no" +
             " ORDER BY price desc limit 5;", nativeQuery = true)
-    public List<DailyBestProductResponseDto> findDailyBestProductByCategory(int categoryNo);
+    public List<BestProductResponseDto> findDailyBestProductByCategory(int categoryNo);
 
-    
+    /**
+     * 주간(해당 주의 월요일~일요일) 베스트 상품 5개 (카테고리별)
+     *
+     * no : 베스트 상품의 고유 번호
+     * subdiv : 상품의 소분류 이름
+     * name : 상품 이름
+     * price : 상품의 당일 매출
+     * beforePrice : 상품의 전주 매출
+     */
+    @Query(value="SELECT p.product_no AS no, s.subdiv_name AS subdiv, " +
+            " p.product_name AS name, SUM(d.order_detail_price) AS price, " +
+                " (SELECT SUM(order_detail_price)" +
+                    " FROM automart.order_detail, automart.order" +
+                    " WHERE no = product_no" +
+                        " AND DATE(order_date)" +
+                            " BETWEEN ADDDATE(CURDATE(), -WEEKDAY(CURDATE()) - 7)" +
+                                " AND ADDDATE(CURDATE(), -WEEKDAY(CURDATE()) - 1)" +
+                        " AND order.order_no = order_detail.order_no" +
+                        " AND order_state = 1" +
+                        " AND order_detail_status = 1) AS beforePrice" +
+            " FROM ( SELECT order_no" +
+                " FROM automart.order" +
+                " WHERE DATE(order_date)" +
+                    " BETWEEN ADDDATE(CURDATE(), -WEEKDAY(CURDATE()) + 0)" +
+                        " AND ADDDATE(CURDATE(), -WEEKDAY(CURDATE()) + 6)" +
+                    " AND order_state = 1 ) o," +
+                " automart.order_detail d, automart.product p, automart.subdivision s" +
+            " WHERE o.order_no = d.order_no" +
+                " AND p.product_no = d.product_no" +
+                " AND d.order_detail_status = 1" +
+                " AND p.category_no = ?1" +
+                " AND p.subdiv_no = s.subdiv_no" +
+            " GROUP BY p.product_no" +
+            " ORDER BY price desc limit 5;", nativeQuery = true)
+    public List<BestProductResponseDto> findWeeklyBestProductByCategory(int categoryNo);
 }
