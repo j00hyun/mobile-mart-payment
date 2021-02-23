@@ -180,25 +180,25 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
      */
     @Query(value="SELECT p.product_no AS no, s.subdiv_name AS subdiv, " +
             " p.product_name AS name, SUM(d.order_detail_price) AS price, " +
-            " (SELECT SUM(order_detail_price)" +
-            " FROM automart.order_detail, automart.order" +
-            " WHERE no = product_no" +
-            " AND DATE(order_date)" +
-                " BETWEEN ADDDATE(CURDATE(), -59) AND ADDDATE(CURDATE(), -30)" +
-            " AND order.order_no = order_detail.order_no" +
-            " AND order_state = 1" +
-            " AND order_detail_status = 1) AS beforePrice" +
+                " (SELECT SUM(order_detail_price)" +
+                    " FROM automart.order_detail, automart.order" +
+                    " WHERE no = product_no" +
+                        " AND DATE(order_date)" +
+                            " BETWEEN ADDDATE(CURDATE(), -59) AND ADDDATE(CURDATE(), -30)" +
+                        " AND order.order_no = order_detail.order_no" +
+                        " AND order_state = 1" +
+                        " AND order_detail_status = 1) AS beforePrice" +
             " FROM ( SELECT order_no" +
-            " FROM automart.order" +
-            " WHERE DATE(order_date)" +
-                " BETWEEN ADDDATE(CURDATE(), -30) AND ADDDATE(CURDATE(), -1)" +
-            " AND order_state = 1 ) o," +
-            " automart.order_detail d, automart.product p, automart.subdivision s" +
+                " FROM automart.order" +
+                " WHERE DATE(order_date)" +
+                    " BETWEEN ADDDATE(CURDATE(), -30) AND ADDDATE(CURDATE(), -1)" +
+                    " AND order_state = 1 ) o," +
+                " automart.order_detail d, automart.product p, automart.subdivision s" +
             " WHERE o.order_no = d.order_no" +
-            " AND p.product_no = d.product_no" +
-            " AND d.order_detail_status = 1" +
-            " AND p.category_no = ?1" +
-            " AND p.subdiv_no = s.subdiv_no" +
+                " AND p.product_no = d.product_no" +
+                " AND d.order_detail_status = 1" +
+                " AND p.category_no = ?1" +
+                " AND p.subdiv_no = s.subdiv_no" +
             " GROUP BY p.product_no" +
             " ORDER BY price desc limit 5;", nativeQuery = true)
     public List<BestProductResponseDto> findMonthlyBestProductByCategory(int categoryNo);
@@ -214,25 +214,25 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
      */
     @Query(value="SELECT p.product_no AS no, s.subdiv_name AS subdiv, " +
             " p.product_name AS name, SUM(d.order_detail_price) AS price, " +
-            " (SELECT SUM(order_detail_price)" +
-            " FROM automart.order_detail, automart.order" +
-            " WHERE no = product_no" +
-            " AND DATE(order_date)" +
-            " BETWEEN ADDDATE(CURDATE(), -729) AND ADDDATE(CURDATE(), -365)" +
-            " AND order.order_no = order_detail.order_no" +
-            " AND order_state = 1" +
-            " AND order_detail_status = 1) AS beforePrice" +
+                " (SELECT SUM(order_detail_price)" +
+                    " FROM automart.order_detail, automart.order" +
+                    " WHERE no = product_no" +
+                        " AND DATE(order_date)" +
+                            " BETWEEN ADDDATE(CURDATE(), -729) AND ADDDATE(CURDATE(), -365)" +
+                        " AND order.order_no = order_detail.order_no" +
+                        " AND order_state = 1" +
+                        " AND order_detail_status = 1) AS beforePrice" +
             " FROM ( SELECT order_no" +
-            " FROM automart.order" +
-            " WHERE DATE(order_date)" +
-            " BETWEEN ADDDATE(CURDATE(), -365) AND ADDDATE(CURDATE(), -1)" +
-            " AND order_state = 1 ) o," +
-            " automart.order_detail d, automart.product p, automart.subdivision s" +
+                " FROM automart.order" +
+                " WHERE DATE(order_date)" +
+                    " BETWEEN ADDDATE(CURDATE(), -365) AND ADDDATE(CURDATE(), -1)" +
+                    " AND order_state = 1 ) o," +
+                " automart.order_detail d, automart.product p, automart.subdivision s" +
             " WHERE o.order_no = d.order_no" +
-            " AND p.product_no = d.product_no" +
-            " AND d.order_detail_status = 1" +
-            " AND p.category_no = ?1" +
-            " AND p.subdiv_no = s.subdiv_no" +
+                " AND p.product_no = d.product_no" +
+                " AND d.order_detail_status = 1" +
+                " AND p.category_no = ?1" +
+                " AND p.subdiv_no = s.subdiv_no" +
             " GROUP BY p.product_no" +
             " ORDER BY price desc limit 5;", nativeQuery = true)
     public List<BestProductResponseDto> findAnnualBestProductByCategory(int categoryNo);
