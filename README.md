@@ -121,17 +121,7 @@ Github에 소스코드를 PUSH 혹은 PR하면 Jenkins가 소스코드를 가져
         </a>
         <br>
       </td>
-      <td align="center">
-        <a href="https://github.com/Kimjongsoo">
-          <img src="https://avatars.githubusercontent.com/u/31787166?s=400&v=4" width="100px" alt="Kimjongsoo" style="max-width:100%;">
-          <br>
-          <sub>
-            <b>김종수</b>
-          </sub>
-        </a>
-        <br>
-      </td>
-      <td align="center">
+      <td align="center" colspan="2">
         <a href="https://github.com/chaeyeonp">
           <img src="https://avatars.githubusercontent.com/u/61309080?s=400&u=f5fdeef35aafb099f0d20fc5354b3a8693500dd9&v=4" width="100px" alt="chaeyeonp" style="max-width:100%;">
           <br>
